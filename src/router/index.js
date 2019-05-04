@@ -159,6 +159,34 @@ export const constantRoutes = [
     ]
   },
 
+  //商品管理
+  {
+    path: '/manage-goods',
+    component: Layout,
+    redirect: '/manage-goods/list',
+    name: 'manage-goods',
+    meta: { title: '商品管理', icon: 'example' },
+    children: [
+      {
+        path: 'list',
+        name: 'list',
+        component: () => import('@/views/manage-goods/list'),
+        meta: { title: '商品管理', icon: 'table' }
+      },
+      {
+        path: 'phone',
+        name: 'phone',
+        component: () => import('@/views/manage-goods/phone'),
+        meta: { title: '手机机型管理', icon: 'table' }
+      },
+      {
+        path: 'picture',
+        name: 'picture',
+        component: () => import('@/views/manage-goods/picture'),
+        meta: { title: '图库管理', icon: 'table' }
+      },
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
