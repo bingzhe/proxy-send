@@ -159,7 +159,7 @@ export const constantRoutes = [
     ]
   },
 
-  //商品管理
+  // 商品管理
   {
     path: '/manage-goods',
     component: Layout,
@@ -184,7 +184,7 @@ export const constantRoutes = [
         name: 'picture',
         component: () => import('@/views/manage-goods/picture'),
         meta: { title: '图库管理', icon: 'table' }
-      },
+      }
     ]
   },
   // 404 page must be placed at the end !!!

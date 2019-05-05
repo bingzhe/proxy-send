@@ -1,20 +1,32 @@
 <template>
   <div class="navbar">
-    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <!-- <hamburger
+      :is-active="sidebar.opened"
+      class="hamburger-container"
+      @toggleClick="toggleSideBar"
+    />-->
 
-    <breadcrumb class="breadcrumb-container" />
+    <!-- <breadcrumb class="breadcrumb-container"/> -->
 
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
+      <div class="right-menu-item admin-wrapper">
+        <i class="el-icon-circle-close"></i>
+        <span>Admin</span>
+      </div>
+      <div class="right-menu-item home-wrapper">
+        <i class="el-icon-circle-close"></i>
+      </div>
+      <div class="right-menu-item logout-wrapper">
+        <i class="el-icon-circle-close"></i>
+      </div>
+      <!-- <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <i class="el-icon-caret-bottom"/>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
+            <el-dropdown-item>Home</el-dropdown-item>
           </router-link>
           <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
             <el-dropdown-item>Github</el-dropdown-item>
@@ -26,7 +38,7 @@
             <span style="display:block;" @click="logout">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown>-->
     </div>
   </div>
 </template>
@@ -64,30 +76,32 @@ export default {
   height: 66px;
   overflow: hidden;
   position: relative;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  background: #f7f7f7;
+  box-shadow: 0px 2px 24px 0px rgba(208, 213, 222, 0.6);
 
-  .hamburger-container {
-    line-height: 46px;
-    height: 100%;
-    float: left;
-    cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+  // .hamburger-container {
+  //   line-height: 46px;
+  //   height: 100%;
+  //   float: left;
+  //   cursor: pointer;
+  //   transition: background 0.3s;
+  //   -webkit-tap-highlight-color: transparent;
 
-    &:hover {
-      background: rgba(0, 0, 0, .025)
-    }
-  }
+  //   &:hover {
+  //     background: rgba(0, 0, 0, 0.025);
+  //   }
+  // }
 
-  .breadcrumb-container {
-    float: left;
-  }
+  // .breadcrumb-container {
+  //   float: left;
+  // }
 
   .right-menu {
     float: right;
     height: 100%;
-    line-height: 50px;
+    line-height: 66px;
+    text-align: center;
+    font-size: 0;
 
     &:focus {
       outline: none;
@@ -95,18 +109,19 @@ export default {
 
     .right-menu-item {
       display: inline-block;
-      padding: 0 8px;
       height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
+      min-width: 66px;
+      font-size: 20px;
+      color: #8a8a8a;
       vertical-align: text-bottom;
+      border-left: 1px solid #d3d3d3;
 
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
+      &:first-child {
+        border-left: none;
+        padding: 0 14px;
 
-        &:hover {
-          background: rgba(0, 0, 0, .025)
+        span {
+          font-size: 14px;
         }
       }
     }
