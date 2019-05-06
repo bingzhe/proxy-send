@@ -40,3 +40,44 @@ export const errcode = {
     * 注意同步修改 js/cfg.js --> errcode
     */
 };
+
+
+/*
+ * 商品材质
+ */
+export const GOODS_MATERIAL = {
+    GLASS: 1,
+    SILICONE: 2,
+
+    code: {
+        1: "玻璃",
+        2: "硅胶"
+    },
+
+    toString: function (code) {
+        code = parseInt(code || 0);
+        return this.code[code] || "未知[" + code + "]";
+    }
+};
+
+
+/*
+ * 商品类型
+ */
+export const GOODS_TYPE = {
+    DIY: 1,
+    NORM: 2,
+    GIFT: 3,
+
+    code: {
+        1: "手机壳-DIY",
+        2: "手机壳-标品",
+        3: "礼品",
+    },
+
+    toString: function (code) {
+        code = parseInt(code || 0);
+        return this.code[code] || "未知[" + code + "]";
+    }
+};
+

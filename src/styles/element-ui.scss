@@ -1,3 +1,11 @@
+/* 改变主题色变量 */
+$--color-primary: #2584f9;
+
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: "~element-ui/lib/theme-chalk/fonts";
+
+@import "~element-ui/packages/theme-chalk/src/index";
+
 // cover some element-ui styles
 
 .el-breadcrumb__inner,
@@ -14,7 +22,6 @@
 .el-upload__input {
   display: none;
 }
-
 
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
@@ -39,6 +46,35 @@
 // dropdown
 .el-dropdown-menu {
   a {
-    display: block
+    display: block;
+  }
+}
+
+// el-input
+.el-input {
+  .el-input__inner {
+    height: 38px;
+    line-height: 38px;
+    border-radius: 2px;
+  }
+}
+
+// el-button
+.el-button {
+  padding: 11px 20px;
+  border-radius: 2px;
+}
+
+// el-table
+.default-table-change {
+  .el-table thead {
+    color: #333333;
+  }
+  .el-table th {
+    background: #eff0f1;
+  }
+  .el-table th.is-leaf,
+  .el-table td {
+    border-bottom: 1px solid #e6e6e6;
   }
 }
