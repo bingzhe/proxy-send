@@ -87,7 +87,7 @@
           </span>
           <span>商品列表</span>
         </div>
-        <router-link to="/manage-goods/list/edit">
+        <router-link to="/manage-goods/goods/edit">
           <el-button class="goods-add" type="primary">新增商品</el-button>
         </router-link>
       </div>
