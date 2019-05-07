@@ -10,14 +10,14 @@
 
     <div class="right-menu">
       <div class="right-menu-item admin-wrapper">
-        <i class="el-icon-circle-close"></i>
+        <i class="el-icon-circle-close" />
         <span>Admin</span>
       </div>
       <div class="right-menu-item home-wrapper">
-        <i class="el-icon-circle-close"></i>
+        <i class="el-icon-circle-close" />
       </div>
       <div class="right-menu-item logout-wrapper">
-        <i class="el-icon-circle-close"></i>
+        <i class="el-icon-circle-close" />
       </div>
       <!-- <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">

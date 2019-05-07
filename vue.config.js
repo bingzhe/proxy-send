@@ -41,7 +41,8 @@ module.exports = {
         }
       }
     },
-    after: require('./mock/mock-server.js')
+    after: require('./mock/mock-server.js'),
+    hot: true
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

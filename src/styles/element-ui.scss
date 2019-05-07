@@ -50,6 +50,11 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
   }
 }
 
+// el-select
+.el-select {
+  width: 100%;
+}
+
 // el-input
 .el-input {
   .el-input__inner {
@@ -59,10 +64,11 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
   }
 }
 
-// el-button
-.el-button {
-  padding: 11px 20px;
-  border-radius: 2px;
+// el-textarea
+.el-textarea {
+  .el-textarea__inner {
+    border-radius: 2px;
+  }
 }
 
 // el-table
@@ -77,4 +83,24 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
   .el-table td {
     border-bottom: 1px solid #e6e6e6;
   }
+}
+
+//el-button 样式的一些自定义
+//默认高度为38px
+.el-button {
+  padding: 11px 20px;
+  border-radius: 2px;
+}
+
+//宽100 高44
+.el-button.btn-h-44-w-100 {
+  width: 100px;
+  height: 44px;
+  font-size: 16px;
+}
+
+//边框，字体有颜色
+.el-button.btn-bd-primary {
+  color: #2584f9;
+  border-color: #2584f9;
 }
