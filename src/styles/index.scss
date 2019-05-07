@@ -64,3 +64,39 @@ div:focus {
 .app-container {
   margin: 24px 30px 58px;
 }
+
+.table-wrapper-default {
+  border: 1px solid #e6e6e6;
+  .table-title {
+    background: #f9fafc;
+    height: 52px;
+    padding: 7px 21px;
+    .table-title__lable {
+      font-size: 16px;
+      color: #666;
+      float: left;
+      line-height: 38px;
+    }
+    .add-button-group {
+      float: right;
+    }
+  }
+  .pagination-wrapper {
+    height: 72px;
+    padding: 16px 10px 21px;
+    .pagination-total {
+      float: left;
+      color: #888888;
+      font-size: 14px;
+      line-height: 31px;
+      padding: 0 0 0 10px;
+
+      .num-text {
+        color: #e33119;
+      }
+    }
+    .sl-pagination {
+      float: right;
+    }
+  }
+}

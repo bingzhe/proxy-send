@@ -79,7 +79,11 @@
     </div>
     <!-- search end -->
 
-    <div v-loading="tableLoading" element-loading-text="拼命加载中" class="table-wrapper">
+    <div
+      v-loading="tableLoading"
+      element-loading-text="拼命加载中"
+      class="table-wrapper table-wrapper-default"
+    >
       <div class="table-title clearfix">
         <div class="table-title__lable">
           <span>
@@ -87,9 +91,11 @@
           </span>
           <span>商品列表</span>
         </div>
-        <router-link to="/manage-goods/goods/edit">
-          <el-button class="goods-add" type="primary">新增商品</el-button>
-        </router-link>
+        <div class="add-button-group">
+          <router-link to="/manage-goods/goods/edit">
+            <el-button class="goods-add" type="primary">新增商品</el-button>
+          </router-link>
+        </div>
       </div>
 
       <div class="table-content default-table-change">
@@ -243,41 +249,6 @@ export default {
   }
 }
 
-.table-wrapper {
-  border: 1px solid #e6e6e6;
-  .table-title {
-    background: #f9fafc;
-    height: 52px;
-    padding: 7px 21px;
-    .table-title__lable {
-      font-size: 16px;
-      color: #666;
-      float: left;
-      line-height: 38px;
-    }
-    .goods-add {
-      float: right;
-    }
-  }
-}
-.pagination-wrapper {
-  height: 72px;
-  padding: 16px 10px 21px;
-  .pagination-total {
-    float: left;
-    color: #888888;
-    font-size: 14px;
-    line-height: 31px;
-    padding: 0 0 0 10px;
-
-    .num-text {
-      color: #e33119;
-    }
-  }
-  .sl-pagination {
-    float: right;
-  }
-}
 .el-table {
   min-height: 400px;
 }
