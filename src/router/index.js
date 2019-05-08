@@ -226,6 +226,28 @@ export const constantRoutes = [
     ]
   },
 
+  // 财务管理
+  {
+    path: '/manage-finance',
+    component: Layout,
+    name: 'manage-finance',
+    meta: { title: '财务', icon: 'example' },
+    children: [
+      {
+        path: 'recharge',
+        name: 'recharge',
+        component: () => import('@/views/manage-finance/recharge'),
+        meta: { title: '充值受理', icon: 'table' }
+      },
+      {
+        path: 'bill',
+        name: 'bill',
+        component: () => import('@/views/manage-finance/bill'),
+        meta: { title: '对账单', icon: 'table' }
+      }
+    ]
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

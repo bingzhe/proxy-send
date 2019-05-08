@@ -70,22 +70,27 @@
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="55" />
 
-          <el-table-column prop="goods_id" label="品牌名称" min-width="60">
+          <el-table-column prop="goods_id" label="订单号" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="型号" min-width="60">
+          <el-table-column prop="goods_id" label="商户名" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="轮廓图" min-width="60">
+          <el-table-column prop="goods_id" label="充值金额" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="更新时间" min-width="60">
+          <el-table-column prop="goods_id" label="充值时间" min-width="60">
+            <template slot-scope="scope">
+              <span>{{ scope.row.goods_id }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="goods_id" label="账户余额" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.goods_id }}</span>
             </template>
