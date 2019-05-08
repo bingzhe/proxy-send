@@ -204,6 +204,28 @@ export const constantRoutes = [
     ]
   },
 
+  // 订单管理
+  {
+    path: '/manage-order',
+    component: Layout,
+    name: 'manage-order',
+    meta: { title: '订单管理', icon: 'example' },
+    children: [
+      {
+        path: 'list',
+        name: 'list',
+        component: () => import('@/views/manage-order/list'),
+        meta: { title: '订单审核', icon: 'table' }
+      },
+      {
+        path: 'search',
+        name: 'search',
+        component: () => import('@/views/manage-order/search'),
+        meta: { title: '订单查询', icon: 'table' }
+      }
+    ]
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
