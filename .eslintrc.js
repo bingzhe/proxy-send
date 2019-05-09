@@ -102,6 +102,7 @@ module.exports = {
     'no-inner-declarations': [2, 'functions'],
     'no-invalid-regexp': 2,
     'no-irregular-whitespace': 2,
+    'line-comment-position': 0,
     'no-iterator': 2,
     'no-label-var': 2,
     'no-labels': [2, {
@@ -110,7 +111,7 @@ module.exports = {
     }],
     'no-lone-blocks': 2,
     'no-mixed-spaces-and-tabs': 2,
-    'no-multi-spaces': 2,
+    'no-multi-spaces': [2, { ignoreEOLComments: true }],
     'no-multi-str': 2,
     'no-multiple-empty-lines': [2, {
       'max': 1

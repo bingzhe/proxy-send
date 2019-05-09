@@ -8,16 +8,16 @@
       <div class="baseinfo-title-wrapper">
         <baseinfo-title color="#F348A1" text="基本信息" />
       </div>
-      <el-form>
+      <el-form ref="baseinfoForm" :model="baseinfoForm" :rules="baseinfoFormRules">
         <el-row>
           <el-col :span="11" :xs="20">
-            <el-form-item label="商品名称" label-width="160px">
-              <el-input placeholder="请输入内容" />
+            <el-form-item label="商品名称" label-width="160px" prop="goods_name">
+              <el-input v-model="baseinfoForm.goods_name" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
-            <el-form-item label="商品种类" label-width="160px">
-              <el-select v-model="goodsType" placeholder="请选择">
+            <el-form-item label="商品种类" label-width="160px" prop="goods_type">
+              <el-select v-model="baseinfoForm.goods_type" placeholder="请选择">
                 <el-option
                   v-for="item in goodsTypeOptions"
                   :key="item.value"
@@ -30,8 +30,8 @@
         </el-row>
         <el-row>
           <el-col :span="11" :xs="20">
-            <el-form-item label="材质" label-width="160px">
-              <el-select v-model="goodsMaterial" placeholder="请选择">
+            <el-form-item label="材质" label-width="160px" prop="goods_material">
+              <el-select v-model="baseinfoForm.goods_material" placeholder="请选择">
                 <el-option
                   v-for="item in goodsMaterialOptions"
                   :key="item.value"
@@ -42,20 +42,25 @@
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
-            <el-form-item label="品牌" label-width="160px">
-              <el-input placeholder="请输入内容" />
+            <el-form-item label="品牌" label-width="160px" prop="brand">
+              <el-input v-model="baseinfoForm.brand" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="11" :xs="20">
-            <el-form-item label="型号" label-width="160px">
-              <el-input placeholder="请输入内容" />
+            <el-form-item label="型号" label-width="160px" prop="model">
+              <el-input v-model="baseinfoForm.model" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
-            <el-form-item label="单价" label-width="160px">
-              <el-input v-model="value" placeholder="请输入内容">
+            <el-form-item label="单价" label-width="160px" prop="price">
+              <el-input
+                v-model.trim="baseinfoForm.price"
+                v-limit-input-number="baseinfoForm.price"
+                placeholder="请输入内容"
+              >
+                <!-- type="number" -->
                 <span slot="suffix" class="input-suffix-text">元</span>
               </el-input>
             </el-form-item>
@@ -66,8 +71,9 @@
           <el-col :span="22">
             <el-form-item label="备注" label-width="160px">
               <el-input
-                type="textarea"
+                v-model="baseinfoForm.remark"
                 :rows="3"
+                type="textarea"
                 placeholder="请输入内容"
                 maxlength="100"
                 show-word-limit
@@ -194,6 +200,37 @@ export default {
   },
   data() {
     return {
+      baseinfoForm: {
+        goods_name: '',            // 商品名称
+        goods_type: '',            // 商品种类
+        goods_material: '',        // 材质
+        brand: '',                 // 品牌
+        model: '',                 // 型号
+        price: '',                 // 单价
+        remark: ''                 // 备注
+      },
+
+      baseinfoFormRules: {
+        goods_name: [
+          { required: true, message: '请输入商品名称', trigger: 'blur' }
+        ],
+        goods_type: [
+          { required: true, message: '请选择商品种类', trigger: 'change' }
+        ],
+        goods_material: [
+          { required: true, message: '请选择材质', trigger: 'change' }
+        ],
+        brand: [
+          { required: true, message: '请选择品牌', trigger: 'change' }
+        ],
+        model: [
+          { required: true, message: '请选择型号', trigger: 'change' }
+        ],
+        price: [
+          { required: true, message: '请输入单价', trigger: 'blur' }
+        ]
+      },
+
       basePicList: [{}, {}],
 
       value: '',

@@ -191,13 +191,13 @@ export const constantRoutes = [
       },
       {
         path: 'phone',
-        name: 'phone',
+        name: 'goodsPhone',
         component: () => import('@/views/manage-goods/phone'),
         meta: { title: '手机机型管理', icon: 'table' }
       },
       {
         path: 'picture',
-        name: 'picture',
+        name: 'goodsPicture',
         component: () => import('@/views/manage-goods/picture'),
         meta: { title: '图库管理', icon: 'table' }
       }
@@ -213,13 +213,13 @@ export const constantRoutes = [
     children: [
       {
         path: 'list',
-        name: 'list',
+        name: 'orderList',
         component: () => import('@/views/manage-order/list'),
         meta: { title: '订单审核', icon: 'table' }
       },
       {
         path: 'search',
-        name: 'search',
+        name: 'orderSearch',
         component: () => import('@/views/manage-order/search'),
         meta: { title: '订单查询', icon: 'table' }
       }
@@ -235,15 +235,42 @@ export const constantRoutes = [
     children: [
       {
         path: 'recharge',
-        name: 'recharge',
+        name: 'financeRecharge',
         component: () => import('@/views/manage-finance/recharge'),
         meta: { title: '充值受理', icon: 'table' }
       },
       {
         path: 'bill',
-        name: 'bill',
+        name: 'financeBill',
         component: () => import('@/views/manage-finance/bill'),
         meta: { title: '对账单', icon: 'table' }
+      }
+    ]
+  },
+  // 生产管理
+  {
+    path: '/manage-fabricate',
+    component: Layout,
+    name: 'manage-fabricate',
+    meta: { title: '生产管理', icon: 'example' },
+    children: [
+      {
+        path: 'list',
+        name: 'fabricateList',
+        component: () => import('@/views/manage-fabricate/list'),
+        meta: { title: '生产单管理', icon: 'table' }
+      },
+      {
+        path: 'logistics',
+        name: 'fabricateLogistics',
+        component: () => import('@/views/manage-fabricate/logistics'),
+        meta: { title: '物流单管理', icon: 'table' }
+      },
+      {
+        path: 'deliver',
+        name: 'fabricateDeliver',
+        component: () => import('@/views/manage-fabricate/deliver'),
+        meta: { title: '发货管理', icon: 'table' }
       }
     ]
   },

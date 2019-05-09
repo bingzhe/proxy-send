@@ -27,6 +27,9 @@ import '@/permission' // permission control
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 
+// 自定义指令
+import './directive/index'
+
 Vue.config.productionTip = false
 
 new Vue({
