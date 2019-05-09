@@ -107,7 +107,7 @@ const Http = new function() {
 
     const ToServer = function() {
       let datastr = JsonToUrlParam(data).toString()
-      if (opt.encmode == 'encrypt1') {
+      if (opt.encmode === 'encrypt1') {
         datastr = encrypt(THIS.data_key, datastr)
       }
       var param = {
@@ -127,9 +127,9 @@ const Http = new function() {
         url + '?' + (new Date()).getTime(),
         param,
         resp => {
-          if (errcode.USER_NOLOGIN == resp.ret) {
+          if (errcode.USER_NOLOGIN === resp.ret) {
             resp_callback(resp)
-          } else if (errcode.DATA_KEY_NOT_EXIST == resp.ret) {
+          } else if (errcode.DATA_KEY_NOT_EXIST === resp.ret) {
             resp_callback(resp)
             window.Store.SetGlobalData('key', '')
           }

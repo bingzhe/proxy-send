@@ -270,10 +270,10 @@ const Util = {
     var interval = 24 * 60 * 60 * 1000
     var i = 0
     var arr = []
-    if (type.trim() == 'week') {
+    if (type.trim() === 'week') {
       i = 7
     }
-    if (type.trim() == 'month') {
+    if (type.trim() === 'month') {
       i = 30
     }
     if (days) {

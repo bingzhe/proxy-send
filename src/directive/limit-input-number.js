@@ -12,6 +12,7 @@
 // 设置组件中的指定属性的值
 const setValue = function(exp, value, context) {
   value = isNaN(value) ? '' : value
+  console.log(exp)
   new Function('context', 'value', `context.${exp} = value`)(context, value)
 }
 
@@ -24,9 +25,10 @@ export default {
 
     // 初始化lastValue
     inputEl.lastValue = inputEl.value
-    // 默认小数点位数
-    const dotRange = inputEl.dataset.dotrange || `{0,2}`
-    const pattern = `^[0-9]+(.[0-9]${dotRange})?$`
+
+    const hasDot = !!inputEl.dataset.dotrange
+    const dotRange = inputEl.dataset.dotrange || `{0,2}`   // 默认小数点位数
+    const pattern = `^[0-9]+${hasDot ? `(\\.[0-9]${dotRange})?` : ''}$`
 
     if (!expression) {
       throw new TypeError('请绑定expression')
