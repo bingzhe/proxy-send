@@ -23,7 +23,7 @@
           </div>
         </div>
 
-        <el-button type="primary">查询</el-button>
+        <el-button type="primary" class="btn-h-38">查询</el-button>
       </div>
     </div>
     <!-- search end -->
@@ -41,8 +41,8 @@
           <span>手机机型列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="add-btn" type="primary">新增品牌</el-button>
-          <el-button class="add-btn" type="primary" @click="handlerAddModelClick">新增型号</el-button>
+          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddBrandClick">新增品牌</el-button>
+          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddModelClick">新增型号</el-button>
         </div>
       </div>
 
@@ -108,6 +108,7 @@
       </div>
     </div>
 
+    <!-- 型号添加弹窗 -->
     <sl-dialog
       ref="modelEditDialog"
       :title="editModelId ? '编辑型号': '新增型号'"
@@ -157,6 +158,41 @@
         </el-form-item>
       </el-form>
     </sl-dialog>
+
+    <!-- 品牌信息维护弹窗 -->
+    <sl-dialog
+      ref="brandEditDialog"
+      title="品牌信息维护"
+      :show-footer="false"
+      @close="handlerBrandEditDialogClose"
+    >
+      <el-form
+        ref="brandForm"
+        class="brand-form"
+        :inline="true"
+        :model="brandForm"
+        :rules="brandFormRules"
+      >
+        <el-form-item label="品牌名称" prop="phone_brand">
+          <el-input v-model="brandForm.phone_brand" placeholder="请输入" @input="handlerBrandInput" />
+        </el-form-item>
+        <el-form-item>
+          <el-button class="btn-h-38" type="primary" @click="handlerDialogAddBrandClick">新增</el-button>
+        </el-form-item>
+      </el-form>
+      <div class="brand-wrapper">
+        <div class="brand-wrapper-title">已有品牌</div>
+        <div class="brand-wrapper-list">
+          <el-button v-for="brand in phoneBrandOptions" :key="brand.brand_id">
+            {{ brand.brand_name }}
+            <i
+              class="el-icon--right el-icon-close"
+              @click="handlerBrandDeleteClick(brand)"
+            />
+          </el-button>
+        </div>
+      </div>
+    </sl-dialog>
   </div>
 </template>
 
@@ -168,6 +204,18 @@ export default {
     SlDialog
   },
   data() {
+    /**
+     * 校验品牌名重复
+     */
+    const validateBrand = (rule, value, callback) => {
+      const brandList = this.phoneBrandOptions.map(brand => brand.brand_name)
+      if (brandList.indexOf(value) !== -1) {
+        callback(new Error('品牌名重复'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       list: [
         {
@@ -191,7 +239,9 @@ export default {
         border_radius: '',   // 四角弧度
         outline_img: ''      // 轮廓图
       },
-
+      brandForm: {
+        phone_brand: ''      // 品牌
+      },
       modelFormRules: {
         phone_brand: [
           { required: true, message: '请选择品牌', trigger: 'change' }
@@ -206,12 +256,24 @@ export default {
           { required: true, message: '请上传轮廓图' }
         ]
       },
+      brandFormRules: {
+        phone_brand: [
+          { required: true, message: '请输入品牌', trigger: 'blur' },
+          { validator: validateBrand, trigger: 'blur' }
+        ]
+      },
       phoneBrandOptions: [{
         brand_name: '华为',
         brand_id: '1'
       }, {
         brand_name: '苹果',
         brand_id: '2'
+      }, {
+        brand_name: '小米',
+        brand_id: '3'
+      }, {
+        brand_name: 'OPPO',
+        brand_id: '4'
       }]
     }
   },
@@ -220,7 +282,25 @@ export default {
       return Math.ceil(this.total / this.listQuery.limit)
     }
   },
+  mounted() {
+    this.getPhoneModelList()
+    this.getBrandList()
+  },
   methods: {
+    getPhoneModelList() {
+      /**
+       * 调接口 手机型号list
+       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+       */
+      console.log('调接口 手机型号list')
+    },
+    getBrandList() {
+      /**
+       * 调接口 品牌list
+       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+       */
+      console.log('调接口 品牌list')
+    },
     // 多选
     handlerSelectionChange(val) {
       this.multipleSelection = val
@@ -235,6 +315,8 @@ export default {
       this.listQuery.page = val
       // this.getList()
     },
+
+    // 型号添加弹窗
     handlerAddModelClick() {
       this.$refs.modelEditDialog.show()
     },
@@ -274,8 +356,55 @@ export default {
       }
 
       console.log('保存手机型号 req=>', data)
+      /**
+       * 调接口 保存手机型号
+       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+       */
+    },
+    /**
+     *  品牌维护弹窗
+     */
+    handlerAddBrandClick() {
+      this.$refs.brandEditDialog.show()
+    },
+    handlerDialogAddBrandClick() {
+      this.$refs.brandForm.validate(valid => {
+        if (valid) {
+          const data = {
+            brand_phone: this.brandForm.phone_brand
+          }
+
+          console.log('保存品牌 req=>', data)
+
+          /**
+           * 调接口 保存品牌
+           * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+           */
+          this.getBrandList()
+        }
+      })
+    },
+    handlerBrandEditDialogClose() {
+      this.$refs.brandForm.resetFields()
+    },
+    handlerBrandInput() {
+      this.$refs.brandForm.clearValidate()
+    },
+    handlerBrandDeleteClick(brand) {
+      const data = {
+        brand_id: brand.brand_id
+      }
+
+      console.log('删除品牌 req=>', data)
+      /**
+       * 调接口 删除品牌
+       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+       */
+      this.getBrandList()
     }
+
   }
+
 }
 </script>
 
@@ -316,7 +445,50 @@ export default {
   color: #333;
   margin-right: 10px;
 }
+.brand-form {
+  text-align: center;
+  .el-input {
+    width: 300px;
+  }
+}
 
+.brand-wrapper {
+  margin: 10px 60px 0;
+
+  .brand-wrapper-title {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  .brand-wrapper-list {
+    min-height: 150px;
+    /deep/ .el-button {
+      padding: 11px 11px 11px 19px;
+      cursor: auto;
+      .el-icon-close {
+        cursor: pointer;
+      }
+      .el-icon--right {
+        margin-left: 18px;
+      }
+      &:hover {
+        background: #ffffff;
+        color: #333;
+        border-color: #dcdfe6;
+
+        .el-icon-close {
+          color: #2584f9;
+        }
+      }
+      &:focus {
+        background: #ffffff;
+        color: #333;
+        border-color: #dcdfe6;
+      }
+    }
+  }
+}
 /deep/ .outline-uploader {
   .el-upload {
     border: 1px dashed #e6e6e6;

@@ -26,7 +26,7 @@ export default {
     },
     top: {
       type: String,
-      default: '15vh'
+      default: '20vh'
     },
     width: {
       type: String,
@@ -60,7 +60,7 @@ export default {
   },
   data() {
     return {
-      dialogVisible: true
+      dialogVisible: false
     }
   },
   methods: {
