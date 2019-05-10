@@ -88,8 +88,11 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 //el-button 样式的一些自定义
 //默认高度为38px
 .el-button {
-  padding: 11px 20px;
   border-radius: 2px;
+}
+
+.el-button.btn-h-38 {
+  padding: 11px 20px;
 }
 
 //宽100 高44

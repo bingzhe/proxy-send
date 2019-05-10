@@ -17,7 +17,7 @@
         <el-row>
           <el-col :span="11" :xs="20">
             <el-form-item label="商品名称" label-width="160px" prop="goods_name">
-              <el-input v-model="baseinfoForm.goods_name" placeholder="请输入内容" />
+              <el-input v-model="baseinfoForm.goods_name" placeholder="请输入" />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
@@ -60,9 +60,9 @@
               v-show="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
               label="品牌"
               label-width="160px"
-              prop="brand"
+              prop="phone_brand"
             >
-              <el-input v-model="baseinfoForm.brand" placeholder="请输入内容" />
+              <el-input v-model="baseinfoForm.phone_brand" placeholder="请输入" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -72,9 +72,9 @@
               v-show="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
               label="型号"
               label-width="160px"
-              prop="model"
+              prop="phone_model"
             >
-              <el-input v-model="baseinfoForm.model" placeholder="请输入内容" />
+              <el-input v-model="baseinfoForm.phone_model" placeholder="请输入" />
             </el-form-item>
             <el-form-item
               v-show="goodsType === GOODS_TYPE.GIFT"
@@ -82,7 +82,7 @@
               label-width="160px"
               prop="goods_stock"
             >
-              <el-input v-model="baseinfoForm.goods_stock" placeholder="请输入内容" />
+              <el-input v-model="baseinfoForm.goods_stock" placeholder="请输入" />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
@@ -91,7 +91,7 @@
                 v-model.trim="baseinfoForm.price"
                 v-limit-input-number="baseinfoForm.price"
                 data-dotrange="{0,2}"
-                placeholder="请输入内容"
+                placeholder="请输入"
               >
                 <!-- type="number" -->
                 <span slot="suffix" class="input-suffix-text">元</span>
@@ -107,7 +107,7 @@
                 v-model="baseinfoForm.remark"
                 :rows="3"
                 type="textarea"
-                placeholder="请输入内容"
+                placeholder="请输入"
                 maxlength="100"
                 show-word-limit
               />
@@ -127,7 +127,7 @@
               <el-input
                 v-model.trim="printinfoForm.pic_height"
                 v-limit-input-number="printinfoForm.pic_height"
-                placeholder="请输入内容"
+                placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
               </el-input>
@@ -135,7 +135,7 @@
           </el-col>
           <el-col :span="11" :xs="20">
             <el-form-item label="四角弧度" label-width="160px" prop="pic_radius">
-              <el-input v-model.trim="printinfoForm.pic_radius" placeholder="请输入内容" />
+              <el-input v-model.trim="printinfoForm.pic_radius" placeholder="请输入" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -145,7 +145,7 @@
               <el-input
                 v-model.trim="printinfoForm.pic_width"
                 v-limit-input-number="printinfoForm.pic_width"
-                placeholder="请输入内容"
+                placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
               </el-input>
@@ -170,7 +170,7 @@
               <el-input
                 v-model.trim="printinfoForm.horizontal_distance"
                 v-limit-input-number="printinfoForm.horizontal_distance"
-                placeholder="请输入内容"
+                placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
               </el-input>
@@ -181,7 +181,7 @@
               <el-input
                 v-model.trim="printinfoForm.vertical_distance"
                 v-limit-input-number="printinfoForm.vertical_distance"
-                placeholder="请输入内容"
+                placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
               </el-input>
@@ -220,7 +220,7 @@
                   }"
                   :prop="'base_pic_list.' + scope.$index + '.color'"
                 >
-                  <el-input v-model="scope.row.color" placeholder="请输入内容" />
+                  <el-input v-model="scope.row.color" placeholder="请输入" />
                 </el-form-item>
               </template>
             </el-table-column>
@@ -233,7 +233,7 @@
                   }"
                   :prop="'base_pic_list.' + scope.$index + '.stock'"
                 >
-                  <el-input v-model.trim="scope.row.stock" placeholder="请输入内容" />
+                  <el-input v-model.trim="scope.row.stock" placeholder="请输入" />
                 </el-form-item>
               </template>
             </el-table-column>
@@ -278,22 +278,22 @@ export default {
       goodsType: 1,
 
       baseinfoForm: {
-        goods_name: '', // 商品名称
-        goods_type: '', // 商品种类
-        goods_material: '', // 材质
-        brand: '', // 品牌
-        model: '', // 型号
-        price: '', // 单价
-        remark: '', // 备注
-        goods_stock: '' // 商品库存
+        goods_name: '',       // 商品名称
+        goods_type: '',       // 商品种类
+        goods_material: '',   // 材质
+        phone_brand: '',      // 品牌
+        phone_model: '',      // 型号
+        price: '',            // 单价
+        remark: '',           // 备注
+        goods_stock: ''       // 商品库存
       },
       printinfoForm: {
-        pic_height: '', // 图像高
-        pic_width: '', // 图像宽
-        pic_radius: '', // 四角弧度
-        pic_position: '', // 定位角
+        pic_height: '',          // 图像高
+        pic_width: '',           // 图像宽
+        pic_radius: '',          // 四角弧度
+        pic_position: '',        // 定位角
         horizontal_distance: '', // 与横边距离
-        vertical_distance: '' // 与纵边距离
+        vertical_distance: ''    // 与纵边距离
       },
 
       basePicForm: {
@@ -317,8 +317,8 @@ export default {
         goods_material: [
           { required: true, message: '请选择材质', trigger: 'change' }
         ],
-        brand: [{ required: true, message: '请选择品牌', trigger: 'change' }],
-        model: [{ required: true, message: '请选择型号', trigger: 'change' }],
+        phone_brand: [{ required: true, message: '请选择品牌', trigger: 'change' }],
+        phone_model: [{ required: true, message: '请选择型号', trigger: 'change' }],
         price: [{ required: true, message: '请输入单价', trigger: 'blur' }]
       },
       giftInfoRules: {
@@ -437,18 +437,18 @@ export default {
         this.baseinfoFormRules = this.phoneShellRules
       }
     },
+    /**
+     * @param {String} formName 表单名称
+     */
     validateForm(formName) {
       return new Promise((resolve, reject) => {
-        // console.log('promise')
-        this.$refs[formName].validate((valid) => {
+        this.$refs[formName].validate(valid => {
           resolve(valid)
         })
       })
     },
     async handlerSaveBtnClick() {
-      const data = {
-
-      }
+      const data = {}
 
       if (this.goodsType === GOODS_TYPE.DIY) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
@@ -459,8 +459,8 @@ export default {
           data.goods_name = this.baseinfoForm.goods_name
           data.goods_type = this.baseinfoForm.goods_type
           data.goods_material = this.baseinfoForm.goods_material
-          data.brand = this.baseinfoForm.brand
-          data.model = this.baseinfoForm.model
+          data.phone_brand = this.baseinfoForm.phone_brand
+          data.phone_model = this.baseinfoForm.phone_model
           data.price = this.baseinfoForm.price
           data.remark = this.baseinfoForm.remark
           data.pic_height = this.printinfoForm.pic_height
@@ -479,8 +479,8 @@ export default {
           data.goods_name = this.baseinfoForm.goods_name
           data.goods_type = this.baseinfoForm.goods_type
           data.goods_material = this.baseinfoForm.goods_material
-          data.brand = this.baseinfoForm.brand
-          data.model = this.baseinfoForm.model
+          data.phone_brand = this.baseinfoForm.phone_brand
+          data.phone_model = this.baseinfoForm.phone_model
           data.price = this.baseinfoForm.price
           data.remark = this.baseinfoForm.remark
           data.pic_list = this.basePicForm.base_pic_list
@@ -554,6 +554,13 @@ export default {
   }
   .base-pic-table-wrapper {
     margin: 0 20px 40px 70px;
+    .el-table {
+      /deep/ .el-table__body-wrapper {
+        td {
+          padding: 0;
+        }
+      }
+    }
     .text-btn {
       color: #e33119;
     }
@@ -583,19 +590,5 @@ export default {
 .input-suffix-text {
   color: #333;
   margin-right: 10px;
-}
-</style>
-
-<style lang="scss">
-#goods-edit-page {
-  .base-pic-table-wrapper {
-    .el-table {
-      .el-table__body-wrapper {
-        td {
-          padding: 0;
-        }
-      }
-    }
-  }
 }
 </style>

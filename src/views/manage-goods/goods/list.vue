@@ -74,7 +74,7 @@
           </div>
         </div>
 
-        <el-button type="primary">查询</el-button>
+        <el-button class="btn-h-38" type="primary">查询</el-button>
       </div>
     </div>
     <!-- search end -->
@@ -93,7 +93,7 @@
         </div>
         <div class="add-button-group">
           <router-link to="/manage-goods/goods/edit">
-            <el-button class="goods-add" type="primary">新增商品</el-button>
+            <el-button class="goods-add btn-h-38" type="primary">新增商品</el-button>
           </router-link>
         </div>
       </div>
