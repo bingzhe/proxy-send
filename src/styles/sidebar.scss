@@ -74,7 +74,6 @@
     .is-active.el-menu-item.submenu-title-noDropdown {
       border-left: 6px solid #2584f9;
     }
-
     .el-submenu__title i {
       color: #fff;
     }
@@ -116,6 +115,7 @@
 
     .is-active > .el-submenu__title {
       color: $subMenuActiveText !important;
+      // background-color: $subMenuBg !important;
     }
 
     & .nest-menu .el-submenu > .el-submenu__title,
@@ -132,6 +132,10 @@
       &:hover {
         background-color: $subMenuHover !important;
       }
+    }
+    //------- add custome------
+    .is-active.el-menu-item {
+      background-color: #2584f9 !important;
     }
   }
 
