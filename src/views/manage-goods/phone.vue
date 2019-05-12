@@ -432,6 +432,7 @@ export default {
     }
     .search-value {
       float: left;
+      width: 180px;
     }
   }
 }
@@ -502,7 +503,7 @@ export default {
   }
   .avatar-uploader-icon {
     font-size: 30px;
-    color: #e6e6e6;
+    color: #2584f9;
     width: 117px;
     height: 140px;
     line-height: 140px;
@@ -514,5 +515,13 @@ export default {
     display: block;
   }
 }
+// 图片没有上传提示
+// .el-form-item.is-error {
+//   .outline-uploader {
+//     /deep/ .el-upload {
+//       border-color: #f56c6c;
+//     }
+//   }
+// }
 </style>
 

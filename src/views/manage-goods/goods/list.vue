@@ -245,6 +245,7 @@ export default {
     }
     .search-value {
       float: left;
+      width: 180px;
     }
   }
 }
