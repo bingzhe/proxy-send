@@ -2,6 +2,11 @@
   <div class="app-container">
     <!-- search start -->
     <div class="search-wrapper">
+      <el-form ref="searchForm" :model="searchForm" :inline="true">
+        <el-form-item>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+        </el-form-item>
+      </el-form>
       <div class="search-bottom-wrapper clearfix">
         <!-- 状态 -->
         <div class="search-item">
@@ -137,6 +142,8 @@
 export default {
   data() {
     return {
+      // search
+      searchForm: {},
 
       list: [
         {
@@ -160,6 +167,8 @@ export default {
     }
   },
   methods: {
+    handlerSearchClick() {
+    },
     // 多选
     handleSelectionChange(val) {
       this.multipleSelection = val

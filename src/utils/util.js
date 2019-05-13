@@ -312,6 +312,20 @@ const Util = {
       }
     }
     head.appendChild(script)
+  },
+  /**
+   * 本地终端生成token
+   * @return token
+   */
+  creatToken: function() {
+    // 当前终端的标识
+    let token = window.Store.GetGlobalData('token')
+    if (!token) {
+      token = 'T1' + Util.GetRandString(14)
+      window.Store.SetGlobalData('token', token)
+    }
+
+    return token
   }
 }
 

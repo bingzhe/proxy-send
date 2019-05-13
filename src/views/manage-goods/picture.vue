@@ -78,9 +78,12 @@
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="操作" min-width="60">
+          <el-table-column prop="opr" label="操作" min-width="60" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <el-button class="btn-green" type="text">启用</el-button>
+              <el-button class="btn-green" type="text">停用</el-button>
+              <el-button type="text">编辑</el-button>
+              <el-button class="btn-red" type="text danger">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -385,5 +388,11 @@ export default {
 //     }
 //   }
 // }
+.btn-green {
+  color: #1a9901;
+}
+.btn-red {
+  color: #e33119;
+}
 </style>
 

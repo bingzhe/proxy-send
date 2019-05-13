@@ -3,7 +3,7 @@
     <!-- search start -->
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
-        <el-form-item label="品牌" prop="phone_brand" label-width="70px">
+        <el-form-item label="品牌" prop="phone_brand" label-width="45px">
           <el-input v-model.trim="searchForm.phone_brand" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="型号" prop="phone_model" label-width="70px">

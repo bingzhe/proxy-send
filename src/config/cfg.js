@@ -36,9 +36,9 @@ export const errcode = {
 
   // const xxx  = -200010       //出错描述
 
-  /*
-        * 注意同步修改 js/cfg.js --> errcode
-        */
+  /**
+   *  注意同步修改 js/cfg.js --> errcode
+   */
 }
 
 /*
@@ -59,6 +59,7 @@ export const GOODS_MATERIAL = {
   }
 }
 
+// ================== 商品管理 ============================
 /*
  * 商品类型
  */
@@ -93,6 +94,27 @@ export const GOODS_PRINT_POSITION = {
     2: '左下',
     3: '右上',
     4: '右下'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
+
+// ================== 财务 ============================
+/**
+ *充值状态
+ */
+export const RECHARGE_STATUS = {
+  AUDIT: 1,
+  SUCCESS: 2,
+  FAIL: 3,
+
+  code: {
+    1: '待审核',
+    2: '充值成功',
+    3: '充值失败'
   },
 
   toString: function(code) {
