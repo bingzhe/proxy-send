@@ -2,80 +2,65 @@
   <div class="app-container">
     <!-- search start -->
     <div class="search-wrapper">
-      <div class="search-top-wrapper clearfix">
-        <!-- 材质 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>材质</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 商品种类 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>商品种类</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 品牌 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>品牌</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 型号 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>型号</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 商品名称 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>商品名称</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-      </div>
-      <div class="search-bottom-wrapper clearfix">
-        <!-- 商品编号 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>商品编号</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 库存量 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>库存量</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <el-button class="btn-h-38" type="primary">查询</el-button>
-      </div>
+      <el-form ref="searchForm" :model="searchForm" :inline="true">
+        <el-form-item label="材质" prop="goods_material" label-width="70px">
+          <el-select v-model="searchForm.goods_material" placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option
+              v-for="item in goodsMaterialOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="商品种类" prop="goods_type" label-width="70px">
+          <el-select v-model="searchForm.goods_type" placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option
+              v-for="item in goodsTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="品牌" prop="phone_brand" label-width="70px">
+          <el-input v-model.trim="searchForm.phone_brand" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="型号" prop="phone_model" label-width="70px">
+          <el-input v-model.trim="searchForm.phone_model" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="商品名称" prop="goods_name" label-width="70px">
+          <el-input v-model.trim="searchForm.goods_name" placeholder="请输入" />
+        </el-form-item>
+        <br>
+        <el-form-item label="商品编号" prop="goods_id" label-width="70px">
+          <el-input v-model.trim="searchForm.goods_id" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="库存量" prop="goods_stock_type" label-width="70px">
+          <el-select
+            v-model="searchForm.goods_stock_type"
+            class="goods-stock-type"
+            placeholder="请选择"
+          >
+            <el-option key="全部" label="全部" value />
+            <el-option key="more" label="大于等于" value="more" />
+            <el-option key="less" label="小于等于" value="less" />
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="goods_stock">
+          <el-input
+            v-model.trim="searchForm.goods_stock"
+            v-limit-input-number="searchForm.goods_stock"
+            class="goods-stock"
+            placeholder="请输入"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button class="btn-h-38" type="primary" @click="getGoodsList">查询</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <!-- search end -->
 
@@ -108,7 +93,7 @@
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="商品名称" min-width="60">
+          <el-table-column prop="goods_id" label="商品名称" min-width="80">
             <template slot-scope="scope">
               <span>{{ scope.row.goods_id }}</span>
             </template>
@@ -143,9 +128,24 @@
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="操作" min-width="60">
+          <el-table-column prop="opr" label="操作" min-width="120" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <el-button
+                class="btn-green"
+                type="text"
+                @click="handlerOnOffClick(scope.row.goods_id)"
+              >上架</el-button>
+              <el-button
+                class="btn-green"
+                type="text"
+                @click="handlerOnOffClick(scope.row.goods_id)"
+              >下架</el-button>
+              <el-button type="text" @click="handlerEditBtnClick(scope.row.goods_id)">编辑</el-button>
+              <el-button
+                class="btn-red"
+                type="text danger"
+                @click="handlerDeleteBtnClick(scope.row.goods_id)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -177,15 +177,30 @@
   </div>
 </template>
 <script>
+import { GOODS_TYPE, GOODS_MATERIAL } from '@/config/cfg'
+
 export default {
   data() {
     return {
 
+      // search
+      searchForm: {
+        goods_material: '',   // 材质
+        goods_type: '',       // 商品种类
+        phone_brand: '',      // 品牌
+        phone_model: '',      // 型号
+        goods_name: '',       // 商品名称
+        goods_id: '',         // 商品编号
+        goods_stock_type: '', // 库存类型   （1.大于等于：more 2.小于等于：less）
+        goods_stock: ''       // 商品库存
+      },
+
       list: [
         {
           goods_id: '123'
-        }, {}, {}
-        // {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+        },
+        {},
+        {}
       ],
       multipleSelection: [],
       tableLoading: false,
@@ -194,7 +209,32 @@ export default {
       listQuery: {
         page: 1,
         limit: 10
-      }
+      },
+
+      goodsTypeOptions: [
+        {
+          value: GOODS_TYPE.DIY,
+          label: GOODS_TYPE.toString(GOODS_TYPE.DIY)
+        },
+        {
+          value: GOODS_TYPE.NORM,
+          label: GOODS_TYPE.toString(GOODS_TYPE.NORM)
+        },
+        {
+          value: GOODS_TYPE.GIFT,
+          label: GOODS_TYPE.toString(GOODS_TYPE.GIFT)
+        }
+      ],
+      goodsMaterialOptions: [
+        {
+          value: GOODS_MATERIAL.GLASS,
+          label: GOODS_MATERIAL.toString(GOODS_MATERIAL.GLASS)
+        },
+        {
+          value: GOODS_MATERIAL.SILICONE,
+          label: GOODS_MATERIAL.toString(GOODS_MATERIAL.SILICONE)
+        }
+      ]
     }
   },
   computed: {
@@ -202,7 +242,55 @@ export default {
       return Math.ceil(this.total / this.listQuery.limit)
     }
   },
+  mounted() {
+    this.getGoodsList()
+  },
   methods: {
+    getGoodsList() {
+      const data = {}
+      // 材质
+      if (this.searchForm.goods_material) {
+        data.goods_material = this.searchForm.goods_material
+      }
+      // 商品种类
+      if (this.searchForm.goods_type) {
+        data.goods_type = this.searchForm.goods_type
+      }
+      // 品牌
+      if (this.searchForm.phone_brand) {
+        data.phone_brand = this.searchForm.phone_brand
+      }
+      // 型号
+      if (this.searchForm.phone_model) {
+        data.phone_model = this.searchForm.phone_model
+      }
+      // 商品名称
+      if (this.searchForm.goods_name) {
+        data.goods_name = this.searchForm.goods_name
+      }
+      // 商品编号
+      if (this.searchForm.goods_id) {
+        data.goods_id = this.searchForm.goods_id
+      }
+      // 商品库存类型
+      if (this.searchForm.goods_stock_type) {
+        data.goods_stock_type = this.searchForm.goods_stock_type
+      }
+      // 商品库存
+      if (this.searchForm.goods_stock) {
+        data.goods_stock = this.searchForm.goods_stock
+      }
+
+      /**
+       * 掉接口  商品列表
+       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+       */
+
+      console.log('调接口 商品列表 req=>', data)
+    },
+    handlerSearchClick() {
+      this.getGoodsList()
+    },
     // 多选
     handleSelectionChange(val) {
       this.multipleSelection = val
@@ -216,6 +304,26 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val
       // this.getList()
+    },
+    handlerEditBtnClick(id) {
+      this.$router.push({
+        path: '/manage-goods/goods/edit',
+        query: {
+          goodsid: id
+        }
+      })
+    },
+    handlerDeleteBtnClick(id) {
+      /**
+       * 掉接口  删除商品
+       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+       */
+    },
+    handlerOnOffClick(id) {
+      /**
+      * 掉接口  上下架
+      * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      */
     }
   }
 }
@@ -231,27 +339,28 @@ export default {
 .search-wrapper {
   padding-top: 30px;
 
-  .search-item {
-    float: left;
-    margin: 0 20px 20px 0;
-    .search-label {
-      width: 72px;
-      text-align: right;
-      color: #333;
-      float: left;
-      font-size: 14px;
-      line-height: 38px;
-      padding-right: 12px;
-    }
-    .search-value {
-      float: left;
-      width: 180px;
-    }
+  .el-input {
+    width: 180px;
+  }
+  .el-select {
+    width: 180px;
+  }
+  .goods-stock.el-input {
+    width: 120px;
+  }
+  .goods-stock-type.el-select {
+    width: 120px;
   }
 }
 
 .el-table {
   min-height: 400px;
+}
+.btn-green {
+  color: #1a9901;
+}
+.btn-red {
+  color: #e33119;
 }
 </style>
 

@@ -2,29 +2,17 @@
   <div class="app-container">
     <!-- search start -->
     <div class="search-wrapper">
-      <div class="search-bottom-wrapper clearfix">
-        <!-- 品牌 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>品牌</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 型号 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>型号</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <el-button type="primary" class="btn-h-38">查询</el-button>
-      </div>
+      <el-form ref="searchForm" :model="searchForm" :inline="true">
+        <el-form-item label="品牌" prop="phone_brand" label-width="70px">
+          <el-input v-model.trim="searchForm.phone_brand" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="型号" prop="phone_model" label-width="70px">
+          <el-input v-model.trim="searchForm.phone_model" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <!-- search end -->
 
@@ -76,9 +64,12 @@
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="操作" min-width="60">
+          <el-table-column prop="opr" label="操作" min-width="120" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <el-button class="btn-green" type="text">启用</el-button>
+              <el-button class="btn-green" type="text">停用</el-button>
+              <el-button type="text">编辑</el-button>
+              <el-button class="btn-red" type="text danger">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -217,6 +208,12 @@ export default {
     }
 
     return {
+
+      searchForm: {
+        phone_brand: '',     // 品牌
+        phone_model: ''     // 型号
+      },
+
       list: [
         {
           goods_id: '123'
@@ -288,11 +285,22 @@ export default {
   },
   methods: {
     getPhoneModelList() {
+      const data = {}
+
+      // 品牌
+      if (this.searchForm.phone_brand) {
+        data.phone_brand = this.searchForm.phone_brand
+      }
+      // 型号
+      if (this.searchForm.phone_model) {
+        data.phone_model = this.searchForm.phone_model
+      }
+
       /**
        * 调接口 手机型号list
        * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
        */
-      console.log('调接口 手机型号list')
+      console.log('调接口 手机型号list req=>', data)
     },
     getBrandList() {
       /**
@@ -300,6 +308,9 @@ export default {
        * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
        */
       console.log('调接口 品牌list')
+    },
+    handlerSearchClick() {
+      this.getPhoneModelList()
     },
     // 多选
     handlerSelectionChange(val) {
@@ -371,7 +382,7 @@ export default {
       this.$refs.brandForm.validate(valid => {
         if (valid) {
           const data = {
-            brand_phone: this.brandForm.phone_brand
+            phone_brand: this.brandForm.phone_brand
           }
 
           console.log('保存品牌 req=>', data)
@@ -417,23 +428,11 @@ export default {
 
 .search-wrapper {
   padding-top: 30px;
-
-  .search-item {
-    float: left;
-    margin: 0 20px 20px 0;
-    .search-label {
-      width: 72px;
-      text-align: right;
-      color: #333;
-      float: left;
-      font-size: 14px;
-      line-height: 38px;
-      padding-right: 12px;
-    }
-    .search-value {
-      float: left;
-      width: 180px;
-    }
+  .el-input {
+    width: 180px;
+  }
+  .el-select {
+    width: 180px;
   }
 }
 .el-table {
@@ -523,5 +522,11 @@ export default {
 //     }
 //   }
 // }
+.btn-green {
+  color: #1a9901;
+}
+.btn-red {
+  color: #e33119;
+}
 </style>
 

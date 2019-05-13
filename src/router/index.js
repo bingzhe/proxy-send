@@ -178,14 +178,14 @@ export const constantRoutes = [
             name: 'list',
             hidden: true,
             component: () => import('@/views/manage-goods/goods/list'),
-            meta: { title: '商品列表', icon: 'table' }
+            meta: { title: '商品列表', icon: 'table', activeMenu: '/manage-goods/goods' }
           },
           {
             path: 'edit',
             name: 'edit',
             hidden: true,
             component: () => import('@/views/manage-goods/goods/edit'),
-            meta: { title: '商品编辑', icon: 'table' }
+            meta: { title: '商品编辑', icon: 'table', activeMenu: '/manage-goods/goods' }
           }
         ]
       },

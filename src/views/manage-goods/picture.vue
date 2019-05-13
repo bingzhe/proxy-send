@@ -2,50 +2,31 @@
   <div class="app-container">
     <!-- search start -->
     <div class="search-wrapper">
-      <div class="search-bottom-wrapper clearfix">
-        <!-- 主题分类 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>主题分类</span>
-          </div>
-          <div class="search-value">
-            <el-select v-model="pic_type" placeholder="请选择">
-              <el-option key="全部" label="全部" value />
-              <el-option v-for="item in picTypeOptions" :key="item" :label="item" :value="item" />
-            </el-select>
-          </div>
-        </div>
-
-        <!-- 状态 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>状态</span>
-          </div>
-          <div class="search-value">
-            <el-select v-model="pic_status" placeholder="请选择">
-              <el-option key="全部" label="全部" value />
-              <el-option
-                v-for="item in picStatusOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </div>
-        </div>
-
-        <!-- 素材名称 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>素材名称</span>
-          </div>
-          <div class="search-value">
-            <el-input v-model="pic_name" placeholder="请输入" />
-          </div>
-        </div>
-
-        <el-button type="primary" class="btn-h-38" @click="handlerSearchClick">查询</el-button>
-      </div>
+      <el-form ref="searchForm" :model="searchForm" :inline="true">
+        <el-form-item label="主题分类" prop="pic_type" label-width="70px">
+          <el-select v-model="searchForm.pic_type" placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option v-for="item in picTypeOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态" prop="pic_status" label-width="70px">
+          <el-select v-model="searchForm.pic_status" placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option
+              v-for="item in picStatusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="素材名称" prop="pic_name" label-width="70px">
+          <el-input v-model="searchForm.pic_name" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+        </el-form-item>
+      </el-form>
     </div>
 
     <!-- search end -->
@@ -193,9 +174,11 @@ export default {
     return {
 
       // search
-      pic_type: '',
-      pic_status: '',
-      pic_name: '',
+      searchForm: {
+        pic_type: '',    // 图片分类
+        pic_status: '',  // 状态
+        pic_name: ''     // 素材名
+      },
 
       list: [
         {
@@ -255,17 +238,17 @@ export default {
   methods: {
     getPictureList() {
       const data = {}
-
-      if (this.pic_type) {
-        data.pic_type = this.pic_type
+      // 图片分类
+      if (this.searchForm.pic_type) {
+        data.pic_type = this.searchForm.pic_type
       }
-
-      if (this.pic_status || this.pic_status === 0) {
-        data.pic_status = this.pic_status
+      // 状态
+      if (this.searchForm.pic_status || this.searchForm.pic_status === 0) {
+        data.pic_status = this.searchForm.pic_status
       }
-
-      if (this.pic_name) {
-        data.pic_name = this.pic_name
+      // 素材名
+      if (this.searchForm.pic_name) {
+        data.pic_name = this.searchForm.pic_name
       }
       /**
        * 调接口 图库列表
@@ -354,22 +337,11 @@ export default {
 .search-wrapper {
   padding-top: 30px;
 
-  .search-item {
-    float: left;
-    margin: 0 20px 20px 0;
-    .search-label {
-      width: 72px;
-      text-align: right;
-      color: #333;
-      float: left;
-      font-size: 14px;
-      line-height: 38px;
-      padding-right: 12px;
-    }
-    .search-value {
-      float: left;
-      width: 180px;
-    }
+  .el-input {
+    width: 180px;
+  }
+  .el-select {
+    width: 180px;
   }
 }
 
