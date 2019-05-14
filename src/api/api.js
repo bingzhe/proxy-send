@@ -36,6 +36,9 @@ function generateRequestFn(interfaceFile, options = {}) {
 
 // =================== login ======================
 
+// login_get
+export const loginGet = generateRequestFn('login_get.php')
+
 // login_save
 export const loginSave = generateRequestFn('login_save.php')
 

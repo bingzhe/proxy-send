@@ -42,9 +42,9 @@
             @input.native="getMd5Password"
             @keyup.enter.native="handleLogin"
           />
-          <span class="show-pwd" @click="showPwd">
+          <!-- <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
+          </span>-->
           <input v-model="loginForm.password_md5" type="hidden">
         </el-form-item>
 
@@ -85,7 +85,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import Util from '@/utils/util'
-import { loginSave } from '@/api/api'
+import { loginSave, loginGet } from '@/api/api'
 import { errcode } from '@/config/cfg'
 
 export default {
@@ -97,7 +97,7 @@ export default {
         password: '',
         password_md5: '',
         verify_code: '',
-        checked: ''
+        checked: false
       },
       loginRules: {
         username: [{ required: true, message: '请输入用户账号', trigger: 'blur' }],
@@ -121,6 +121,9 @@ export default {
       },
       immediate: true
     }
+  },
+  created() {
+    this.getRemeberPassword()
   },
   mounted() {
     this.getVerifyCodeImg()
@@ -156,11 +159,33 @@ export default {
       console.log('登录 req=>', data)
       const resp = await loginSave(data, false)
       console.log('登录 res=>', resp)
+      this.loading = false
+
+      // <<<<<<<<<<<<<<<<<<<<<<
+      this.$router.push('/')
 
       if (resp.ret !== 0) {
         this.errTipMsg = errcode.toString(resp.ret)
         return
       }
+
+      this.checkRemeberPassword()
+
+      /**
+       * 存一些登录的信息
+       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+       */
+    },
+    async getVerifyCode() {
+      const data = {
+        opr: 'get_login_verify_code'
+      }
+
+      console.log('登录验证码图片 req=>', data)
+      const resp = await loginGet(data)
+      console.log('登录验证码图片 res=>', resp)
+
+      this.codeimgurl = resp.data.verify_code
     },
     // 获取验证码图片地址
     getVerifyCodeImg() {
@@ -175,7 +200,35 @@ export default {
     clearValidate() {
       this.$refs.loginForm.clearValidate()
       this.errTipMsg = ''
+    },
+    // 记住密码
+    checkRemeberPassword() {
+      const LOGINPD = {
+        username: this.loginForm.username,
+        password: this.loginForm.password_md5
+      }
+      console.log(1)
+
+      if (this.loginForm.checked) {
+        window.Store.SetGlobalData('LOGINPD', JSON.stringify(LOGINPD))
+      } else {
+        window.Store.DeleteGlobalData('LOGINPD')
+      }
+    },
+    // 取记住的密码
+    getRemeberPassword() {
+      let LOGINPD = window.Store.GetGlobalData('LOGINPD')
+
+      if (LOGINPD) {
+        LOGINPD = JSON.parse(LOGINPD)
+
+        this.loginForm.username = LOGINPD.username
+        this.loginForm.password = '默认密码！！'
+        this.loginForm.password_md5 = LOGINPD.password
+        this.loginForm.checked = true
+      }
     }
+
   }
 }
 </script>
