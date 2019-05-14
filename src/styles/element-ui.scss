@@ -107,3 +107,11 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
   color: #2584f9;
   border-color: #2584f9;
 }
+
+// MessageBox 警告样式
+
+.el-message-box__wrapper {
+  .el-message-box {
+    border-radius: 2px;
+  }
+}

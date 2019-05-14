@@ -1,83 +1,85 @@
 <template>
   <div class="login-container">
-    <div class="login-form-contanier">
-      <el-form
-        ref="loginForm"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form"
-        label-position="left"
-      >
-        <!-- <div class="login-logo-container">
-          <img class="login-logo" src="@/assets/images/login_logo.png">
-        </div>-->
-
-        <el-form-item prop="username">
-          <span class="svg-container">
-            <svg-icon icon-class="user" />
-          </span>
-          <el-input
-            ref="username"
-            v-model="loginForm.username"
-            placeholder="请输入用户名称"
-            name="username"
-            type="text"
-            tabindex="1"
-            @input.native="clearValidate"
-          />
-        </el-form-item>
-
-        <el-form-item prop="password">
-          <span class="svg-container">
-            <svg-icon icon-class="password" />
-          </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="请输入登录密码"
-            name="password"
-            tabindex="2"
-            @input.native="getMd5Password"
-            @keyup.enter.native="handleLogin"
-          />
-          <!-- <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>-->
-          <input v-model="loginForm.password_md5" type="hidden">
-        </el-form-item>
-
-        <el-form-item prop="verify_code" class="verify-code">
-          <span class="svg-container">
-            <svg-icon icon-class="user" />
-          </span>
-          <el-input
-            ref="verify_code"
-            v-model="loginForm.verify_code"
-            placeholder="请输入验证码"
-            name="verify_code"
-            type="text"
-            tabindex="3"
-            @input.native="clearValidate"
-          />
-          <div class="check-img">
-            <img :src="codeimgurl" alt="验证图片">
+    <div class="login-center">
+      <div class="login-form-contanier">
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          :rules="loginRules"
+          class="login-form"
+          label-position="left"
+        >
+          <div class="login-logo-container">
+            <img class="login-logo" src="@/assets/images/login_logo.png">
           </div>
-          <el-checkbox v-model="loginForm.checked" class="remeber-box">记住密码</el-checkbox>
-          <el-button class="change-code-img" type="text" @click="getVerifyCodeImg">看不清，换一张</el-button>
-        </el-form-item>
 
-        <div class="login-tip">{{ errTipMsg }}</div>
+          <el-form-item prop="username">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input
+              ref="username"
+              v-model="loginForm.username"
+              placeholder="请输入用户名称"
+              name="username"
+              type="text"
+              tabindex="1"
+              @input.native="clearValidate"
+            />
+          </el-form-item>
 
-        <el-button
-          :loading="loading"
-          class="login-btn"
-          type="primary"
-          style="width:100%;"
-          @click.native.prevent="handleLogin"
-        >登录</el-button>
-      </el-form>
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              :type="passwordType"
+              placeholder="请输入登录密码"
+              name="password"
+              tabindex="2"
+              @input.native="getMd5Password"
+            />
+            <!-- <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>-->
+            <input v-model="loginForm.password_md5" type="hidden">
+          </el-form-item>
+
+          <el-form-item prop="verify_code" class="verify-code">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input
+              ref="verify_code"
+              v-model="loginForm.verify_code"
+              placeholder="请输入验证码"
+              name="verify_code"
+              type="text"
+              tabindex="3"
+              @input.native="clearValidate"
+              @keyup.enter.native="handleLogin"
+            />
+            <div class="check-img">
+              <img :src="codeimgurl" alt="验证图片">
+            </div>
+            <el-checkbox v-model="loginForm.checked" class="remeber-box">记住密码</el-checkbox>
+            <el-button class="change-code-img" type="text" @click="getVerifyCodeImg">看不清，换一张</el-button>
+          </el-form-item>
+
+          <div class="login-tip">{{ errTipMsg }}</div>
+
+          <el-button
+            :loading="loading"
+            class="login-btn"
+            type="primary"
+            style="width:100%;"
+            @click.native.prevent="handleLogin"
+          >登录</el-button>
+        </el-form>
+      </div>
     </div>
   </div>
 </template>
@@ -87,6 +89,7 @@ import { validUsername } from '@/utils/validate'
 import Util from '@/utils/util'
 import { loginSave, loginGet } from '@/api/api'
 import { errcode } from '@/config/cfg'
+import { setEmployeeId } from '@/config/global-store'
 
 export default {
   name: 'Login',
@@ -151,7 +154,7 @@ export default {
     async loginOpr() {
       const data = {
         opr: 'login',
-        username: this.loginForm.username,
+        login_name: this.loginForm.username,
         password_md5: this.loginForm.password_md5,
         verify_code: this.loginForm.verify_code
       }
@@ -159,22 +162,24 @@ export default {
       console.log('登录 req=>', data)
       const resp = await loginSave(data, false)
       console.log('登录 res=>', resp)
-      this.loading = false
 
-      // <<<<<<<<<<<<<<<<<<<<<<
-      this.$router.push('/')
+      this.loading = false
 
       if (resp.ret !== 0) {
         this.errTipMsg = errcode.toString(resp.ret)
         return
       }
 
-      this.checkRemeberPassword()
-
       /**
        * 存一些登录的信息
-       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
        */
+      const employeeid = resp.data.employee_id
+      setEmployeeId(employeeid)
+
+      this.checkRemeberPassword()
+
+      // this.$router.push({ path: this.redirect || '/' })
+      this.$router.push({ path: '/' })
     },
     async getVerifyCode() {
       const data = {
@@ -210,14 +215,14 @@ export default {
       console.log(1)
 
       if (this.loginForm.checked) {
-        window.Store.SetGlobalData('LOGINPD', JSON.stringify(LOGINPD))
+        window.Store.SetGlobalData('F_LOGINPD', JSON.stringify(LOGINPD))
       } else {
-        window.Store.DeleteGlobalData('LOGINPD')
+        window.Store.DeleteGlobalData('F_LOGINPD')
       }
     },
     // 取记住的密码
     getRemeberPassword() {
-      let LOGINPD = window.Store.GetGlobalData('LOGINPD')
+      let LOGINPD = window.Store.GetGlobalData('F_LOGINPD')
 
       if (LOGINPD) {
         LOGINPD = JSON.parse(LOGINPD)
@@ -243,13 +248,34 @@ $cursor: #fff;
   width: 100%;
   background-color: $bg;
   overflow: hidden;
+  background: url("../../assets/images/login_bg.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
 
+  .login-center {
+    height: 755px;
+    width: 1193px;
+    background: url("../../assets/images/login_center.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  }
   .login-form-contanier {
-    width: 350px;
-    max-width: 100%;
-    padding: 160px 25px 0;
-    margin: 0 auto;
+    width: 300px;
+    // max-width: 100%;
+    // padding: 160px 25px 0;
+    // margin: 0 auto;
     overflow: hidden;
+    position: absolute;
+    right: 168px;
+    top: 50%;
+    transform: translateY(-50%);
 
     .login-logo-container {
       text-align: center;
@@ -354,6 +380,19 @@ $cursor: #fff;
 
     /deep/ .el-checkbox__label {
       font-size: 12px;
+    }
+  }
+}
+
+@media screen and (max-width: 1450px) {
+  .login-container {
+    .login-center {
+      height: 604px;
+      width: 954px;
+    }
+    .login-form-contanier {
+      width: 280px;
+      right: 130px;
     }
   }
 }

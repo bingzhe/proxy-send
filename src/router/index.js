@@ -46,7 +46,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/manage-goods'
+    redirect: '/manage-goods/goods'
   },
 
   // 商品管理

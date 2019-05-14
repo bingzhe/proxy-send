@@ -16,7 +16,7 @@
       <div class="right-menu-item home-wrapper">
         <i class="el-icon-circle-close" />
       </div>
-      <div class="right-menu-item logout-wrapper">
+      <div class="right-menu-item logout-wrapper" @click="openLogout">
         <i class="el-icon-circle-close" />
       </div>
       <!-- <el-dropdown class="avatar-container" trigger="click">
@@ -47,6 +47,8 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { loginSave } from '@/api/api'
+import { delEmployeeId } from '@/config/global-store'
 
 export default {
   components: {
@@ -66,7 +68,34 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    openLogout() {
+      this.$confirm('确定要退出登录吗？', '退出确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.logoutOpr()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      })
+    },
+    async logoutOpr() {
+      const resp = await loginSave({ opr: 'logout' })
+
+      if (resp.ret !== 0) return
+
+      /**
+       * 清除数据
+       */
+      delEmployeeId()
+
+      this.$router.push('/login')
     }
+
   }
 }
 </script>
@@ -115,6 +144,7 @@ export default {
       color: #8a8a8a;
       vertical-align: text-bottom;
       border-left: 1px solid #d3d3d3;
+      cursor: pointer;
 
       &:first-child {
         border-left: none;
