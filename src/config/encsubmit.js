@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Util from '@/utils/Util'
+import Util from '@/utils/util'
 import { errcode } from './cfg'
 import Crypt, { decrypt, encrypt } from './encrypt'
 

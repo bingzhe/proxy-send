@@ -8,9 +8,9 @@
         class="login-form"
         label-position="left"
       >
-        <div class="login-logo-container">
+        <!-- <div class="login-logo-container">
           <img class="login-logo" src="@/assets/images/login_logo.png">
-        </div>
+        </div>-->
 
         <el-form-item prop="username">
           <span class="svg-container">
@@ -23,6 +23,7 @@
             name="username"
             type="text"
             tabindex="1"
+            @input.native="clearValidate"
           />
         </el-form-item>
 
@@ -38,15 +39,16 @@
             placeholder="请输入登录密码"
             name="password"
             tabindex="2"
+            @input.native="getMd5Password"
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
           </span>
-          <input v-model="loginForm.password_md5">
+          <input v-model="loginForm.password_md5" type="hidden">
         </el-form-item>
 
-        <el-form-item prop="verify_code">
+        <el-form-item prop="verify_code" class="verify-code">
           <span class="svg-container">
             <svg-icon icon-class="user" />
           </span>
@@ -57,12 +59,16 @@
             name="verify_code"
             type="text"
             tabindex="3"
+            @input.native="clearValidate"
           />
           <div class="check-img">
-            <!--  @click="changeCheckImg" -->
             <img :src="codeimgurl" alt="验证图片">
           </div>
+          <el-checkbox v-model="loginForm.checked" class="remeber-box">记住密码</el-checkbox>
+          <el-button class="change-code-img" type="text" @click="getVerifyCodeImg">看不清，换一张</el-button>
         </el-form-item>
+
+        <div class="login-tip">{{ errTipMsg }}</div>
 
         <el-button
           :loading="loading"
@@ -79,36 +85,30 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import Util from '@/utils/util'
+import { loginSave } from '@/api/api'
+import { errcode } from '@/config/cfg'
 
 export default {
   name: 'Login',
   data() {
-    // const validateUsername = (rule, value, callback) => {
-    //   if (!validUsername(value)) {
-    //     callback(new Error('Please enter the correct user name'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
-    // const validatePassword = (rule, value, callback) => {
-    //   if (value.length < 6) {
-    //     callback(new Error('The password can not be less than 6 digits'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
     return {
       loginForm: {
         username: '',
         password: '',
         password_md5: '',
-        verify_code: ''
+        verify_code: '',
+        checked: ''
       },
       loginRules: {
-        // username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        // password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [{ required: true, message: '请输入用户账号', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入登录密码', trigger: 'blur' }],
+        verify_code: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
       },
-      codeimgurl: '', // 图片地址
+
+      codeimgurl: '', // 验证码图片地址
+
+      errTipMsg: '',
+
       loading: false,
       passwordType: 'password',
       redirect: undefined
@@ -122,8 +122,8 @@ export default {
       immediate: true
     }
   },
-  created() {
-    this.changeCheckImg()
+  mounted() {
+    this.getVerifyCodeImg()
   },
   methods: {
     showPwd() {
@@ -140,46 +140,48 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+
+          this.loginOpr()
         }
       })
     },
-    // 更换code图片地址
-    changeCheckImg() {
-      const token = Util.creatToken()
+    async loginOpr() {
+      const data = {
+        opr: 'login',
+        username: this.loginForm.username,
+        password_md5: this.loginForm.password_md5,
+        verify_code: this.loginForm.verify_code
+      }
 
-      this.codeimgurl = `http://platform.jzzwlcm.com/php/code.php?height=40&width=90&fontsize=16&codelen=4&token=${token}&is_plain=1&${Math.random()}`
+      console.log('登录 req=>', data)
+      const resp = await loginSave(data, false)
+      console.log('登录 res=>', resp)
+
+      if (resp.ret !== 0) {
+        this.errTipMsg = errcode.toString(resp.ret)
+        return
+      }
+    },
+    // 获取验证码图片地址
+    getVerifyCodeImg() {
+      const token = Util.creatToken()
+      this.codeimgurl = `http://platform.jzzwlcm.com/php/code.php?height=38&width=90&fontsize=16&codelen=4&token=${token}&is_plain=1&${Math.random()}`
+
+      this.clearValidate()
+    },
+    getMd5Password() {
+      this.loginForm.password_md5 = md5(this.loginForm.password)
+    },
+    clearValidate() {
+      this.$refs.loginForm.clearValidate()
+      this.errTipMsg = ''
     }
   }
 }
 </script>
 
-<style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
-// $bg: #283443;
-// $light_gray: #fff;
-// $cursor: #fff;
-
-// @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-//   .login-container .el-input input {
-//     color: $cursor;
-//   }
-// }
-</style>
-
 <style lang="scss" scoped>
 $bg: #fff;
-$dark_gray: #889aa4;
 $light_gray: #eee;
 $cursor: #fff;
 
@@ -204,8 +206,27 @@ $cursor: #fff;
         height: 110px;
       }
     }
+
     .el-form-item {
       border-bottom: 1px solid #c8c8c8;
+      margin-bottom: 20px;
+    }
+
+    .el-form-item.password-remeber {
+      border-bottom: none;
+    }
+
+    .el-form-item.verify-code {
+      /deep/ .el-form-item__error {
+        padding-top: 28px;
+      }
+    }
+
+    .login-tip {
+      height: 34px;
+      font-size: 12px;
+      color: #f56c6c;
+      padding-top: 5px;
     }
 
     .el-button.login-btn {
@@ -232,11 +253,8 @@ $cursor: #fff;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
-      // padding: 12px 5px 12px 15px;
-      // color: $light_gray;
+      padding-left: 10px;
       color: #333;
-      // height: 47px;
-      // caret-color: $cursor;
 
       &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px $bg inset !important;
@@ -245,30 +263,9 @@ $cursor: #fff;
     }
   }
 
-  // .login-form {
-  //   position: relative;
-  //   width: 350px;
-  //   max-width: 100%;
-  //   padding: 160px 25px 0;
-  //   margin: 0 auto;
-  // }
-
-  // .tips {
-  //   font-size: 14px;
-  //   color: #fff;
-  //   margin-bottom: 10px;
-
-  //   span {
-  //     &:first-of-type {
-  //       margin-right: 16px;
-  //     }
-  //   }
-  // }
-
   .svg-container {
-    padding: 0px 5px 0px 15px;
+    padding: 0px 5px 0px 10px;
     color: #8a8a8a;
-    vertical-align: middle;
     width: 30px;
     display: inline-block;
   }
@@ -278,18 +275,33 @@ $cursor: #fff;
     right: 10px;
     top: 2px;
     font-size: 16px;
-    color: $dark_gray;
+    color: #8a8a8a;
     cursor: pointer;
     user-select: none;
   }
   .check-img {
-    cursor: pointer;
     position: absolute;
-    top: 4px;
-    right: 4px;
+    cursor: pointer;
+    top: 0;
+    right: 0;
     width: 90px;
-    height: 40px;
-    margin-left: 10px;
+    height: 38px;
+  }
+  .change-code-img {
+    position: absolute;
+    top: 35px;
+    right: 0;
+    font-size: 12px;
+    color: #197ef0;
+  }
+  .remeber-box {
+    position: absolute;
+    top: 35px;
+    left: 0;
+
+    /deep/ .el-checkbox__label {
+      font-size: 12px;
+    }
   }
 }
 </style>
