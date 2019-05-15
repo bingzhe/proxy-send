@@ -1,5 +1,64 @@
 <template>
-  <sl-dialog>1</sl-dialog>
+  <sl-dialog
+    ref="shopEditDialog"
+    :title="businessId? '编辑商户信息' : '新增商户信息'"
+    :confirm-text="businessId ? '保存': '提交'"
+    :validate="true"
+    width="900px"
+    top="12vh"
+    @confirm="handlerShopEditConfirm"
+    @close="handlerShopEditClose"
+  >
+    <el-form
+      ref="shopEditForm"
+      :model="shopEditForm"
+      :rules="shopEditFormRules"
+      :inline="true"
+      label-width="150px"
+    >
+      <el-form-item label="账户名" prop="username">
+        <el-input v-model="shopEditForm.username" placeholder="请输入" />
+      </el-form-item>
+      <el-form-item label="账户密码" prop="password">
+        <el-input v-model="shopEditForm.password" placeholder="请输入" />
+      </el-form-item>
+      <br>
+      <el-form-item label="手机号" prop="telephone">
+        <el-input v-model="shopEditForm.telephone" placeholder="请输入" />
+      </el-form-item>
+      <el-form-item label="VIP等级" prop="vip_level">
+        <el-input v-model="shopEditForm.vip_level" placeholder="请输入" />
+      </el-form-item>
+      <br>
+      <el-form-item label="商户姓名" prop="business_name">
+        <el-input v-model="shopEditForm.business_name" placeholder="请输入" />
+      </el-form-item>
+      <el-form-item label="业务员" prop="salesman">
+        <el-input v-model="shopEditForm.salesman" placeholder="请输入" />
+      </el-form-item>
+      <br>
+      <el-form-item label="状态" prop="status">
+        <el-input v-model="shopEditForm.status" placeholder="请输入" />
+      </el-form-item>
+      <el-form-item label="可使用DIY设计器" prop="designer_valid">
+        <el-input v-model="shopEditForm.designer_valid" placeholder="请输入" />
+      </el-form-item>
+      <br>
+      <el-form-item label="联系地址" prop="address">
+        <el-input
+          v-model="shopEditForm.address"
+          class="address"
+          type="textarea"
+          placeholder="请输入"
+          :rows="3"
+        />
+      </el-form-item>
+      <br>
+      <el-form-item label="商铺URL" prop="url">
+        <el-input v-model="shopEditForm.url" class="business-url" placeholder="请输入" />
+      </el-form-item>
+    </el-form>
+  </sl-dialog>
 </template>
 
 <script>
@@ -20,13 +79,62 @@ export default {
   data() {
     return {
       shopEditForm: {
-
+        username: '',            // 登录用户名(同用户表中的)
+        password: '',
+        telephone: '',           // 联系电话
+        vip_level: '',           // VIP等级
+        business_name: '',       // 商户姓名（注：不是登录名）
+        salesman: '',            // 业务员ID(跟单人)
+        status: '',              // 状态(1:正常,2:停用)
+        designer_valid: '',      // 可使用DIY设计器(1:可使用,0:不能使用)
+        address: '',             // 联系地址
+        url: ''                  // 商铺URL
+      },
+      shopEditFormRules: {
+        username: [{ required: true, message: '请输入账户名', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入账户密码', trigger: 'blur' }],
+        telephone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+        vip_level: [{ required: true, message: '请选择VIP等级', trigger: 'change' }],
+        business_name: [{ required: true, message: '请输入商户姓名', trigger: 'blur' }],
+        salesman: [{ required: true, message: '请选择业务员', trigger: 'change' }],
+        status: [{ required: true, message: '请选择状态', trigger: 'change' }],
+        designer_valid: [{ required: true, message: '请选择是否可使用DIY设计器', trigger: 'change' }],
+        address: [{ required: true, message: '请输入联系地址', trigger: 'blur' }]
       }
+    }
+  },
+  methods: {
+    show() {
+      this.$refs.shopEditDialog.show()
+    },
+    handlerShopEditConfirm() {
+      this.$refs.shopEditForm.validate(valid => {
+        if (valid) {
+          this.saveBusiness()
+        }
+      })
+    },
+    saveBusiness() { },
+    handlerShopEditClose() {
+      this.$refs.shopEditForm.resetFields()
+      this.$emit('on-close')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.el-input {
+  width: 220px;
+}
+.el-select {
+  width: 220px;
+}
+.el-textarea.address {
+  width: 603px;
+}
+.business-url.el-input {
+  width: 603px;
+}
 </style>
 

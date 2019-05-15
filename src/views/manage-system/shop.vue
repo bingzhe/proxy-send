@@ -66,9 +66,7 @@
           <span>商品列表</span>
         </div>
         <div class="add-button-group">
-          <router-link to="/manage-goods/goods/edit">
-            <el-button class="goods-add btn-h-38" type="primary">新增商户</el-button>
-          </router-link>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handlerAddBusinessClick">新增商户</el-button>
         </div>
       </div>
 
@@ -144,15 +142,23 @@
         <!-- 分页 end -->
       </div>
     </div>
+
+    <shop-edit ref="shopEdit" :business-id="editbBusinessId" @on-close="editbBusinessId=''" />
   </div>
 </template>
 <script>
 import { BUSINESS_STATUS, pickerOptions } from '@/config/cfg'
 import { businessSave, businessGet } from '@/api/api'
 import moment from 'moment'
+import ShopEdit from './components/ShopEdit'
 
 export default {
   name: 'BussinessList',
+
+  components: {
+    ShopEdit
+  },
+
   data() {
     return {
       searchForm: {
@@ -188,6 +194,8 @@ export default {
         page: 1,
         limit: 10
       },
+
+      editbBusinessId: '1', // 在编辑的商户id
 
       statusOptions: [
         {
@@ -267,6 +275,9 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val
       // this.getList()
+    },
+    handlerAddBusinessClick() {
+      this.$refs.shopEdit.show()
     }
   }
 }

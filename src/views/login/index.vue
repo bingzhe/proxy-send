@@ -85,9 +85,8 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 import Util from '@/utils/util'
-import { loginSave, loginGet } from '@/api/api'
+import { loginSave } from '@/api/api'
 import { errcode } from '@/config/cfg'
 import { setEmployeeId } from '@/config/global-store'
 
@@ -159,7 +158,7 @@ export default {
         verify_code: this.loginForm.verify_code
       }
 
-      console.log('登录 req=>', data)
+      // console.log('登录 req=>', data)
       const resp = await loginSave(data, false)
       console.log('登录 res=>', resp)
 
@@ -181,22 +180,10 @@ export default {
       // this.$router.push({ path: this.redirect || '/' })
       this.$router.push({ path: '/' })
     },
-    async getVerifyCode() {
-      const data = {
-        opr: 'get_login_verify_code'
-      }
-
-      console.log('登录验证码图片 req=>', data)
-      const resp = await loginGet(data)
-      console.log('登录验证码图片 res=>', resp)
-
-      this.codeimgurl = resp.data.verify_code
-    },
     // 获取验证码图片地址
     getVerifyCodeImg() {
       const token = Util.creatToken()
-      this.codeimgurl = `http://platform.jzzwlcm.com/php/code.php?height=38&width=90&fontsize=16&codelen=4&token=${token}&is_plain=1&${Math.random()}`
-
+      this.codeimgurl = `${process.env.VUE_APP_BASEURL}/img_get.php?opr=get_login_verify_code&height=38&width=90&fontsize=16&codelen=4&token=${token}&${Math.random()}`
       this.clearValidate()
     },
     getMd5Password() {
@@ -212,7 +199,6 @@ export default {
         username: this.loginForm.username,
         password: this.loginForm.password_md5
       }
-      console.log(1)
 
       if (this.loginForm.checked) {
         window.Store.SetGlobalData('F_LOGINPD', JSON.stringify(LOGINPD))
@@ -365,6 +351,10 @@ $cursor: #fff;
     right: 0;
     width: 90px;
     height: 38px;
+    img {
+      width: 90px;
+      height: 38px;
+    }
   }
   .change-code-img {
     position: absolute;
