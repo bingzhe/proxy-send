@@ -164,6 +164,44 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/manage-system',
+    component: Layout,
+    name: 'manage-system',
+    meta: { title: '系统', icon: 'example' },
+    children: [
+      {
+        path: 'shop',
+        name: 'shop',
+        component: () => import('@/views/manage-system/shop'),
+        meta: { title: '商户管理', icon: 'table' }
+      },
+      {
+        path: 'param',
+        name: 'param',
+        component: () => import('@/views/manage-system/param'),
+        meta: { title: '参数配置', icon: 'table' }
+      },
+      {
+        path: 'staff',
+        name: 'staff',
+        component: () => import('@/views/manage-system/staff'),
+        meta: { title: '员工管理', icon: 'table' }
+      },
+      {
+        path: 'role',
+        name: 'role',
+        component: () => import('@/views/manage-system/role'),
+        meta: { title: '角色管理', icon: 'table' }
+      },
+      {
+        path: 'permission',
+        name: 'permission',
+        component: () => import('@/views/manage-system/permission'),
+        meta: { title: '权限管理', icon: 'table' }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
