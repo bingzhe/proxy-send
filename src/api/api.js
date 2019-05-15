@@ -52,3 +52,11 @@ export const factorycfgSave = generateRequestFn('factorycfg_save.php')
 
 // factorycfg_get
 export const factorycfGet = generateRequestFn('factorycfg_get.php')
+
+// =================== 商户管理 ======================
+
+// factorycfg_save
+export const businessSave = generateRequestFn('business_save.php')
+
+// factorycfg_get
+export const businessGet = generateRequestFn('business_get.php')

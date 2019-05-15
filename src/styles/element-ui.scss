@@ -71,6 +71,10 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
   }
 }
 
+.el-date-editor.el-range-editor.el-input__inner {
+  border-radius: 2px;
+}
+
 // el-table
 .default-table-change {
   .el-table thead {

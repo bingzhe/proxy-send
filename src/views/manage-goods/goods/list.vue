@@ -58,7 +58,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="getGoodsList">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -143,7 +143,7 @@
               <el-button type="text" @click="handlerEditBtnClick(scope.row.goods_id)">编辑</el-button>
               <el-button
                 class="btn-red"
-                type="text danger"
+                type="text"
                 @click="handlerDeleteBtnClick(scope.row.goods_id)"
               >删除</el-button>
             </template>
