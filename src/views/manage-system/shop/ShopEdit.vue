@@ -27,18 +27,39 @@
         <el-input v-model="shopEditForm.telephone" placeholder="请输入" />
       </el-form-item>
       <el-form-item label="VIP等级" prop="vip_level">
-        <el-input v-model="shopEditForm.vip_level" placeholder="请输入" />
+        <el-select v-model="shopEditForm.vip_level" placeholder="请选择">
+          <el-option
+            v-for="item in vip_level_list"
+            :key="item.vip_level"
+            :label="item.vip_title"
+            :value="item.vip_level"
+          />
+        </el-select>
       </el-form-item>
       <br>
       <el-form-item label="商户姓名" prop="business_name">
         <el-input v-model="shopEditForm.business_name" placeholder="请输入" />
       </el-form-item>
       <el-form-item label="业务员" prop="salesman">
-        <el-input v-model="shopEditForm.salesman" placeholder="请输入" />
+        <el-select v-model="shopEditForm.salesman" filterable placeholder="请选择">
+          <el-option
+            v-for="item in employee_list"
+            :key="item.employee_id"
+            :label="item.real_name"
+            :value="item.employee_id"
+          />
+        </el-select>
       </el-form-item>
       <br>
       <el-form-item label="状态" prop="status">
-        <el-input v-model="shopEditForm.status" placeholder="请输入" />
+        <el-select v-model="shopEditForm.status" placeholder="请选择">
+          <el-option
+            v-for="item in statusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="可使用DIY设计器" prop="designer_valid">
         <el-input v-model="shopEditForm.designer_valid" placeholder="请输入" />
@@ -63,6 +84,9 @@
 
 <script>
 import SlDialog from '@/components/Dialog/Dialog'
+import { businessSave, businessGet } from '@/api/api'
+import { BUSINESS_STATUS } from '@/config/cfg'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -100,8 +124,25 @@ export default {
         status: [{ required: true, message: '请选择状态', trigger: 'change' }],
         designer_valid: [{ required: true, message: '请选择是否可使用DIY设计器', trigger: 'change' }],
         address: [{ required: true, message: '请输入联系地址', trigger: 'blur' }]
-      }
+      },
+
+      statusOptions: [
+        {
+          label: BUSINESS_STATUS.toString(BUSINESS_STATUS.NORMAL),
+          value: BUSINESS_STATUS.NORMAL
+        },
+        {
+          label: BUSINESS_STATUS.toString(BUSINESS_STATUS.DISABLE),
+          value: BUSINESS_STATUS.DISABLE
+        }
+      ]
     }
+  },
+  computed: {
+    ...mapState({
+      vip_level_list: state => state.user.vip_level_list,
+      employee_list: state => state.user.employee_list
+    })
   },
   methods: {
     show() {
@@ -114,7 +155,29 @@ export default {
         }
       })
     },
-    saveBusiness() { },
+    async saveBusiness() {
+      const data = {
+        opr: 'save_business',
+        username: this.shopEditForm.username,
+        password: this.shopEditForm.password,
+        telephone: this.shopEditForm.telephone,
+        vip_level: this.shopEditForm.vip_level,
+        business_name: this.shopEditForm.business_name,
+        salesman: this.shopEditForm.salesman,
+        status: this.shopEditForm.status,
+        designer_valid: this.shopEditForm.designer_valid,
+        address: this.shopEditForm.address,
+        url: this.shopEditForm.url
+      }
+
+      if (this.businessId) {
+        data.business_id = this.businessId
+      }
+
+      const resp = await businessSave(data)
+      // console.log('商户保存 res=>', data)
+      if (resp.ret !== 0) return
+    },
     handlerShopEditClose() {
       this.$refs.shopEditForm.resetFields()
       this.$emit('on-close')

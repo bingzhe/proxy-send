@@ -143,6 +143,7 @@
       :staff-id="editStaffId"
       :role-list="roleList"
       @on-success="getStaffList"
+      @on-close="handlerEditClose"
     />
   </div>
 </template>
@@ -296,6 +297,9 @@ export default {
     handlerEditClick(row) {
       this.editStaffId = row.employee_id
       this.$refs.staffEdit.show()
+    },
+    handlerEditClose() {
+      this.editStaffId = ''
     }
   }
 }

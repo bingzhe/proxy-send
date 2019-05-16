@@ -249,7 +249,6 @@ export default {
       }
 
       console.log('商户列表 req=>', data)
-      // <<<<<<<<<<<<<<<<<<<<<<<<<
       // const resp = await businessGet(data)
       // console.log('商户列表 res=>', resp)
       // if (resp.ret !== 0) return

@@ -18,7 +18,7 @@
       label-width="150px"
     >
       <el-form-item label="账户名" prop="username">
-        <el-input v-model.trim="staffEditForm.username" placeholder="请输入" />
+        <el-input v-model.trim="staffEditForm.username" :disabled="!!staffId" placeholder="请输入" />
       </el-form-item>
       <el-form-item label="账户密码" prop="password">
         <el-input v-model.trim="staffEditForm.password" placeholder="请输入" />
