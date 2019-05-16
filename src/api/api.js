@@ -35,7 +35,6 @@ function generateRequestFn(interfaceFile, options = {}) {
 }
 
 // =================== login ======================
-
 // login_get
 export const loginGet = generateRequestFn('login_get.php')
 
@@ -46,7 +45,6 @@ export const loginSave = generateRequestFn('login_save.php')
 export const loginSaveEncry = generateRequestFn('login_save.php', { encmode: 'encrypt1' })
 
 // =================== system ======================
-
 // factorycfg_save
 export const factorycfgSave = generateRequestFn('factorycfg_save.php')
 
@@ -54,9 +52,16 @@ export const factorycfgSave = generateRequestFn('factorycfg_save.php')
 export const factorycfGet = generateRequestFn('factorycfg_get.php')
 
 // =================== 商户管理 ======================
-
-// factorycfg_save
+// business_save
 export const businessSave = generateRequestFn('business_save.php')
 
-// factorycfg_get
+// business_get
 export const businessGet = generateRequestFn('business_get.php')
+
+// =================== 员工管理 ======================
+// employee_save
+export const employeeSave = generateRequestFn('employee_save.php')
+
+// employee_get
+export const employeeGet = generateRequestFn('employee_get.php')
+

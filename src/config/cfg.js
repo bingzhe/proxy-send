@@ -235,7 +235,7 @@ export const RECHARGE_STATUS = {
   }
 }
 
-// ================== 财务 ============================
+// ================== 商户管理 ============================
 
 /**
  * 商户状态
@@ -255,6 +255,25 @@ export const BUSINESS_STATUS = {
   }
 }
 
+// ================== 员工管理 ============================
+
+/**
+ * 员工状态
+ */
+export const STAFF_STATUS = {
+  NORMAL: 1,
+  DISABLE: 2,
+
+  code: {
+    1: '正常',
+    2: '停用'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
 /**
  * 日期选择配置项
  */

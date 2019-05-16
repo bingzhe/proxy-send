@@ -173,31 +173,31 @@ export const constantRoutes = [
       {
         path: 'shop',
         name: 'shop',
-        component: () => import('@/views/manage-system/shop'),
+        component: () => import('@/views/manage-system/shop/shop'),
         meta: { title: '商户管理', icon: 'table' }
       },
       {
         path: 'param',
         name: 'param',
-        component: () => import('@/views/manage-system/param'),
+        component: () => import('@/views/manage-system/param/param'),
         meta: { title: '参数配置', icon: 'table' }
       },
       {
         path: 'staff',
         name: 'staff',
-        component: () => import('@/views/manage-system/staff'),
+        component: () => import('@/views/manage-system/staff/staff'),
         meta: { title: '员工管理', icon: 'table' }
       },
       {
         path: 'role',
         name: 'role',
-        component: () => import('@/views/manage-system/role'),
+        component: () => import('@/views/manage-system/role/role'),
         meta: { title: '角色管理', icon: 'table' }
       },
       {
         path: 'permission',
         name: 'permission',
-        component: () => import('@/views/manage-system/permission'),
+        component: () => import('@/views/manage-system/permission/permission'),
         meta: { title: '权限管理', icon: 'table' }
       }
     ]

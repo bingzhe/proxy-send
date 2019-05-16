@@ -150,7 +150,7 @@
 import { BUSINESS_STATUS, pickerOptions } from '@/config/cfg'
 import { businessSave, businessGet } from '@/api/api'
 import moment from 'moment'
-import ShopEdit from './components/ShopEdit'
+import ShopEdit from './ShopEdit'
 
 export default {
   name: 'BussinessList',
