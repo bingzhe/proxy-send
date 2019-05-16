@@ -19,9 +19,9 @@
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in roleList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item.role_id"
+              :label="item.role_name"
+              :value="item.role_id"
             />
           </el-select>
         </el-form-item>
@@ -107,7 +107,7 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
-              <el-button type="text">编辑</el-button>
+              <el-button type="text" @click="handlerEditClick(scope.row)">编辑</el-button>
               <el-button class="btn-red" type="text">删除</el-button>
             </template>
           </el-table-column>
@@ -137,17 +137,26 @@
         <!-- 分页 end -->
       </div>
     </div>
+
+    <staff-edit
+      ref="staffEdit"
+      :staff-id="editStaffId"
+      :role-list="roleList"
+      @on-success="getStaffList"
+    />
   </div>
 </template>
 <script>
 import { STAFF_STATUS, pickerOptions } from '@/config/cfg'
-import { employeeSave, employeeGet } from '@/api/api'
+import { employeeSave, employeeGet, roleGet } from '@/api/api'
 import moment from 'moment'
+import StaffEdit from './StaffEdit'
 
 export default {
   name: 'StaffList',
 
   components: {
+    StaffEdit
   },
 
   data() {
@@ -170,7 +179,7 @@ export default {
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 10
+        limit: 20
       },
 
       editStaffId: '', // 在编辑的员工id
@@ -197,11 +206,13 @@ export default {
   },
   mounted() {
     this.getStaffList()
+    this.getRoleList()
   },
   methods: {
     async getStaffList() {
       const data = {
-        opr: 'get_employee_list'
+        opr: 'get_employee_list',
+        page_no: this.listQuery.page
       }
       // 状态
       if (this.searchForm.status) {
@@ -232,16 +243,16 @@ export default {
 
       this.tableLoading = true
 
-      console.log('员工列表 req=>', data)
+      // console.log('员工列表 req=>', data)
       const resp = await employeeGet(data)
-      console.log('员工列表 res=>', resp)
+      // console.log('员工列表 res=>', resp)
       if (resp.ret !== 0) return
 
       this.list = resp.data.list
       this.total = resp.data.total
 
       this.list.map(item => {
-        if (item.status_str) {
+        if (item.status) {
           item.status_str = STAFF_STATUS.toString(item.status)
         }
         if (item.create_time) {
@@ -253,6 +264,16 @@ export default {
       })
       this.tableLoading = false
     },
+    async getRoleList() {
+      const data = {
+        opr: 'get_role_list'
+      }
+
+      const resp = await roleGet(data)
+      console.log('角色列表  res=>', resp)
+      if (resp.ret !== 0) return
+      this.roleList = resp.data.list
+    },
     handlerSearchClick() {
       this.getStaffList()
     },
@@ -263,15 +284,18 @@ export default {
     handleSizeChange(val) {
       this.listQuery.page = 1
       this.listQuery.limit = val
-      // this.getList()
-      //   PageSize.set(this.$route, val);
+      this.getStaffList()
     },
     handleCurrentChange(val) {
       this.listQuery.page = val
-      // this.getList()
+      this.getStaffList()
     },
     handlerAddStaffClick() {
-      this.$refs.shopEdit.show()
+      this.$refs.staffEdit.show()
+    },
+    handlerEditClick(row) {
+      this.editStaffId = row.employee_id
+      this.$refs.staffEdit.show()
     }
   }
 }

@@ -42,6 +42,12 @@ export default {
       }
     }
   },
+  created() {
+    /**
+     * 取页面初始数据
+     */
+    this.$store.dispatch('user/getUserInfo')
+  },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })

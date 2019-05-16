@@ -1,6 +1,6 @@
 import http from '@/config/encsubmit'
 import Vue from 'vue'
-import { errcode } from '@/config/cfg'
+// import { errcode } from '@/config/cfg'
 
 /**
  * generate requeset fn
@@ -22,7 +22,7 @@ function generateRequestFn(interfaceFile, options = {}) {
         resp => {
           if (resp.ret !== 0) {
             if (showErrTip) {
-              Vue.prototype.$message.error(errcode.toString(resp.ret))
+              Vue.prototype.$message.error(resp.msg)
             }
           }
           resolve(resp)
@@ -65,3 +65,9 @@ export const employeeSave = generateRequestFn('employee_save.php')
 // employee_get
 export const employeeGet = generateRequestFn('employee_get.php')
 
+// =================== 角色管理 ======================
+// role_save
+export const roleSave = generateRequestFn('role_save.php')
+
+// role_get
+export const roleGet = generateRequestFn('role_get.php')

@@ -6,6 +6,7 @@
     :visible.sync="dialogVisible"
     :show-close="showClose"
     @close="close"
+    @open="open"
   >
     <div class="dialog-content">
       <slot />
@@ -78,6 +79,9 @@ export default {
     },
     close() {
       this.$emit('close')
+    },
+    open() {
+      this.$emit('open')
     }
   }
 

@@ -1,11 +1,16 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import { loginGet } from '@/api/api'
 
 const state = {
   token: getToken(),
   name: '',
-  avatar: ''
+  avatar: '',
+  employee_id: '',
+  userInfo: {},
+  username: '',
+  permmap: {}
 }
 
 const mutations = {
@@ -17,58 +22,75 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  USER_SET_USERINFO: (state, userInfo) => {
+    state.userInfo = userInfo
+    state.username = userInfo.username
+    state.permmap = userInfo.permmap
   }
 }
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
-    return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
+  // login({ commit }, userInfo) {
+  //   const { username, password } = userInfo
+  //   return new Promise((resolve, reject) => {
+  //     login({ username: username.trim(), password: password }).then(response => {
+  //       const { data } = response
+  //       commit('SET_TOKEN', data.token)
+  //       setToken(data.token)
+  //       resolve()
+  //     }).catch(error => {
+  //       reject(error)
+  //     })
+  //   })
+  // },
 
   // get user info
-  getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
+  // getInfo({ commit, state }) {
+  //   return new Promise((resolve, reject) => {
+  // getInfo(state.token).then(response => {
+  //   const { data } = response
 
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
+  //   if (!data) {
+  //     reject('Verification failed, please Login again.')
+  //   }
 
-        const { name, avatar } = data
+  //   const { name, avatar } = data
 
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
+  //   commit('SET_NAME', name)
+  //   commit('SET_AVATAR', avatar)
+  //   resolve(data)
+  // }).catch(error => {
+  //   reject(error)
+  // })
+  //   })
+  // },
 
   // user logout
-  logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        commit('SET_TOKEN', '')
-        removeToken()
-        resetRouter()
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+  // logout({ commit, state }) {
+  //   return new Promise((resolve, reject) => {
+  //     logout(state.token).then(() => {
+  //       commit('SET_TOKEN', '')
+  //       removeToken()
+  //       resetRouter()
+  //       resolve()
+  //     }).catch(error => {
+  //       reject(error)
+  //     })
+  //   })
+  // },
+
+  async getUserInfo({ commit }) {
+    const data = {
+      opr: 'get_home_data'
+    }
+    const resp = await loginGet(data)
+    console.log('界面初始化数据 res=>', resp)
+    if (resp.ret !== 0) return
+
+    const userInfo = resp.data
+    commit('USER_SET_USERINFO', userInfo)
   },
 
   // remove token
