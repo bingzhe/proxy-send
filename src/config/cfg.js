@@ -255,6 +255,24 @@ export const BUSINESS_STATUS = {
   }
 }
 
+/**
+ * 是否可以使DIY设计器
+ */
+export const CANUSE_DESIGNERDIV = {
+  NO: 0,
+  YES: 1,
+
+  code: {
+    0: '不能使用',
+    1: '可使用'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
+
 // ================== 员工管理 ============================
 
 /**

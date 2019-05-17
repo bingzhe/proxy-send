@@ -63,7 +63,7 @@
           <span>
             <i class="el-icon-goods" />
           </span>
-          <span>商品列表</span>
+          <span>商户列表</span>
         </div>
         <div class="add-button-group">
           <el-button class="goods-add btn-h-38" type="primary" @click="handlerAddBusinessClick">新增商户</el-button>
@@ -102,17 +102,17 @@
           </el-table-column>
           <el-table-column prop="status" label="状态" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.status }}</span>
+              <span>{{ scope.row.status_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="create_time" label="开户时间" min-width="60">
+          <el-table-column prop="create_time" label="开户时间" min-width="80">
             <template slot-scope="scope">
-              <span>{{ scope.row.create_time }}</span>
+              <span>{{ scope.row.create_time_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="opr" label="操作" min-width="120" align="center">
+          <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
-              <el-button type="text">编辑</el-button>
+              <el-button type="text" @click="handlerShopEditClick(scope.row)">编辑</el-button>
               <el-button class="btn-red" type="text">删除</el-button>
             </template>
           </el-table-column>
@@ -143,7 +143,12 @@
       </div>
     </div>
 
-    <shop-edit ref="shopEdit" :business-id="editbBusinessId" @on-close="editbBusinessId=''" />
+    <shop-edit
+      ref="shopEdit"
+      :business-id="editbBusinessId"
+      @on-close="handlerShopEditClose"
+      @on-success="getBusinessList"
+    />
   </div>
 </template>
 <script>
@@ -172,30 +177,16 @@ export default {
         create_time_end: 0         // 开户时间（终止）（时间戳，秒）
       },
 
-      list: [
-        {
-          business_id: '1',   // 账户ID
-          business_name: '2', // 商户姓名（注：不是登录名）
-          username: '3',      // 用户名(即用户表中的)
-          vip_level: '4',     // VIP等级
-          salesman: '5',      // 业务员ID(跟单人)
-          status: 0,         // 状态(1:正常,2:停用)
-          designer_valid: 0, // 可使用DIY设计器(1:可使用,0:不能使用)
-          telephone: '7',     // 联系电话
-          address: '8',       // 联系地址
-          url: '0',           // 商铺URL
-          create_time: '-'    // 开户时间（开始）（时间戳，秒）
-        }
-      ],
+      list: [],
       tableLoading: false,
       // 分页
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 10
+        limit: 20
       },
 
-      editbBusinessId: '1', // 在编辑的商户id
+      editbBusinessId: '', // 在编辑的商户id
 
       statusOptions: [
         {
@@ -216,6 +207,9 @@ export default {
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
     }
+  },
+  mounted() {
+    this.getBusinessList()
   },
   methods: {
     async getBusinessList() {
@@ -248,17 +242,32 @@ export default {
         data.create_time_end = parseInt(moment(this.searchForm.create_time[1]).format('X'))
       }
 
-      console.log('商户列表 req=>', data)
-      // const resp = await businessGet(data)
-      // console.log('商户列表 res=>', resp)
-      // if (resp.ret !== 0) return
-
       this.tableLoading = true
-      setTimeout(() => {
-        this.tableLoading = false
-      }, 3000)
+
+      // console.log('商户列表 req=>', data)
+      const resp = await businessGet(data)
+      console.log('商户列表 res=>', resp)
+      if (resp.ret !== 0) return
+
+      this.tableLoading = false
+
+      this.list = resp.data.list
+      this.total = resp.data.total
+
+      this.list.map(item => {
+        if (item.status) {
+          item.status_str = BUSINESS_STATUS.toString(item.status)
+        }
+        if (item.create_time) {
+          item.create_time_str = moment(item.create_time * 1000).format(
+            'YYYY-MM-DD HH:mm:ss'
+          )
+        }
+        return item
+      })
     },
     handlerSearchClick() {
+      this.listQuery.page = 1
       this.getBusinessList()
     },
     // 多选
@@ -268,14 +277,20 @@ export default {
     handleSizeChange(val) {
       this.listQuery.page = 1
       this.listQuery.limit = val
-      // this.getList()
-      //   PageSize.set(this.$route, val);
+      this.getBusinessList()
     },
     handleCurrentChange(val) {
       this.listQuery.page = val
-      // this.getList()
+      this.getBusinessList()
     },
     handlerAddBusinessClick() {
+      this.$refs.shopEdit.show()
+    },
+    handlerShopEditClose() {
+      this.editbBusinessId = ''
+    },
+    handlerShopEditClick(row) {
+      this.editbBusinessId = row.business_id
       this.$refs.shopEdit.show()
     }
   }
@@ -300,6 +315,9 @@ export default {
 }
 .el-table {
   min-height: 400px;
+  /deep/ td {
+    padding: 4px 0;
+  }
 }
 .btn-green {
   color: #1a9901;

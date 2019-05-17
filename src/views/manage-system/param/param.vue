@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { factorycfgSave, factorycfGet } from '@/api/api'
+import { factorycfgSave, factorycfgGet } from '@/api/api'
 import SlDialog from '@/components/Dialog/Dialog'
 
 export default {
@@ -101,25 +101,14 @@ export default {
         ]
       },
 
-      list: [
-        {
-          cfg_name: '物流公司及快递费',
-          cfg_value: '{("中通","0.00"),("顺丰","1.50)}'
-        }, {
-          cfg_name: '123',
-          cfg_value: '123'
-        }, {
-          cfg_name: '123',
-          cfg_value: '123'
-        }
-      ],
+      list: [],
       multipleSelection: [],
       tableLoading: false,
       // 分页
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 10
+        limit: 20
       }
     }
   },
@@ -136,14 +125,15 @@ export default {
         data.cfg_name = this.searchForm.cfg_name
       }
 
-      console.log('工厂参数list req=>', data)
-      const resp = await factorycfGet(data)
+      // console.log('工厂参数list req=>', data)
+      const resp = await factorycfgGet(data)
       console.log('工厂参数list res=>', resp)
       if (resp.ret !== 0) return
 
       this.list = resp.data.list
     },
     handlerSearchClick() {
+      this.listQuery.page = 1
       this.getCfgList()
     },
     openCfgEditDialog(row) {
@@ -166,11 +156,12 @@ export default {
       }
 
       console.log('工厂参数保存 req=>', data)
-      const resp = await factorycfGet(data)
+      const resp = await factorycfgSave(data)
       console.log('工厂参数保存 res=>', resp)
       if (resp.ret !== 0) return
 
       this.handlerCfgEditClose()
+      this.getCfgList()
     },
     handlerCfgEditClose() {
       this.$refs.cfgEditForm.resetFields()

@@ -107,7 +107,7 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="handlerEditClick(scope.row)">编辑</el-button>
+              <el-button type="text" @click="handlerStaffEditClick(scope.row)">编辑</el-button>
               <el-button class="btn-red" type="text">删除</el-button>
             </template>
           </el-table-column>
@@ -249,6 +249,7 @@ export default {
       // console.log('员工列表 res=>', resp)
       if (resp.ret !== 0) return
 
+      this.tableLoading = false
       this.list = resp.data.list
       this.total = resp.data.total
 
@@ -263,7 +264,6 @@ export default {
         }
         return item
       })
-      this.tableLoading = false
     },
     async getRoleList() {
       const data = {
@@ -276,6 +276,7 @@ export default {
       this.roleList = resp.data.list
     },
     handlerSearchClick() {
+      this.listQuery.page = 1
       this.getStaffList()
     },
     // 多选
@@ -294,7 +295,7 @@ export default {
     handlerAddStaffClick() {
       this.$refs.staffEdit.show()
     },
-    handlerEditClick(row) {
+    handlerStaffEditClick(row) {
       this.editStaffId = row.employee_id
       this.$refs.staffEdit.show()
     },

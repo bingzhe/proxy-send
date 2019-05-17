@@ -175,7 +175,7 @@ export default {
       this.$refs.staffEditDialog.hide()
       this.$notify({
         title: '成功',
-        message: this.staffId ? '保存成功' : '保存成功',
+        message: this.staffId ? '保存成功' : '提交成功',
         type: 'success'
       })
     },

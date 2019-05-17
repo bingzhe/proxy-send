@@ -8,6 +8,7 @@
     top="12vh"
     @confirm="handlerShopEditConfirm"
     @close="handlerShopEditClose"
+    @open="handlerShopEditOpen"
   >
     <el-form
       ref="shopEditForm"
@@ -17,7 +18,7 @@
       label-width="150px"
     >
       <el-form-item label="账户名" prop="username">
-        <el-input v-model="shopEditForm.username" placeholder="请输入" />
+        <el-input v-model="shopEditForm.username" :diabled="!!businessId" placeholder="请输入" />
       </el-form-item>
       <el-form-item label="账户密码" prop="password">
         <el-input v-model="shopEditForm.password" placeholder="请输入" />
@@ -62,7 +63,15 @@
         </el-select>
       </el-form-item>
       <el-form-item label="可使用DIY设计器" prop="designer_valid">
-        <el-input v-model="shopEditForm.designer_valid" placeholder="请输入" />
+        <!-- <el-input v-model="shopEditForm.designer_valid" placeholder="请输入"/> -->
+        <el-select v-model="shopEditForm.designer_valid" placeholder="请选择">
+          <el-option
+            v-for="item in useDesignerOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </el-form-item>
       <br>
       <el-form-item label="联系地址" prop="address">
@@ -85,7 +94,7 @@
 <script>
 import SlDialog from '@/components/Dialog/Dialog'
 import { businessSave, businessGet } from '@/api/api'
-import { BUSINESS_STATUS } from '@/config/cfg'
+import { BUSINESS_STATUS, CANUSE_DESIGNERDIV } from '@/config/cfg'
 import { mapState } from 'vuex'
 
 export default {
@@ -135,6 +144,17 @@ export default {
           label: BUSINESS_STATUS.toString(BUSINESS_STATUS.DISABLE),
           value: BUSINESS_STATUS.DISABLE
         }
+      ],
+
+      useDesignerOptions: [
+        {
+          label: CANUSE_DESIGNERDIV.toString(CANUSE_DESIGNERDIV.YES),
+          value: CANUSE_DESIGNERDIV.YES
+        },
+        {
+          label: CANUSE_DESIGNERDIV.toString(CANUSE_DESIGNERDIV.NO),
+          value: CANUSE_DESIGNERDIV.NO
+        }
       ]
     }
   },
@@ -147,6 +167,30 @@ export default {
   methods: {
     show() {
       this.$refs.shopEditDialog.show()
+    },
+    async getBusinessInfo() {
+      const data = {
+        opr: 'get_business_info',
+        business_id: this.businessId
+      }
+
+      console.log('商户详情 req=>', data)
+      const resp = await businessGet(data)
+      console.log('商户详情 res=>', resp)
+      if (resp.ret !== 0) return
+
+      const info = resp.data.info
+
+      this.shopEditForm.username = info.username
+      this.shopEditForm.password = info.password
+      this.shopEditForm.telephone = info.telephone
+      this.shopEditForm.vip_level = info.vip_level
+      this.shopEditForm.business_name = info.business_name
+      this.shopEditForm.salesman = info.salesman
+      this.shopEditForm.status = info.status
+      this.shopEditForm.designer_valid = info.designer_valid
+      this.shopEditForm.address = info.address
+      this.shopEditForm.url = info.url
     },
     handlerShopEditConfirm() {
       this.$refs.shopEditForm.validate(valid => {
@@ -174,13 +218,28 @@ export default {
         data.business_id = this.businessId
       }
 
+      console.log('商户保存 req=>', data)
       const resp = await businessSave(data)
-      // console.log('商户保存 res=>', data)
+      console.log('商户保存 res=>', resp)
       if (resp.ret !== 0) return
+
+      this.handlerShopEditClose()
+      this.$emit('on-success')
+      this.$refs.shopEditDialog.hide()
+      this.$notify({
+        title: '成功',
+        message: this.businessId ? '保存成功' : '提交成功',
+        type: 'success'
+      })
     },
     handlerShopEditClose() {
       this.$refs.shopEditForm.resetFields()
       this.$emit('on-close')
+    },
+    handlerShopEditOpen() {
+      if (this.businessId) {
+        this.getBusinessInfo()
+      }
     }
   }
 }

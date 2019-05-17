@@ -49,7 +49,7 @@ export const loginSaveEncry = generateRequestFn('login_save.php', { encmode: 'en
 export const factorycfgSave = generateRequestFn('factorycfg_save.php')
 
 // factorycfg_get
-export const factorycfGet = generateRequestFn('factorycfg_get.php')
+export const factorycfgGet = generateRequestFn('factorycfg_get.php')
 
 // =================== 商户管理 ======================
 // business_save
