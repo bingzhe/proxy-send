@@ -44,7 +44,7 @@ export default {
   },
   created() {
     /**
-     * 取页面初始数据
+     * 更新页面全局数据
      */
     this.$store.dispatch('user/getUserInfo')
   },

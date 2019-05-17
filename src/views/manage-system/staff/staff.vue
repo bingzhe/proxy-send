@@ -18,7 +18,7 @@
           <el-select v-model="searchForm.role_id" placeholder="请选择">
             <el-option key="全部" label="全部" value />
             <el-option
-              v-for="item in roleList"
+              v-for="item in role_list"
               :key="item.role_id"
               :label="item.role_name"
               :value="item.role_id"
@@ -141,8 +141,7 @@
     <staff-edit
       ref="staffEdit"
       :staff-id="editStaffId"
-      :role-list="roleList"
-      @on-success="getStaffList"
+      @on-success="handlerEidtSuc"
       @on-close="handlerEditClose"
     />
   </div>
@@ -152,6 +151,7 @@ import { STAFF_STATUS, pickerOptions } from '@/config/cfg'
 import { employeeSave, employeeGet, roleGet } from '@/api/api'
 import moment from 'moment'
 import StaffEdit from './StaffEdit'
+import { mapState } from 'vuex'
 
 export default {
   name: 'StaffList',
@@ -195,19 +195,21 @@ export default {
           value: STAFF_STATUS.DISABLE
         }
       ],
-      roleList: [],
 
       pickerOptions
     }
   },
   computed: {
+    ...mapState({
+      role_list: state => state.user.role_list
+    }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
     }
   },
   mounted() {
     this.getStaffList()
-    this.getRoleList()
+    // this.getRoleList()
   },
   methods: {
     async getStaffList() {
@@ -265,16 +267,6 @@ export default {
         return item
       })
     },
-    async getRoleList() {
-      const data = {
-        opr: 'get_role_list'
-      }
-
-      const resp = await roleGet(data)
-      console.log('角色列表  res=>', resp)
-      if (resp.ret !== 0) return
-      this.roleList = resp.data.list
-    },
     handlerSearchClick() {
       this.listQuery.page = 1
       this.getStaffList()
@@ -301,6 +293,14 @@ export default {
     },
     handlerEditClose() {
       this.editStaffId = ''
+    },
+    handlerEidtSuc() {
+      this.getStaffList()
+
+      /**
+       * 更新页面全局数据
+       */
+      this.$store.dispatch('user/getUserInfo')
     }
   }
 }

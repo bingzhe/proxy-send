@@ -30,7 +30,7 @@
       <el-form-item label="角色" prop="role_id">
         <el-select v-model="staffEditForm.role_id" placeholder="请选择">
           <el-option
-            v-for="item in roleList"
+            v-for="item in role_list"
             :key="item.role_id"
             :label="item.role_name"
             :value="item.role_id"
@@ -70,6 +70,7 @@
 import SlDialog from '@/components/Dialog/Dialog'
 import { employeeSave, employeeGet } from '@/api/api'
 import { STAFF_STATUS } from '@/config/cfg'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -79,10 +80,6 @@ export default {
   props: {
     staffId: {
       type: String,
-      required: true
-    },
-    roleList: {
-      type: Array,
       required: true
     }
   },
@@ -117,6 +114,11 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    ...mapState({
+      role_list: state => state.user.role_list
+    })
   },
   methods: {
     show() {

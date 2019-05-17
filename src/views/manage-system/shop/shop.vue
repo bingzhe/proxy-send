@@ -15,13 +15,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="业务员" prop="salesman" label-width="70px">
-          <el-select v-model="searchForm.salesman" placeholder="请选择">
+          <el-select v-model="searchForm.salesman" filterable placeholder="请选择">
             <el-option key="全部" label="全部" value />
             <el-option
-              v-for="item in salesmanList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="item in employee_list"
+              :key="item.employee_id"
+              :label="item.real_name"
+              :value="item.employee_id"
             />
           </el-select>
         </el-form-item>
@@ -156,6 +156,7 @@ import { BUSINESS_STATUS, pickerOptions } from '@/config/cfg'
 import { businessSave, businessGet } from '@/api/api'
 import moment from 'moment'
 import ShopEdit from './ShopEdit'
+import { mapState } from 'vuex'
 
 export default {
   name: 'BussinessList',
@@ -204,6 +205,10 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      vip_level_list: state => state.user.vip_level_list,
+      employee_list: state => state.user.employee_list
+    }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
     }
@@ -244,7 +249,7 @@ export default {
 
       this.tableLoading = true
 
-      // console.log('商户列表 req=>', data)
+      console.log('商户列表 req=>', data)
       const resp = await businessGet(data)
       console.log('商户列表 res=>', resp)
       if (resp.ret !== 0) return

@@ -18,7 +18,7 @@
       label-width="150px"
     >
       <el-form-item label="账户名" prop="username">
-        <el-input v-model="shopEditForm.username" :diabled="!!businessId" placeholder="请输入" />
+        <el-input v-model="shopEditForm.username" :disabled="!!businessId" placeholder="请输入" />
       </el-form-item>
       <el-form-item label="账户密码" prop="password">
         <el-input v-model="shopEditForm.password" placeholder="请输入" />
@@ -174,9 +174,9 @@ export default {
         business_id: this.businessId
       }
 
-      console.log('商户详情 req=>', data)
+      // console.log('商户详情 req=>', data)
       const resp = await businessGet(data)
-      console.log('商户详情 res=>', resp)
+      // console.log('商户详情 res=>', resp)
       if (resp.ret !== 0) return
 
       const info = resp.data.info
@@ -218,9 +218,9 @@ export default {
         data.business_id = this.businessId
       }
 
-      console.log('商户保存 req=>', data)
+      // console.log('商户保存 req=>', data)
       const resp = await businessSave(data)
-      console.log('商户保存 res=>', resp)
+      // console.log('商户保存 res=>', resp)
       if (resp.ret !== 0) return
 
       this.handlerShopEditClose()

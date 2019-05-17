@@ -9,10 +9,11 @@ const state = {
   avatar: '',
   employee_id: '',
   userInfo: {},
-  username: '',          // 用户名
-  permmap: {},           // 权限 map
-  vip_level_list: [],    // vip list
-  employee_list: []      // 员工 list
+  username: '',           // 用户名
+  permmap: {},            // 权限 map
+  vip_level_list: [],     // vip list
+  employee_list: [],      // 员工 list
+  role_list: []           // 角色列表
 }
 
 const mutations = {
@@ -31,6 +32,7 @@ const mutations = {
     state.permmap = userInfo.permmap
     state.vip_level_list = userInfo.vip_level_list
     state.employee_list = userInfo.employee_list
+    state.role_list = userInfo.role_list
   }
 }
 
