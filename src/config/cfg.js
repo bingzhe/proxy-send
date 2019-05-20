@@ -153,24 +153,6 @@ export const errcode = {
    */
 }
 
-/*
- * 商品材质
- */
-export const GOODS_MATERIAL = {
-  GLASS: 1,
-  SILICONE: 2,
-
-  code: {
-    1: '玻璃',
-    2: '硅胶'
-  },
-
-  toString: function(code) {
-    code = parseInt(code || 0)
-    return this.code[code] || '未知[' + code + ']'
-  }
-}
-
 // ================== 商品管理 ============================
 /*
  * 商品类型

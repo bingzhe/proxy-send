@@ -6,16 +6,11 @@
         <el-form-item label="材质" prop="goods_material" label-width="70px">
           <el-select v-model="searchForm.goods_material" placeholder="请选择">
             <el-option key="全部" label="全部" value />
-            <el-option
-              v-for="item in goodsMaterialOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
+            <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-form-item label="商品种类" prop="goods_type" label-width="70px">
-          <el-select v-model="searchForm.goods_type" placeholder="请选择">
+        <el-form-item label="商品种类" prop="type" label-width="70px">
+          <el-select v-model="searchForm.type" placeholder="请选择">
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in goodsTypeOptions"
@@ -25,11 +20,27 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="品牌" prop="phone_brand" label-width="70px">
-          <el-input v-model.trim="searchForm.phone_brand" placeholder="请输入" />
+        <el-form-item label="品牌" prop="brand" label-width="70px">
+          <el-select v-model="searchForm.brand" placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option
+              v-for="item in phone_brand_list"
+              :key="item.brand_id"
+              :label="item.brand_name"
+              :value="item.brand_id"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="型号" prop="phone_model" label-width="70px">
-          <el-input v-model.trim="searchForm.phone_model" placeholder="请输入" />
+        <el-form-item label="型号" prop="model" label-width="70px">
+          <el-select v-model="searchForm.model" filterable placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option
+              v-for="item in model_list"
+              :key="item.model_id"
+              :label="item.model_name"
+              :value="item.model_id"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="商品名称" prop="goods_name" label-width="70px">
           <el-input v-model.trim="searchForm.goods_name" placeholder="请输入" />
@@ -177,8 +188,9 @@
   </div>
 </template>
 <script>
-import { GOODS_TYPE, GOODS_MATERIAL } from '@/config/cfg'
+import { GOODS_TYPE } from '@/config/cfg'
 import { goodsSave, goodsGet } from '@/api/api'
+import { mapState } from 'vuex'
 
 export default {
   data() {
@@ -187,9 +199,9 @@ export default {
       // search
       searchForm: {
         goods_material: '',   // 材质
-        goods_type: '',       // 商品种类
-        phone_brand: '',      // 品牌
-        phone_model: '',      // 型号
+        type: '',       // 商品种类
+        brand: '',      // 品牌
+        model: '',      // 型号
         goods_name: '',       // 商品名称
         goods_id: '',         // 商品编号
         goods_stock_type: '', // 库存类型   （1.大于等于：more 2.小于等于：less）
@@ -219,20 +231,15 @@ export default {
           value: GOODS_TYPE.GIFT,
           label: GOODS_TYPE.toString(GOODS_TYPE.GIFT)
         }
-      ],
-      goodsMaterialOptions: [
-        {
-          value: GOODS_MATERIAL.GLASS,
-          label: GOODS_MATERIAL.toString(GOODS_MATERIAL.GLASS)
-        },
-        {
-          value: GOODS_MATERIAL.SILICONE,
-          label: GOODS_MATERIAL.toString(GOODS_MATERIAL.SILICONE)
-        }
       ]
     }
   },
   computed: {
+    ...mapState({
+      phone_brand_list: state => state.user.phone_brand_list,
+      model_list: state => state.user.model_list,
+      raw_material_list: state => state.user.raw_material_list
+    }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
     }
@@ -250,16 +257,16 @@ export default {
         data.goods_material = this.searchForm.goods_material
       }
       // 商品种类
-      if (this.searchForm.goods_type) {
-        data.goods_type = this.searchForm.goods_type
+      if (this.searchForm.type) {
+        data.type = this.searchForm.type
       }
       // 品牌
-      if (this.searchForm.phone_brand) {
-        data.phone_brand = this.searchForm.phone_brand
+      if (this.searchForm.brand) {
+        data.brand = this.searchForm.brand
       }
       // 型号
-      if (this.searchForm.phone_model) {
-        data.phone_model = this.searchForm.phone_model
+      if (this.searchForm.model) {
+        data.model = this.searchForm.model
       }
       // 商品名称
       if (this.searchForm.goods_name) {
@@ -269,14 +276,13 @@ export default {
       if (this.searchForm.goods_id) {
         data.goods_id = this.searchForm.goods_id
       }
-      // 商品库存类型
-      if (this.searchForm.goods_stock_type) {
-        data.goods_stock_type = this.searchForm.goods_stock_type
+      // 商品库存 查找
+      if (this.searchForm.goods_stock_type === 'more') {
+        data.inventory_gte = this.searchForm.goods_stock
+      } else if (this.searchForm.goods_stock_type === 'less') {
+        data.inventory_lte = this.searchForm.goods_stock
       }
-      // 商品库存
-      if (this.searchForm.goods_stock) {
-        data.goods_stock = this.searchForm.goods_stock
-      }
+
       this.tableLoading = true
 
       /**

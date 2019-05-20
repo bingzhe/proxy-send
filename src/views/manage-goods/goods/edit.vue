@@ -47,10 +47,10 @@
             >
               <el-select v-model="baseinfoForm.raw_material" placeholder="请选择">
                 <el-option
-                  v-for="item in goodsMaterialOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in raw_material_list"
+                  :key="item"
+                  :label="item"
+                  :value="item"
                 />
               </el-select>
             </el-form-item>
@@ -62,7 +62,18 @@
               label-width="160px"
               prop="brand"
             >
-              <el-input v-model="baseinfoForm.brand" placeholder="请输入" />
+              <el-select
+                v-model="baseinfoForm.brand"
+                placeholder="请选择"
+                @change="handlerBrandChange"
+              >
+                <el-option
+                  v-for="item in phone_brand_list"
+                  :key="item.brand_id"
+                  :label="item.brand_name"
+                  :value="item.brand_id"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -74,7 +85,14 @@
               label-width="160px"
               prop="model"
             >
-              <el-input v-model="baseinfoForm.model" placeholder="请输入" />
+              <el-select v-model="baseinfoForm.model" placeholder="请选择">
+                <el-option
+                  v-for="item in model_list"
+                  :key="item.model_id"
+                  :label="item.model_name"
+                  :value="item.model_id"
+                />
+              </el-select>
             </el-form-item>
             <el-form-item
               v-if="goodsType === GOODS_TYPE.GIFT"
@@ -290,9 +308,9 @@
 </template>
 <script>
 import BaseinfoTitle from '../components/BaseinfoTitle/BaseinfoTitle'
-import { GOODS_TYPE, GOODS_MATERIAL, GOODS_PRINT_POSITION } from '@/config/cfg'
+import { GOODS_TYPE, GOODS_PRINT_POSITION } from '@/config/cfg'
 import { goodsSave, goodsGet } from '@/api/api'
-import { setTimeout } from 'timers'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -347,6 +365,7 @@ export default {
       },
 
       GOODS_TYPE,
+      model_list: [],   // 手机型号 list
 
       // 商品种类
       goodsTypeOptions: [
@@ -361,18 +380,6 @@ export default {
         {
           value: GOODS_TYPE.GIFT,
           label: GOODS_TYPE.toString(GOODS_TYPE.GIFT)
-        }
-      ],
-
-      // 材质选项
-      goodsMaterialOptions: [
-        {
-          value: GOODS_MATERIAL.GLASS,
-          label: GOODS_MATERIAL.toString(GOODS_MATERIAL.GLASS)
-        },
-        {
-          value: GOODS_MATERIAL.SILICONE,
-          label: GOODS_MATERIAL.toString(GOODS_MATERIAL.SILICONE)
         }
       ],
 
@@ -399,10 +406,15 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapState({
+      phone_brand_list: state => state.user.phone_brand_list,
+      raw_material_list: state => state.user.raw_material_list
+    })
+  },
   created() {
-    this.goods_id = this.$route.query.goodsid
-
-    if (this.goods_id) {
+    if (this.$route.query.goodsid) {
+      this.goods_id = this.$route.query.goodsid
       this.getGoodsInfo()
     }
   },
@@ -562,6 +574,13 @@ export default {
         this.$message.error('上传轮廓图大小不能超过 5MB!')
       }
       return isLt5M
+    },
+    handlerBrandChange(brand_id) {
+      this.phone_brand_list.forEach(brand => {
+        if (brand.brand_id === brand_id) {
+          this.model_list = brand.model_list
+        }
+      })
     }
   }
 }
