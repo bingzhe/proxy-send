@@ -71,3 +71,10 @@ export const roleSave = generateRequestFn('role_save.php')
 
 // role_get
 export const roleGet = generateRequestFn('role_get.php')
+
+// =================== 商品管理 ======================
+// goods_save
+export const goodsSave = generateRequestFn('goods_save.php')
+
+// goods_get
+export const goodsGet = generateRequestFn('goods_get.php')

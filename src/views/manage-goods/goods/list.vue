@@ -93,39 +93,39 @@
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="商品名称" min-width="80">
+          <el-table-column prop="goods_name" label="商品名称" min-width="80">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.goods_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="材质" min-width="60">
+          <el-table-column prop="raw_material" label="材质" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.raw_material_txt }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="品牌" min-width="60">
+          <el-table-column prop="brand" label="品牌" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.brand_txt }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="型号" min-width="60">
+          <el-table-column prop="model" label="型号" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.model_txt }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="商品种类" min-width="60">
+          <el-table-column prop="type" label="商品种类" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.type }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="库存" min-width="60">
+          <el-table-column prop="inventory" label="库存" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.inventory }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="状态" min-width="60">
+          <el-table-column prop="status" label="状态" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.status }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="opr" label="操作" min-width="120" align="center">
@@ -178,6 +178,7 @@
 </template>
 <script>
 import { GOODS_TYPE, GOODS_MATERIAL } from '@/config/cfg'
+import { goodsSave, goodsGet } from '@/api/api'
 
 export default {
   data() {
@@ -195,20 +196,14 @@ export default {
         goods_stock: ''       // 商品库存
       },
 
-      list: [
-        {
-          goods_id: '123'
-        },
-        {},
-        {}
-      ],
+      list: [],
       multipleSelection: [],
       tableLoading: false,
       // 分页
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 10
+        limit: 20
       },
 
       goodsTypeOptions: [
@@ -246,8 +241,10 @@ export default {
     this.getGoodsList()
   },
   methods: {
-    getGoodsList() {
-      const data = {}
+    async getGoodsList() {
+      const data = {
+        opr: 'get_goods_list'
+      }
       // 材质
       if (this.searchForm.goods_material) {
         data.goods_material = this.searchForm.goods_material
@@ -280,6 +277,7 @@ export default {
       if (this.searchForm.goods_stock) {
         data.goods_stock = this.searchForm.goods_stock
       }
+      this.tableLoading = true
 
       /**
        * 掉接口  商品列表
@@ -287,6 +285,14 @@ export default {
        */
 
       console.log('调接口 商品列表 req=>', data)
+      const resp = await goodsGet(data)
+      console.log('调接口 商品列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.tableLoading = false
+
+      this.list = resp.data.list
+      this.total = resp.data.total
     },
     handlerSearchClick() {
       this.getGoodsList()
@@ -355,6 +361,9 @@ export default {
 
 .el-table {
   min-height: 400px;
+  /deep/ td {
+    padding: 4px 0;
+  }
 }
 .btn-green {
   color: #1a9901;

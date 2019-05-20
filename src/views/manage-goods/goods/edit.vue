@@ -21,9 +21,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
-            <el-form-item label="商品种类" label-width="160px" prop="goods_type">
+            <el-form-item label="商品种类" label-width="160px" prop="type">
               <el-select
-                v-model="baseinfoForm.goods_type"
+                v-model="baseinfoForm.type"
                 placeholder="请选择"
                 @change="handlerGoodsTypeChagne"
               >
@@ -40,12 +40,12 @@
         <el-row>
           <el-col :span="11" :xs="20">
             <el-form-item
-              v-show="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
+              v-if="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
               label="材质"
               label-width="160px"
-              prop="goods_material"
+              prop="raw_material"
             >
-              <el-select v-model="baseinfoForm.goods_material" placeholder="请选择">
+              <el-select v-model="baseinfoForm.raw_material" placeholder="请选择">
                 <el-option
                   v-for="item in goodsMaterialOptions"
                   :key="item.value"
@@ -57,32 +57,37 @@
           </el-col>
           <el-col :span="11" :xs="20">
             <el-form-item
-              v-show="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
+              v-if="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
               label="品牌"
               label-width="160px"
-              prop="phone_brand"
+              prop="brand"
             >
-              <el-input v-model="baseinfoForm.phone_brand" placeholder="请输入" />
+              <el-input v-model="baseinfoForm.brand" placeholder="请输入" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="11" :xs="20">
             <el-form-item
-              v-show="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
+              v-if="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
               label="型号"
               label-width="160px"
-              prop="phone_model"
+              prop="model"
             >
-              <el-input v-model="baseinfoForm.phone_model" placeholder="请输入" />
+              <el-input v-model="baseinfoForm.model" placeholder="请输入" />
             </el-form-item>
             <el-form-item
-              v-show="goodsType === GOODS_TYPE.GIFT"
+              v-if="goodsType === GOODS_TYPE.GIFT"
               label="库存"
               label-width="160px"
-              prop="goods_stock"
+              prop="inventory"
             >
-              <el-input v-model="baseinfoForm.goods_stock" placeholder="请输入" />
+              <el-input
+                v-model.trim="baseinfoForm.inventory"
+                v-limit-input-number="baseinfoForm.inventory"
+                data-dotrange="{0,0}"
+                placeholder="请输入"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
@@ -123,10 +128,10 @@
       <el-form ref="printinfoForm" :model="printinfoForm" :rules="printinfoFormRules">
         <el-row>
           <el-col :span="11" :xs="20">
-            <el-form-item label="图像高" label-width="160px" prop="pic_height">
+            <el-form-item label="图像高" label-width="160px" prop="height">
               <el-input
-                v-model.trim="printinfoForm.pic_height"
-                v-limit-input-number="printinfoForm.pic_height"
+                v-model.trim="printinfoForm.height"
+                v-limit-input-number="printinfoForm.height"
                 placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
@@ -134,17 +139,17 @@
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
-            <el-form-item label="四角弧度" label-width="160px" prop="pic_radius">
-              <el-input v-model.trim="printinfoForm.pic_radius" placeholder="请输入" />
+            <el-form-item label="四角弧度" label-width="160px" prop="radius">
+              <el-input v-model.trim="printinfoForm.radius" placeholder="请输入" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="11" :xs="20">
-            <el-form-item label="图像宽" label-width="160px" prop="pic_width">
+            <el-form-item label="图像宽" label-width="160px" prop="width">
               <el-input
-                v-model.trim="printinfoForm.pic_width"
-                v-limit-input-number="printinfoForm.pic_width"
+                v-model.trim="printinfoForm.width"
+                v-limit-input-number="printinfoForm.width"
                 placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
@@ -152,8 +157,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
-            <el-form-item label="定位角" label-width="160px" prop="pic_position">
-              <el-select v-model="printinfoForm.pic_position" placeholder="请选择">
+            <el-form-item label="定位角" label-width="160px" prop="pos">
+              <el-select v-model="printinfoForm.pos" placeholder="请选择">
                 <el-option
                   v-for="item in goodsPrintPositoinOptions"
                   :key="item.value"
@@ -166,10 +171,10 @@
         </el-row>
         <el-row>
           <el-col :span="11" :xs="20">
-            <el-form-item label="与横边距离" label-width="160px" prop="horizontal_distance">
+            <el-form-item label="与横边距离" label-width="160px" prop="x_offset ">
               <el-input
-                v-model.trim="printinfoForm.horizontal_distance"
-                v-limit-input-number="printinfoForm.horizontal_distance"
+                v-model.trim="printinfoForm.x_offset "
+                v-limit-input-number="printinfoForm.x_offset "
                 placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
@@ -177,10 +182,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
-            <el-form-item label="与纵边距离" label-width="160px" prop="vertical_distance">
+            <el-form-item label="与纵边距离" label-width="160px" prop="y_offset ">
               <el-input
-                v-model.trim="printinfoForm.vertical_distance"
-                v-limit-input-number="printinfoForm.vertical_distance"
+                v-model.trim="printinfoForm.y_offset "
+                v-limit-input-number="printinfoForm.y_offset "
                 placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
@@ -205,44 +210,63 @@
       </div>
       <div class="base-pic-table-wrapper default-table-change">
         <el-form ref="basePicForm" :model="basePicForm">
-          <el-table :data="basePicForm.base_pic_list" stripe border>
+          <el-table :data="basePicForm.opt_color_list" stripe border>
             <el-table-column prop="num" label="序号" width="80" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.$index + 1 }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="goods_id" label="颜色" min-width="80" align="center">
+            <el-table-column prop="color_name" label="颜色" min-width="80" align="center">
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
                   :rules="{
                     required: true, message: '颜色不能为空', trigger: 'blur'
                   }"
-                  :prop="'base_pic_list.' + scope.$index + '.color'"
+                  :prop="'opt_color_list.' + scope.$index + '.color_name'"
                 >
-                  <el-input v-model="scope.row.color" placeholder="请输入" />
+                  <el-input v-model="scope.row.color_name" placeholder="请输入" />
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="goods_id" label="库存" min-width="80" align="center">
+            <el-table-column prop="inventory" label="库存" min-width="80" align="center">
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
-                  :rules="{
-                    required: true, message: '库存不能为空', trigger: 'blur'
-                  }"
-                  :prop="'base_pic_list.' + scope.$index + '.stock'"
+                  :rules="{required: true, message: '库存不能为空', trigger: 'blur'}"
+                  :prop="'opt_color_list.' + scope.$index + '.inventory'"
                 >
-                  <el-input v-model.trim="scope.row.stock" placeholder="请输入" />
+                  <el-input v-model.trim="scope.row.inventory" placeholder="请输入" />
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="goods_id" label="图片" min-width="80" align="center">
+            <el-table-column prop="color_img" label="图片" min-width="80" align="center">
               <template slot-scope="scope">
-                <div class="base-image-wrapper">{{ scope.row.picture }}</div>
+                <el-form-item
+                  class="pictable-form-item"
+                  :rules="{required: true, message: '图片不能为空'}"
+                  :prop="'opt_color_list.' + scope.$index + '.color_img'"
+                >
+                  <el-upload
+                    class="outline-uploader"
+                    action="http://platform.jzzwlcm.com/php/img_save.php"
+                    :on-success="(res,file,filelist) => {return handlerOutlineImgSuccess(res,file,filelist,scope.row)}"
+                    :before-upload="beforeOutlineImgUpload"
+                    :show-file-list="false"
+                    :data="{upload:1}"
+                    name="imgfile"
+                  >
+                    <img
+                      v-if="scope.row.color_img"
+                      :src="scope.row.color_img_url"
+                      class="upload-preview"
+                    >
+                    <i v-else class="el-icon-plus avatar-uploader-icon" />
+                  </el-upload>
+                </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="goods_id" label="操作" min-width="45" align="center">
+            <el-table-column prop="opr" label="操作" min-width="45" align="center">
               <template slot-scope="scope">
                 <el-button class="text-btn" type="text" @click="handlerDeletePicClick(scope.row)">删除</el-button>
               </template>
@@ -267,6 +291,8 @@
 <script>
 import BaseinfoTitle from '../components/BaseinfoTitle/BaseinfoTitle'
 import { GOODS_TYPE, GOODS_MATERIAL, GOODS_PRINT_POSITION } from '@/config/cfg'
+import { goodsSave, goodsGet } from '@/api/api'
+import { setTimeout } from 'timers'
 
 export default {
   components: {
@@ -279,82 +305,50 @@ export default {
 
       baseinfoForm: {
         goods_name: '',       // 商品名称
-        goods_type: '',       // 商品种类
-        goods_material: '',   // 材质
-        phone_brand: '',      // 品牌
-        phone_model: '',      // 型号
+        type: '',             // 商品种类
+        raw_material: '',     // 材质
+        brand: '',            // 品牌
+        model: '',            // 型号
         price: '',            // 单价
         remark: '',           // 备注
-        goods_stock: ''       // 商品库存
+        inventory: ''         // 商品库存
       },
       printinfoForm: {
-        pic_height: '',          // 图像高
-        pic_width: '',           // 图像宽
-        pic_radius: '',          // 四角弧度
-        pic_position: '',        // 定位角
-        horizontal_distance: '', // 与横边距离
-        vertical_distance: ''    // 与纵边距离
+        height: '',          // 图像高
+        width: '',           // 图像宽
+        radius: '',          // 四角弧度
+        pos: '',        // 定位角
+        x_offset: '', // 与横边距离
+        y_offset: ''    // 与纵边距离
       },
 
+      // opt_color_list : [{ color_name: '', inventory: '', color_img: '' } ]
       basePicForm: {
-        base_pic_list: [
-          // {
-          //   color: '',
-          //   stock: '',
-          //   picture: ''
-          // }
-        ]
+        opt_color_list: []
       },
 
-      baseinfoFormRules: {},
-      phoneShellRules: {
-        goods_name: [
-          { required: true, message: '请输入商品名称', trigger: 'blur' }
-        ],
-        goods_type: [
-          { required: true, message: '请选择商品种类', trigger: 'change' }
-        ],
-        goods_material: [
-          { required: true, message: '请选择材质', trigger: 'change' }
-        ],
-        phone_brand: [{ required: true, message: '请选择品牌', trigger: 'change' }],
-        phone_model: [{ required: true, message: '请选择型号', trigger: 'change' }],
-        price: [{ required: true, message: '请输入单价', trigger: 'blur' }]
+      baseinfoFormRules: {
+        goods_name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
+        type: [{ required: true, message: '请选择商品种类', trigger: 'change' }],
+        raw_material: [{ required: true, message: '请选择材质', trigger: 'change' }],
+        brand: [{ required: true, message: '请选择品牌', trigger: 'change' }],
+        model: [{ required: true, message: '请选择型号', trigger: 'change' }],
+        price: [{ required: true, message: '请输入单价', trigger: 'blur' }],
+        inventory: [{ required: true, message: '请输入商品库存', trigger: 'blur' }]
       },
-      giftInfoRules: {
-        goods_name: [
-          { required: true, message: '请输入商品名称', trigger: 'blur' }
-        ],
-        goods_type: [
-          { required: true, message: '请选择商品种类', trigger: 'change' }
-        ],
-        goods_stock: [
-          { required: true, message: '请输入商品库存', trigger: 'blur' }
-        ],
-        price: [{ required: true, message: '请输入单价', trigger: 'blur' }]
-      },
+
       printinfoFormRules: {
-        pic_height: [
-          { required: true, message: '请输入图像高', trigger: 'blur' }
-        ],
-        pic_width: [
-          { required: true, message: '请输入图像宽', trigger: 'blur' }
-        ],
-        pic_radius: [
-          { required: true, message: '请输入四角弧度', trigger: 'blur' }
-        ],
-        pic_position: [
-          { required: true, message: '请选择定位角', trigger: 'change' }
-        ],
-        horizontal_distance: [
-          { required: true, message: '请输入与横边距离', trigger: 'blur' }
-        ],
-        vertical_distance: [
-          { required: true, message: '请输入与纵边距离', trigger: 'blur' }
-        ]
+        height: [{ required: true, message: '请输入图像高', trigger: 'blur' }],
+        width: [{ required: true, message: '请输入图像宽', trigger: 'blur' }],
+        radius: [{ required: true, message: '请输入四角弧度', trigger: 'blur' }],
+        pos: [{ required: true, message: '请选择定位角', trigger: 'change' }],
+        x_offset: [{ required: true, message: '请输入与横边距离', trigger: 'blur' }],
+        y_offset: [{ required: true, message: '请输入与纵边距离', trigger: 'blur' }]
       },
 
       GOODS_TYPE,
+
+      // 商品种类
       goodsTypeOptions: [
         {
           value: GOODS_TYPE.DIY,
@@ -370,6 +364,7 @@ export default {
         }
       ],
 
+      // 材质选项
       goodsMaterialOptions: [
         {
           value: GOODS_MATERIAL.GLASS,
@@ -381,6 +376,7 @@ export default {
         }
       ],
 
+      // 定位角选项
       goodsPrintPositoinOptions: [
         {
           value: GOODS_PRINT_POSITION.LEFT_TOP,
@@ -404,25 +400,24 @@ export default {
     }
   },
   created() {
-    this.baseinfoFormRules = this.phoneShellRules
     this.goods_id = this.$route.query.goodsid
 
-    // if (this.goods_id) {
-
-    // }
+    if (this.goods_id) {
+      this.getGoodsInfo()
+    }
   },
   methods: {
     handlerAddPicClick() {
-      this.basePicForm.base_pic_list.push({
-        color: '',
-        stock: '',
-        picture: ''
+      this.basePicForm.opt_color_list.push({
+        color_name: '',
+        inventory: '',
+        color_img: ''
       })
     },
     handlerDeletePicClick(item) {
-      const index = this.basePicForm.base_pic_list.indexOf(item)
+      const index = this.basePicForm.opt_color_list.indexOf(item)
       if (index !== -1) {
-        this.basePicForm.base_pic_list.splice(index, 1)
+        this.basePicForm.opt_color_list.splice(index, 1)
       }
     },
     handlerGoBackClick() {
@@ -430,16 +425,7 @@ export default {
     },
     handlerGoodsTypeChagne(val) {
       this.goodsType = val
-
-      if (this.goodsType === GOODS_TYPE.GIFT) {
-        this.baseinfoFormRules = this.giftInfoRules
-      } else {
-        this.baseinfoFormRules = this.phoneShellRules
-      }
     },
-    /**
-     * @param {String} formName 表单名称
-     */
     validateForm(formName) {
       return new Promise((resolve, reject) => {
         this.$refs[formName].validate(valid => {
@@ -447,58 +433,136 @@ export default {
         })
       })
     },
+    async getGoodsInfo() {
+      const data = {
+        opr: 'get_goods_info',
+        goods_id: this.goods_id
+      }
+
+      const resp = await goodsGet(data)
+      console.log('商品信息 res=>', resp)
+
+      if (resp.ret !== 0) return
+
+      const info = resp.data.info
+
+      this.goodsType = info.type
+
+      this.baseinfoForm.goods_name = info.goods_name
+      this.baseinfoForm.type = info.type
+      this.baseinfoForm.raw_material = info.raw_material || ''
+      this.baseinfoForm.brand = info.brand || ''
+      this.baseinfoForm.model = info.model || ''
+      this.baseinfoForm.price = info.price
+      this.baseinfoForm.remark = info.remark || ''
+      this.baseinfoForm.inventory = info.inventory || ''
+
+      if (this.goodsType === GOODS_TYPE.DIY) {
+        this.printinfoForm.height = info.img_print_param.height
+        this.printinfoForm.width = info.img_print_param.width
+        this.printinfoForm.radius = info.img_print_param.radius
+        this.printinfoForm.pos = info.img_print_param.pos
+        this.printinfoForm.x_offset = info.img_print_param.x_offset
+        this.printinfoForm.y_offset = info.img_print_param.y_offset
+      }
+
+      if (this.goodsType === GOODS_TYPE.DIY || this.goodsType === GOODS_TYPE.NORM) {
+        this.basePicForm.opt_color_list = info.opt_color_list
+
+        this.basePicForm.opt_color_list.forEach(item => {
+          item.color_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${item.color_img}`
+        })
+      }
+    },
     async handlerSaveBtnClick() {
-      const data = {}
+      const data = {
+        opr: 'save_goods_info'
+      }
 
       if (this.goodsType === GOODS_TYPE.DIY) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
         const printinfoValidate = await this.validateForm('printinfoForm')
         const basePicValidate = await this.validateForm('basePicForm')
 
-        if (baseinfoValidate && printinfoValidate && basePicValidate) {
-          data.goods_name = this.baseinfoForm.goods_name
-          data.goods_type = this.baseinfoForm.goods_type
-          data.goods_material = this.baseinfoForm.goods_material
-          data.phone_brand = this.baseinfoForm.phone_brand
-          data.phone_model = this.baseinfoForm.phone_model
-          data.price = this.baseinfoForm.price
-          data.remark = this.baseinfoForm.remark
-          data.pic_height = this.printinfoForm.pic_height
-          data.pic_width = this.printinfoForm.pic_width
-          data.pic_radius = this.printinfoForm.pic_radius
-          data.pic_position = this.printinfoForm.pic_position
-          data.horizontal_distance = this.printinfoForm.horizontal_distance
-          data.vertical_distance = this.printinfoForm.vertical_distance
-          data.pic_list = this.basePicForm.base_pic_list
-        }
+        if (!baseinfoValidate || !printinfoValidate || !basePicValidate) return
+
+        data.goods_name = this.baseinfoForm.goods_name
+        data.type = this.baseinfoForm.type
+        data.raw_material = this.baseinfoForm.raw_material
+        data.brand = this.baseinfoForm.brand
+        data.model = this.baseinfoForm.model
+        data.price = this.baseinfoForm.price
+        data.remark = this.baseinfoForm.remark
+
+        data.img_print_param = this.printinfoForm
+        data.opt_color_list = this.basePicForm.opt_color_list
       } else if (this.goodsType === GOODS_TYPE.NORM) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
         const basePicValidate = await this.validateForm('basePicForm')
 
-        if (baseinfoValidate && basePicValidate) {
-          data.goods_name = this.baseinfoForm.goods_name
-          data.goods_type = this.baseinfoForm.goods_type
-          data.goods_material = this.baseinfoForm.goods_material
-          data.phone_brand = this.baseinfoForm.phone_brand
-          data.phone_model = this.baseinfoForm.phone_model
-          data.price = this.baseinfoForm.price
-          data.remark = this.baseinfoForm.remark
-          data.pic_list = this.basePicForm.base_pic_list
-        }
+        if (!baseinfoValidate || !basePicValidate) return
+
+        data.goods_name = this.baseinfoForm.goods_name
+        data.type = this.baseinfoForm.type
+        data.raw_material = this.baseinfoForm.raw_material
+        data.brand = this.baseinfoForm.brand
+        data.model = this.baseinfoForm.model
+        data.price = this.baseinfoForm.price
+        data.remark = this.baseinfoForm.remark
+        data.opt_color_list = this.basePicForm.opt_color_list
       } else if (this.goodsType === GOODS_TYPE.GIFT) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
 
-        if (baseinfoValidate) {
-          data.goods_name = this.baseinfoForm.goods_name
-          data.goods_type = this.baseinfoForm.goods_type
-          data.goods_stock = this.baseinfoForm.goods_stock
-          data.price = this.baseinfoForm.price
-          data.remark = this.baseinfoForm.remark
-        }
-      }
-      console.log('提交数据 req=>', data)
-    }
+        if (!baseinfoValidate) return
 
+        data.goods_name = this.baseinfoForm.goods_name
+        data.type = this.baseinfoForm.type
+        data.inventory = this.baseinfoForm.inventory
+        data.price = this.baseinfoForm.price
+        data.remark = this.baseinfoForm.remark
+      }
+
+      // 是否编辑
+      if (this.goods_id) {
+        data.goods_id = this.goods_id
+      }
+
+      console.log('商品保存 req=>', data)
+      const resp = await goodsSave(data)
+      console.log('商品保存 res=>', resp)
+
+      if (resp.ret !== 0) return
+
+      this.$notify({
+        title: '成功',
+        message: this.goods_id ? '保存成功' : '提交成功',
+        type: 'success',
+        duration: 2000
+      })
+      setTimeout(() => {
+        this.$router.go(-1)
+      }, 2000)
+    },
+
+    handlerOutlineImgSuccess(response, file, fileList, row) {
+      const fileName = response.data.filename
+
+      row.color_img = fileName
+      row.color_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${fileName}`
+    },
+    beforeOutlineImgUpload(file) {
+      // console.log('beforeOutlineImgUpload file', file)
+      // const isJPG = file.type === 'image/jpeg';
+      const isLt5M = file.size / 1024 / 1024 < 5
+
+      // if (!isJPG) {
+      //   this.$message.error('上传头像图片只能是 JPG 格式!');
+      // }
+      if (!isLt5M) {
+        this.$message.error('上传轮廓图大小不能超过 5MB!')
+      }
+      return isLt5M
+    }
   }
 }
 </script>
@@ -590,5 +654,31 @@ export default {
 .input-suffix-text {
   color: #333;
   margin-right: 10px;
+}
+/deep/ .outline-uploader {
+  line-height: 0;
+  .el-upload {
+    border: 1px dashed #e6e6e6;
+    border-radius: 1px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .el-upload:hover {
+    border-color: #2584f9;
+  }
+  .avatar-uploader-icon {
+    font-size: 30px;
+    color: #2584f9;
+    width: 44px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+  }
+  .upload-preview {
+    width: 44px;
+    height: 60px;
+    display: block;
+  }
 }
 </style>
