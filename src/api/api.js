@@ -78,3 +78,23 @@ export const goodsSave = generateRequestFn('goods_save.php')
 
 // goods_get
 export const goodsGet = generateRequestFn('goods_get.php')
+
+// =================== 手机机型管理 ======================
+// phonebrand_get
+export const phonebrandGet = generateRequestFn('phonebrand_get.php')
+
+// phonebrand_save
+export const phonebrandSave = generateRequestFn('phonebrand_save.php')
+
+// phonemodel_get
+export const phonemodelGet = generateRequestFn('phonemodel_get.php')
+
+// phonemodel_save
+export const phonemodelSave = generateRequestFn('phonemodel_save.php')
+
+// =================== 手机机型管理 ======================
+// material_get
+export const materialGet = generateRequestFn('material_get.php')
+
+// material_save
+export const materialSave = generateRequestFn('material_save.php')

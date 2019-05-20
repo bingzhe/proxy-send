@@ -576,6 +576,7 @@ export default {
       return isLt5M
     },
     handlerBrandChange(brand_id) {
+      this.baseinfoForm.model = ''
       this.phone_brand_list.forEach(brand => {
         if (brand.brand_id === brand_id) {
           this.model_list = brand.model_list

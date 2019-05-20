@@ -16,7 +16,8 @@ const state = {
   role_list: [],           // 角色列表
   phone_brand_list: [],    // 品牌 型号 list
   model_list: [],          // 型号list
-  raw_material_list: []   // 材质 list
+  raw_material_list: [],   // 材质 list
+  theme_list: []          // 图库主题分类
 }
 
 const mutations = {
@@ -39,6 +40,7 @@ const mutations = {
     state.phone_brand_list = siteInfo.phone_brand_list
     state.model_list = siteInfo.model_list
     state.raw_material_list = siteInfo.raw_material_list
+    state.theme_list = siteInfo.theme_list
   }
 }
 
@@ -107,6 +109,7 @@ const actions = {
     let model_list = []
 
     phone_brand_list.forEach(brand => {
+      brand.model_list = brand.model_list || []
       model_list = [...model_list, ...brand.model_list]
     })
 

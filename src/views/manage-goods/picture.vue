@@ -3,14 +3,14 @@
     <!-- search start -->
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
-        <el-form-item label="主题分类" prop="pic_type" label-width="70px">
-          <el-select v-model="searchForm.pic_type" placeholder="请选择">
+        <el-form-item label="主题分类" prop="theme" label-width="70px">
+          <el-select v-model="searchForm.theme" placeholder="请选择">
             <el-option key="全部" label="全部" value />
-            <el-option v-for="item in picTypeOptions" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in theme_list" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="pic_status" label-width="70px">
-          <el-select v-model="searchForm.pic_status" placeholder="请选择">
+        <el-form-item label="状态" prop="status" label-width="70px">
+          <el-select v-model="searchForm.status" placeholder="请选择">
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in picStatusOptions"
@@ -20,8 +20,8 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="素材名称" prop="pic_name" label-width="70px">
-          <el-input v-model="searchForm.pic_name" placeholder="请输入" />
+        <el-form-item label="素材名称" prop="material_name" label-width="70px">
+          <el-input v-model="searchForm.material_name" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
           <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
@@ -53,14 +53,14 @@
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="55" />
 
-          <el-table-column prop="goods_id" label="素材名称" min-width="60">
+          <el-table-column prop="material_name" label="素材名称" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.material_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="主题分类" min-width="60">
+          <el-table-column prop="theme" label="主题分类" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.theme }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="goods_id" label="缩略图" min-width="60">
@@ -68,9 +68,9 @@
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="上传时间" min-width="60">
+          <el-table-column prop="lastmodtime" label="上传时间" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.lastmodtime_str }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="goods_id" label="状态" min-width="60">
@@ -78,11 +78,11 @@
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="opr" label="操作" min-width="60" align="center">
+          <el-table-column prop="opr" label="操作" width="160" align="center">
             <template slot-scope="scope">
-              <el-button class="btn-green" type="text">启用</el-button>
+              <el-button v-if="false" class="btn-green" type="text">启用</el-button>
               <el-button class="btn-green" type="text">停用</el-button>
-              <el-button type="text">编辑</el-button>
+              <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
               <el-button class="btn-red" type="text danger">删除</el-button>
             </template>
           </el-table-column>
@@ -128,16 +128,16 @@
           class="picture-form"
           label-width="130px"
         >
-          <el-form-item label="图片名称" prop="pic_name">
-            <el-input v-model="pictureForm.pic_name" placeholder="请输入" />
+          <el-form-item label="图片名称" prop="material_name">
+            <el-input v-model="pictureForm.material_name" placeholder="请输入" />
           </el-form-item>
-          <el-form-item label="主题分类" prop="pic_type">
-            <el-select v-model="pictureForm.pic_type" placeholder="请选择">
-              <el-option v-for="item in picTypeOptions" :key="item" :label="item" :value="item" />
+          <el-form-item label="主题分类" prop="theme">
+            <el-select v-model="pictureForm.theme" placeholder="请选择">
+              <el-option v-for="item in theme_list" :key="item" :label="item" :value="item" />
             </el-select>
           </el-form-item>
-          <el-form-item v-if="editPictureId" label="状态" prop="pic_status">
-            <el-select v-model="pictureForm.pic_status" placeholder="请选择">
+          <el-form-item v-if="editPictureId" label="状态" prop="status">
+            <el-select v-model="pictureForm.status" placeholder="请选择">
               <el-option
                 v-for="item in picStatusOptions"
                 :key="item.value"
@@ -146,7 +146,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="图片" prop="pic_img">
+          <el-form-item label="图片" prop="material_img">
             <el-upload
               class="outline-uploader"
               action="http://platform.jzzwlcm.com/php/img_save.php"
@@ -156,7 +156,11 @@
               :data="{upload:1}"
               name="imgfile"
             >
-              <img v-if="pictureForm.pic_img" :src="pictureForm.pic_img" class="upload-preview">
+              <img
+                v-if="pictureForm.material_img"
+                :src="pictureForm.material_img"
+                class="upload-preview"
+              >
               <i v-else class="el-icon-plus avatar-uploader-icon" />
             </el-upload>
           </el-form-item>
@@ -168,6 +172,9 @@
 </template>
 <script>
 import SlDialog from '@/components/Dialog/Dialog'
+import moment from 'moment'
+import { mapState } from 'vuex'
+import { materialGet, materialSave } from '@/api/api'
 
 export default {
   components: {
@@ -178,49 +185,36 @@ export default {
 
       // search
       searchForm: {
-        pic_type: '',    // 图片分类
-        pic_status: '',  // 状态
-        pic_name: ''     // 素材名
+        theme: '',            // 图片分类
+        status: '',       // 状态
+        material_name: ''     // 素材名
       },
 
-      list: [
-        {
-          goods_id: '123'
-        }, {}, {}
-        // {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-      ],
+      list: [],
       multipleSelection: [],
       tableLoading: false,
       // 分页
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 10
+        limit: 20
       },
 
       // picture dialog
       editPictureId: '',
       pictureForm: {
-        pic_name: '',
-        pic_type: '',
-        pic_status: '',
-        pic_img: ''
+        material_name: '',
+        theme: '',
+        status: '',
+        material_img: ''
       },
       pictureFormRules: {
-        pic_name: [
-          { required: true, message: '请输入图片名称', trigger: 'blur' }
-        ],
-        pic_type: [
-          { required: true, message: '请选择主题分类', trigger: 'change' }
-        ],
-        pic_status: [
-          { required: true, message: '请选择状态', trigger: 'change' }
-        ],
-        pic_img: [
-          { required: true, message: '请上传轮廓图' }
-        ]
+        material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
+        theme: [{ required: true, message: '请选择主题分类', trigger: 'change' }],
+        status: [{ required: true, message: '请选择状态', trigger: 'change' }],
+        material_img: [{ required: true, message: '请上传轮廓图' }]
       },
-      picTypeOptions: ['美女', '游戏'],
+
       picStatusOptions: [{
         label: '启用',
         value: 1
@@ -231,6 +225,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      theme_list: state => state.user.theme_list
+    }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
     }
@@ -239,25 +236,40 @@ export default {
     this.getPictureList()
   },
   methods: {
-    getPictureList() {
-      const data = {}
+    async getPictureList() {
+      const data = {
+        opr: 'get_material_list',
+        page_no: this.listQuery.page
+      }
       // 图片分类
-      if (this.searchForm.pic_type) {
-        data.pic_type = this.searchForm.pic_type
+      if (this.searchForm.theme) {
+        data.theme = this.searchForm.theme
       }
       // 状态
-      if (this.searchForm.pic_status || this.searchForm.pic_status === 0) {
-        data.pic_status = this.searchForm.pic_status
+      if (this.searchForm.status || this.searchForm.status === 0) {
+        data.status = this.searchForm.status
       }
       // 素材名
-      if (this.searchForm.pic_name) {
-        data.pic_name = this.searchForm.pic_name
+      if (this.searchForm.material_name) {
+        data.material_name = this.searchForm.material_name
       }
-      /**
-       * 调接口 图库列表
-       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-       */
+
       console.log('调接口 图库列表 req=>', data)
+      const resp = await materialGet(data)
+      console.log('调接口 图库列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.list = resp.data.list
+      this.total = resp.data.total
+
+      this.list.map(item => {
+        if (item.lastmodtime) {
+          item.lastmodtime_str = moment(item.lastmodtime * 1000).format(
+            'YYYY-MM-DD HH:mm:ss'
+          )
+        }
+        return item
+      })
     },
     handlerSearchClick() {
       this.getPictureList()
@@ -283,7 +295,7 @@ export default {
     },
     handlerOutlineImgSuccess(response, file, fileList) {
       const fileName = response.data.filename
-      this.pictureForm.pic_img = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${fileName}`
+      this.pictureForm.material_img = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${fileName}`
     },
     beforeOutlineImgUpload(file) {
       // console.log('beforeOutlineImgUpload file', file)
@@ -305,25 +317,40 @@ export default {
         }
       })
     },
-    handlerPicEditDialogClose() {
-      this.$refs.pictureForm.resetFields()
-    },
-    savePicture() {
+    async savePicture() {
       const data = {
-        pic_name: this.pictureForm.pic_name,
-        pic_type: this.pictureForm.pic_type,
-        pic_img: this.pictureForm.pic_img
+        opr: 'save_material',
+        material_name: this.pictureForm.material_name,
+        theme: this.pictureForm.theme,
+        material_img: this.pictureForm.material_img
       }
 
       if (this.editPictureId) {
-        data.pic_status = this.pictureForm.pic_status
+        data.status = this.pictureForm.status
+        data.material_id = this.editPictureId
       }
 
       console.log('保存图片 req=>', data)
-      /**
-       * 调接口 保存图片
-       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-       */
+      const resp = await materialSave(data)
+      console.log('保存图片 res=>', resp)
+
+      if (resp.ret === 0) return
+    },
+    handlerMaterialEditClick(row) {
+      this.editPictureId = row.material_id
+      this.pictureForm.material_name = row.material_name
+      this.pictureForm.theme = row.theme
+      this.pictureForm.status = row.status
+      this.pictureForm.material_img = row.material_img
+      this.$refs.pictureEditDialog.show()
+    },
+    handlerPicEditDialogClose() {
+      this.editPictureId = ''
+      this.pictureForm.material_name = ''
+      this.pictureForm.theme = ''
+      this.pictureForm.status = ''
+      this.pictureForm.material_img = ''
+      this.$refs.pictureForm.resetFields()
     }
 
   }
@@ -350,6 +377,9 @@ export default {
 
 .el-table {
   min-height: 400px;
+  /deep/ td {
+    padding: 4px 0;
+  }
 }
 .picture-form {
   width: 430px;

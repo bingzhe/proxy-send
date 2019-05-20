@@ -196,6 +196,24 @@ export const GOODS_PRINT_POSITION = {
   }
 }
 
+/**
+ * 商品状态
+ */
+export const GOODS_STATUS = {
+  OFF: 1,
+  ON: 2,
+
+  code: {
+    1: '未上架',
+    2: '已上架'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
+
 // ================== 财务 ============================
 /**
  *充值状态

@@ -119,7 +119,7 @@
               <span>{{ scope.row.brand_txt }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="model" label="型号" min-width="60">
+          <el-table-column prop="model" label="型号" min-width="80">
             <template slot-scope="scope">
               <span>{{ scope.row.model_txt }}</span>
             </template>
@@ -136,17 +136,19 @@
           </el-table-column>
           <el-table-column prop="status" label="状态" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.status }}</span>
+              <span>{{ scope.row.status_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="opr" label="操作" min-width="120" align="center">
+          <el-table-column prop="opr" label="操作" width="160" align="center">
             <template slot-scope="scope">
               <el-button
+                v-if="scope.row.status === GOODS_STATUS.OFF"
                 class="btn-green"
                 type="text"
                 @click="handlerOnOffClick(scope.row.goods_id)"
               >上架</el-button>
               <el-button
+                v-if="scope.row.status === GOODS_STATUS.ON"
                 class="btn-green"
                 type="text"
                 @click="handlerOnOffClick(scope.row.goods_id)"
@@ -188,7 +190,7 @@
   </div>
 </template>
 <script>
-import { GOODS_TYPE } from '@/config/cfg'
+import { GOODS_TYPE, GOODS_STATUS } from '@/config/cfg'
 import { goodsSave, goodsGet } from '@/api/api'
 import { mapState } from 'vuex'
 
@@ -231,7 +233,8 @@ export default {
           value: GOODS_TYPE.GIFT,
           label: GOODS_TYPE.toString(GOODS_TYPE.GIFT)
         }
-      ]
+      ],
+      GOODS_STATUS
     }
   },
   computed: {
@@ -250,7 +253,8 @@ export default {
   methods: {
     async getGoodsList() {
       const data = {
-        opr: 'get_goods_list'
+        opr: 'get_goods_list',
+        page_no: this.listQuery.page
       }
       // 材质
       if (this.searchForm.goods_material) {
@@ -299,6 +303,13 @@ export default {
 
       this.list = resp.data.list
       this.total = resp.data.total
+
+      this.list = this.list.map(goods => {
+        goods.status = goods.status || 2
+        goods.status_str = GOODS_STATUS.toString(goods.status)
+
+        return goods
+      })
     },
     handlerSearchClick() {
       this.getGoodsList()
