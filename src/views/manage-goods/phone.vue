@@ -51,7 +51,7 @@
           </el-table-column>
           <el-table-column prop="outline_img" label="轮廓图" min-width="80" align="center">
             <template slot-scope="scope">
-              <img class="table-outline-img" :src="scope.row.outline_img_url">
+              <img class="table-cell-img" :src="scope.row.outline_img_url">
             </template>
           </el-table-column>
           <el-table-column prop="goods_id" label="更新时间" min-width="60">
@@ -403,14 +403,14 @@ export default {
 
       if (resp.ret !== 0) return
 
-      this.handlerModelEditDialogClose()
-      this.$refs.modelEditDialog.hide()
-      this.getPhoneModelList()
       this.$notify({
         title: '成功',
         message: this.editModelId ? '保存成功' : '提交成功',
         type: 'success'
       })
+      this.handlerModelEditDialogClose()
+      this.$refs.modelEditDialog.hide()
+      this.getPhoneModelList()
 
       /**
        * 更新页面全局数据
@@ -494,7 +494,7 @@ export default {
   /deep/ td {
     padding: 4px 0;
 
-    .table-outline-img {
+    .table-cell-img {
       width: 44px;
       height: 60px;
       vertical-align: middle;

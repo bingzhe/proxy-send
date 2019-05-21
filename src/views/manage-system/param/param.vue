@@ -34,7 +34,7 @@
               <span>{{ scope.row.cfg_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="cfg_value" label="参数值" min-width="180" align="center">
+          <el-table-column prop="cfg_value" label="参数值" min-width="200" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.cfg_value }}</span>
             </template>
@@ -91,6 +91,7 @@ export default {
       },
 
       cfgEditForm: {
+        cfg_id: '',
         cfg_name: '',
         cfg_value: ''
       },
@@ -125,12 +126,15 @@ export default {
         data.cfg_name = this.searchForm.cfg_name
       }
 
+      this.tableLoading = true
+
       // console.log('工厂参数list req=>', data)
       const resp = await factorycfgGet(data)
-      console.log('工厂参数list res=>', resp)
+      // console.log('工厂参数list res=>', resp)
       if (resp.ret !== 0) return
 
       this.list = resp.data.list
+      this.tableLoading = false
     },
     handlerSearchClick() {
       this.listQuery.page = 1
@@ -140,6 +144,7 @@ export default {
       this.$refs.cfgEditDialog.show()
       this.cfgEditForm.cfg_name = row.cfg_name
       this.cfgEditForm.cfg_value = row.cfg_value
+      this.cfgEditForm.cfg_id = row.cfg_id
     },
     handlerCfgEditConfirm() {
       this.$refs.cfgEditForm.validate(valid => {
@@ -151,6 +156,7 @@ export default {
     async saveSystemCfg() {
       const data = {
         opr: 'save_factory_cfg',
+        cfg_id: this.cfgEditForm.cfg_id,
         cfg_name: this.cfgEditForm.cfg_name,    // 参数名称
         cfg_value: this.cfgEditForm.cfg_value    // 参数值(json格式串)
       }
@@ -160,11 +166,25 @@ export default {
       console.log('工厂参数保存 res=>', resp)
       if (resp.ret !== 0) return
 
+      this.$notify({
+        title: '成功',
+        message: '保存成功',
+        type: 'success'
+      })
       this.handlerCfgEditClose()
+      this.$refs.cfgEditDialog.hide()
       this.getCfgList()
+
+      /**
+       * 更新页面全局数据
+       */
+      this.$store.dispatch('user/getUserInfo')
     },
     handlerCfgEditClose() {
       this.$refs.cfgEditForm.resetFields()
+      this.cfgEditForm.cfg_name = ''
+      this.cfgEditForm.cfg_value = ''
+      this.cfgEditForm.cfg_id = ''
     }
   }
 }

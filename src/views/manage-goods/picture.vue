@@ -28,7 +28,6 @@
         </el-form-item>
       </el-form>
     </div>
-
     <!-- search end -->
 
     <div
@@ -68,7 +67,7 @@
               <span>{{ scope.row.goods_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="lastmodtime" label="上传时间" min-width="60">
+          <el-table-column prop="lastmodtime" label="上传时间" min-width="80">
             <template slot-scope="scope">
               <span>{{ scope.row.lastmodtime_str }}</span>
             </template>
@@ -215,13 +214,10 @@ export default {
         material_img: [{ required: true, message: '请上传轮廓图' }]
       },
 
-      picStatusOptions: [{
-        label: '启用',
-        value: 1
-      }, {
-        label: '停用',
-        value: 0
-      }]
+      picStatusOptions: [
+        { label: '正常', value: 1 },
+        { label: '停用', value: 2 }
+      ]
     }
   },
   computed: {
@@ -246,7 +242,7 @@ export default {
         data.theme = this.searchForm.theme
       }
       // 状态
-      if (this.searchForm.status || this.searchForm.status === 0) {
+      if (this.searchForm.status) {
         data.status = this.searchForm.status
       }
       // 素材名
@@ -335,6 +331,14 @@ export default {
       console.log('保存图片 res=>', resp)
 
       if (resp.ret === 0) return
+      this.$notify({
+        title: '成功',
+        message: this.editPictureId ? '保存成功' : '提交成功',
+        type: 'success'
+      })
+      this.handlerPicEditDialogClose()
+      this.$refs.pictureEditDialog.hide()
+      this.getPictureList()
     },
     handlerMaterialEditClick(row) {
       this.editPictureId = row.material_id
