@@ -137,6 +137,7 @@ export const constantRoutes = [
       }
     ]
   },
+
   // 生产管理
   {
     path: '/manage-fabricate',
@@ -164,6 +165,8 @@ export const constantRoutes = [
       }
     ]
   },
+
+  // 系统管理
   {
     path: '/manage-system',
     component: Layout,

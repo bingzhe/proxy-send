@@ -62,9 +62,9 @@
               <span>{{ scope.row.theme }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="缩略图" min-width="60">
+          <el-table-column prop="material_img" label="缩略图" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <img class="table-cell-img" :src="scope.row.material_img_url">
             </template>
           </el-table-column>
           <el-table-column prop="lastmodtime" label="上传时间" min-width="80">
@@ -72,15 +72,23 @@
               <span>{{ scope.row.lastmodtime_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="状态" min-width="60">
+          <el-table-column prop="status" label="状态" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.status_str }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="opr" label="操作" width="160" align="center">
             <template slot-scope="scope">
-              <el-button v-if="false" class="btn-green" type="text">启用</el-button>
-              <el-button class="btn-green" type="text">停用</el-button>
+              <el-button
+                v-if="scope.row.status === PICTURE_STATUS.DISABLE"
+                class="btn-green"
+                type="text"
+              >启用</el-button>
+              <el-button
+                v-if="scope.row.status === PICTURE_STATUS.NORMAL"
+                class="btn-green"
+                type="text"
+              >停用</el-button>
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
               <el-button class="btn-red" type="text danger">删除</el-button>
             </template>
@@ -157,7 +165,7 @@
             >
               <img
                 v-if="pictureForm.material_img"
-                :src="pictureForm.material_img"
+                :src="pictureForm.material_img_url"
                 class="upload-preview"
               >
               <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -174,6 +182,7 @@ import SlDialog from '@/components/Dialog/Dialog'
 import moment from 'moment'
 import { mapState } from 'vuex'
 import { materialGet, materialSave } from '@/api/api'
+import { PICTURE_STATUS } from '@/config/cfg'
 
 export default {
   components: {
@@ -205,7 +214,8 @@ export default {
         material_name: '',
         theme: '',
         status: '',
-        material_img: ''
+        material_img: '',
+        material_img_url: ''
       },
       pictureFormRules: {
         material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
@@ -214,10 +224,12 @@ export default {
         material_img: [{ required: true, message: '请上传轮廓图' }]
       },
 
+      // 图片使用状态 正常：1 停用：2
       picStatusOptions: [
         { label: '正常', value: 1 },
         { label: '停用', value: 2 }
-      ]
+      ],
+      PICTURE_STATUS
     }
   },
   computed: {
@@ -250,9 +262,11 @@ export default {
         data.material_name = this.searchForm.material_name
       }
 
-      console.log('调接口 图库列表 req=>', data)
+      this.tableLoading = true
+
+      console.log('图库列表 req=>', data)
       const resp = await materialGet(data)
-      console.log('调接口 图库列表 res=>', resp)
+      console.log('图库列表 res=>', resp)
 
       if (resp.ret !== 0) return
       this.list = resp.data.list
@@ -264,8 +278,15 @@ export default {
             'YYYY-MM-DD HH:mm:ss'
           )
         }
+
+        if (item.status) {
+          item.status_str = PICTURE_STATUS.toString(item.status)
+        }
+
+        item.material_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${item.material_img}`
         return item
       })
+      this.tableLoading = false
     },
     handlerSearchClick() {
       this.getPictureList()
@@ -277,12 +298,11 @@ export default {
     handleSizeChange(val) {
       this.listQuery.page = 1
       this.listQuery.limit = val
-      // this.getList()
-      //   PageSize.set(this.$route, val);
+      this.getPictureList()
     },
     handleCurrentChange(val) {
       this.listQuery.page = val
-      // this.getList()
+      this.getPictureList()
     },
 
     // 图片编辑弹窗
@@ -291,7 +311,8 @@ export default {
     },
     handlerOutlineImgSuccess(response, file, fileList) {
       const fileName = response.data.filename
-      this.pictureForm.material_img = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${fileName}`
+      this.pictureForm.material_img = fileName
+      this.pictureForm.material_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${fileName}`
     },
     beforeOutlineImgUpload(file) {
       // console.log('beforeOutlineImgUpload file', file)
@@ -318,7 +339,8 @@ export default {
         opr: 'save_material',
         material_name: this.pictureForm.material_name,
         theme: this.pictureForm.theme,
-        material_img: this.pictureForm.material_img
+        material_img: this.pictureForm.material_img,
+        status: 1       // 默认启用
       }
 
       if (this.editPictureId) {
@@ -330,7 +352,8 @@ export default {
       const resp = await materialSave(data)
       console.log('保存图片 res=>', resp)
 
-      if (resp.ret === 0) return
+      if (resp.ret !== 0) return
+
       this.$notify({
         title: '成功',
         message: this.editPictureId ? '保存成功' : '提交成功',
@@ -346,15 +369,17 @@ export default {
       this.pictureForm.theme = row.theme
       this.pictureForm.status = row.status
       this.pictureForm.material_img = row.material_img
+      this.pictureForm.material_img_url = row.material_img_url
       this.$refs.pictureEditDialog.show()
     },
     handlerPicEditDialogClose() {
+      this.$refs.pictureForm.resetFields()
       this.editPictureId = ''
       this.pictureForm.material_name = ''
       this.pictureForm.theme = ''
       this.pictureForm.status = ''
       this.pictureForm.material_img = ''
-      this.$refs.pictureForm.resetFields()
+      this.pictureForm.material_img_url = ''
     }
 
   }
@@ -383,6 +408,11 @@ export default {
   min-height: 400px;
   /deep/ td {
     padding: 4px 0;
+  }
+  .table-cell-img {
+    width: 44px;
+    height: 60px;
+    vertical-align: middle;
   }
 }
 .picture-form {

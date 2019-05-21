@@ -289,17 +289,11 @@ export default {
 
       this.tableLoading = true
 
-      /**
-       * 掉接口  商品列表
-       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-       */
-
-      console.log('调接口 商品列表 req=>', data)
+      console.log('商品列表 req=>', data)
       const resp = await goodsGet(data)
-      console.log('调接口 商品列表 res=>', resp)
+      console.log('商品列表 res=>', resp)
 
       if (resp.ret !== 0) return
-      this.tableLoading = false
 
       this.list = resp.data.list
       this.total = resp.data.total
@@ -310,6 +304,7 @@ export default {
 
         return goods
       })
+      this.tableLoading = false
     },
     handlerSearchClick() {
       this.getGoodsList()

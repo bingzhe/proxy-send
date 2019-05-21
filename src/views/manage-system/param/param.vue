@@ -161,9 +161,9 @@ export default {
         cfg_value: this.cfgEditForm.cfg_value    // 参数值(json格式串)
       }
 
-      console.log('工厂参数保存 req=>', data)
+      // console.log('工厂参数保存 req=>', data)
       const resp = await factorycfgSave(data)
-      console.log('工厂参数保存 res=>', resp)
+      // console.log('工厂参数保存 res=>', resp)
       if (resp.ret !== 0) return
 
       this.$notify({

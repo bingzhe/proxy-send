@@ -213,6 +213,42 @@ export const GOODS_STATUS = {
     return this.code[code] || '未知[' + code + ']'
   }
 }
+// ================== 手机型号管理 ============================
+/**
+ * 手机型号状态
+ */
+export const PHONE_STATUS = {
+  NORMAL: 1,
+  DISABLE: 2,
+
+  code: {
+    1: '正常',
+    2: '停用'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
+// ================== 图片素材管理 ============================
+/**
+ * 图片素材状态
+ */
+export const PICTURE_STATUS = {
+  NORMAL: 1,
+  DISABLE: 2,
+
+  code: {
+    1: '正常',
+    2: '停用'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
 
 // ================== 财务 ============================
 /**
