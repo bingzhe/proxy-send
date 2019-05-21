@@ -7,49 +7,6 @@
           <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
         </el-form-item>
       </el-form>
-      <div class="search-bottom-wrapper clearfix">
-        <!-- 状态 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>状态</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 商户名称 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>商户名称</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 订单号 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>订单号</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 充值时间 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>充值时间</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <el-button type="primary">查询</el-button>
-      </div>
     </div>
     <!-- search end -->
 

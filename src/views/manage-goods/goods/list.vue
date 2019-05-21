@@ -197,7 +197,6 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {
-
       // search
       searchForm: {
         goods_material: '',   // 材质

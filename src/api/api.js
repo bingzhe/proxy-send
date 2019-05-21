@@ -98,3 +98,10 @@ export const materialGet = generateRequestFn('material_get.php')
 
 // material_save
 export const materialSave = generateRequestFn('material_save.php')
+
+// =================== 订单管理 ======================
+// order_get
+export const orderGet = generateRequestFn('order_get.php')
+
+// order_save
+export const orderSave = generateRequestFn('order_save.php')

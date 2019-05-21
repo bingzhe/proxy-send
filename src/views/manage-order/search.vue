@@ -2,73 +2,33 @@
   <div class="app-container">
     <!-- search start -->
     <div class="search-wrapper">
-      <div class="search-top-wrapper clearfix">
-        <!-- 材质 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>订单状态</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 商品种类 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>订单编号</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 收货人手机 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>收货人手机</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 商户名 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>商户名</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <!-- 业务员 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>业务员</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-      </div>
-      <div class="search-bottom-wrapper clearfix">
-        <!-- 商品编号 -->
-        <div class="search-item">
-          <div class="search-label">
-            <span>下单时间</span>
-          </div>
-          <div class="search-value">
-            <el-input placeholder="请输入" />
-          </div>
-        </div>
-
-        <el-button type="primary">查询</el-button>
-      </div>
+      <el-form ref="searchForm" :model="searchForm" :inline="true">
+        <el-form-item label="订单状态" prop="order_status" label-width="70px">
+          <el-input v-model.trim="searchForm.order_status" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="订单编号" prop="order_id" label-width="70px">
+          <el-input v-model.trim="searchForm.order_id" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="收货人手机" prop="consignee_phone" label-width="85px">
+          <el-input v-model.trim="searchForm.consignee_phone" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="商户名" prop="business_name" label-width="70px">
+          <el-input v-model.trim="searchForm.business_name" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="业务员" prop="salesman" label-width="70px">
+          <el-input v-model.trim="searchForm.salesman" placeholder="请输入" />
+        </el-form-item>
+        <br>
+        <el-form-item label="下单时间" prop="order_time" label-width="70px">
+          <el-input v-model.trim="searchForm.order_time" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+        </el-form-item>
+      </el-form>
     </div>
-    <!-- search end -->
 
+    <!-- search end -->
     <div
       v-loading="tableLoading"
       element-loading-text="拼命加载中"
@@ -81,11 +41,6 @@
           </span>
           <span>订单审核列表</span>
         </div>
-        <!-- <div class="add-button-group">
-          <router-link to="/manage-goods/goods/edit">
-            <el-button class="goods-add" type="primary">新增商品</el-button>
-          </router-link>
-        </div>-->
       </div>
 
       <div class="table-content default-table-change">
@@ -167,9 +122,25 @@
   </div>
 </template>
 <script>
+import { orderGet } from '@/api/api'
+
 export default {
   data() {
     return {
+
+      // search
+      searchForm: {
+        order_status: '',          // 订单状态(1:待审核,2:审核未通过,3:待发货,4:已发货,5:已撤销,6:已退款)
+        order_id: '',              // 订单id(编号)
+        consignee_phone: '',       // 收货人手机号码
+        business_name: '',         // 商户名称
+        salesman: '',              // 业务员(跟单人)
+        // goods_name: '',            // 商品名称
+        // consignee_person: '',      // 收货人名
+        order_time: '',            // 下单时间
+        order_time_begin: 0,       // 开始时间（时间戳，秒）
+        order_time_end: 0          // 终止时间（时间戳，秒）
+      },
 
       list: [
         {
@@ -206,6 +177,10 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val
       // this.getList()
+    },
+    handlerSearchClick() {
+      this.listQuery.page = 1
+      this.getPhoneModelList()
     }
   }
 }
