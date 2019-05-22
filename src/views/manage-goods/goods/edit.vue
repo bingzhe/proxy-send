@@ -307,7 +307,7 @@
   </div>
 </template>
 <script>
-import BaseinfoTitle from '../components/BaseinfoTitle/BaseinfoTitle'
+import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import { GOODS_TYPE, GOODS_PRINT_POSITION } from '@/config/cfg'
 import { goodsSave, goodsGet } from '@/api/api'
 import { mapState } from 'vuex'

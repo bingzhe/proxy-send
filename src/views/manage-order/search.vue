@@ -106,7 +106,7 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" min-width="60">
             <template slot-scope="scope">
-              <el-button type="text">订单详情</el-button>
+              <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)">订单详情</el-button>
               <el-button
                 v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_WAIT"
                 type="text"
@@ -296,6 +296,14 @@ export default {
     handlerSearchClick() {
       this.listQuery.page = 1
       this.getList()
+    },
+    goSearchOrderinfo(id) {
+      this.$router.push({
+        path: '/manage-order/searchorderinfo',
+        query: {
+          orderid: id
+        }
+      })
     }
   }
 }

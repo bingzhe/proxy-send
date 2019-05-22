@@ -112,6 +112,20 @@ export const constantRoutes = [
         name: 'orderSearch',
         component: () => import('@/views/manage-order/search'),
         meta: { title: '订单查询', icon: 'dingdanchaxun' }
+      },
+      {
+        path: 'orderinfo',
+        name: 'orderinfo',
+        hidden: true,
+        component: () => import('@/views/manage-order/orderinfo/orderinfo'),
+        meta: { title: '订单详情', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
+      },
+      {
+        path: 'searchorderinfo',
+        name: 'searchorderinfo',
+        hidden: true,
+        component: () => import('@/views/manage-order/orderinfo/searchOrderinfo'),
+        meta: { title: '订单查询详情', icon: 'dingdanchaxun', activeMenu: '/manage-order/search' }
       }
     ]
   },
