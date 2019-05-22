@@ -249,7 +249,34 @@ export const PICTURE_STATUS = {
     return this.code[code] || '未知[' + code + ']'
   }
 }
+// ================== 订单管理 ============================
+/**
+ * 订单状态
+ */
+export const ORDER_STATUS = {
+  AUDIT_WAIT: 1,
+  AUDIT_FAIL: 2,
+  DELIVERY_WAIT: 3,
+  DELIVERY_SUC: 4,
+  REVOCAT: 5,
+  REFUND: 6,
+  COMPLETE: 7,
 
+  code: {
+    1: '待审核',
+    2: '审核未通过',
+    3: '待发货',
+    4: '已发货',
+    5: '已撤销',
+    6: '已退款',
+    7: '已完成'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
 // ================== 财务 ============================
 /**
  *充值状态

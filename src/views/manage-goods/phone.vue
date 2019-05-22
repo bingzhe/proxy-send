@@ -59,14 +59,14 @@
               <span>{{ scope.row.lastmodtime_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="status" label="状态" min-width="60">
+          <!-- <el-table-column prop="status" label="状态" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.status_str }}</span>
             </template>
-          </el-table-column>
+          </el-table-column>-->
           <el-table-column prop="opr" label="操作" width="160" align="center">
             <template slot-scope="scope">
-              <el-button
+              <!-- <el-button
                 v-if="scope.row.status === PHONE_STATUS.DISABLE"
                 class="btn-green"
                 type="text"
@@ -75,7 +75,7 @@
                 v-if="scope.row.status === PHONE_STATUS.NORMAL"
                 class="btn-green"
                 type="text"
-              >停用</el-button>
+              >停用</el-button>-->
               <el-button type="text" @click="handlerModelEditClick(scope.row)">编辑</el-button>
               <el-button class="btn-red" type="text danger">删除</el-button>
             </template>
@@ -255,8 +255,8 @@ export default {
         model_name: '',         // 型号
         // border_radius: '',   // 四角弧度
         outline_img: '',        // 轮廓图
-        outline_img_url: '',
-        status: ''              // 正常 1 停用 2
+        outline_img_url: ''
+        // status: ''              // 正常 1 停用 2
       },
       brandForm: {
         brand_name: ''      // 品牌
@@ -321,9 +321,9 @@ export default {
           )
         }
 
-        if (item.status) {
-          item.status_str = PHONE_STATUS.toString(item.status)
-        }
+        // if (item.status) {
+        //   item.status_str = PHONE_STATUS.toString(item.status)
+        // }
 
         item.outline_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${item.outline_img}`
 
@@ -413,8 +413,8 @@ export default {
         brand_id: this.modelForm.brand_id,
         model_name: this.modelForm.model_name,
         // border_radius: this.modelForm.border_radius,
-        outline_img: this.modelForm.outline_img,
-        status: 1       // 默认启用
+        outline_img: this.modelForm.outline_img
+        // status: 1       // 默认启用
       }
 
       if (this.editModelId) {

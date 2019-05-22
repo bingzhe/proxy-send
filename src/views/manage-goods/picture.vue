@@ -9,7 +9,7 @@
             <el-option v-for="item in theme_list" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="status" label-width="70px">
+        <!-- <el-form-item label="状态" prop="status" label-width="70px">
           <el-select v-model="searchForm.status" placeholder="请选择">
             <el-option key="全部" label="全部" value />
             <el-option
@@ -19,7 +19,7 @@
               :value="item.value"
             />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="素材名称" prop="material_name" label-width="70px">
           <el-input v-model="searchForm.material_name" placeholder="请输入" />
         </el-form-item>
@@ -72,14 +72,14 @@
               <span>{{ scope.row.lastmodtime_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="status" label="状态" min-width="60">
+          <!-- <el-table-column prop="status" label="状态" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.status_str }}</span>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column prop="opr" label="操作" width="160" align="center">
             <template slot-scope="scope">
-              <el-button
+              <!-- <el-button
                 v-if="scope.row.status === PICTURE_STATUS.DISABLE"
                 class="btn-green"
                 type="text"
@@ -88,7 +88,7 @@
                 v-if="scope.row.status === PICTURE_STATUS.NORMAL"
                 class="btn-green"
                 type="text"
-              >停用</el-button>
+              >停用</el-button> -->
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
               <el-button class="btn-red" type="text danger">删除</el-button>
             </template>
@@ -143,7 +143,7 @@
               <el-option v-for="item in theme_list" :key="item" :label="item" :value="item" />
             </el-select>
           </el-form-item>
-          <el-form-item v-if="editPictureId" label="状态" prop="status">
+          <!-- <el-form-item v-if="editPictureId" label="状态" prop="status">
             <el-select v-model="pictureForm.status" placeholder="请选择">
               <el-option
                 v-for="item in picStatusOptions"
@@ -152,7 +152,7 @@
                 :value="item.value"
               />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="图片" prop="material_img">
             <el-upload
               class="outline-uploader"
@@ -194,7 +194,7 @@ export default {
       // search
       searchForm: {
         theme: '',            // 图片分类
-        status: '',       // 状态
+        // status: '',       // 状态
         material_name: ''     // 素材名
       },
 
@@ -213,14 +213,14 @@ export default {
       pictureForm: {
         material_name: '',
         theme: '',
-        status: '',
+        // status: '',
         material_img: '',
         material_img_url: ''
       },
       pictureFormRules: {
         material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
         theme: [{ required: true, message: '请选择主题分类', trigger: 'change' }],
-        status: [{ required: true, message: '请选择状态', trigger: 'change' }],
+        // status: [{ required: true, message: '请选择状态', trigger: 'change' }],
         material_img: [{ required: true, message: '请上传轮廓图' }]
       },
 
@@ -253,10 +253,10 @@ export default {
       if (this.searchForm.theme) {
         data.theme = this.searchForm.theme
       }
-      // 状态
-      if (this.searchForm.status) {
-        data.status = this.searchForm.status
-      }
+      // // 状态
+      // if (this.searchForm.status) {
+      //   data.status = this.searchForm.status
+      // }
       // 素材名
       if (this.searchForm.material_name) {
         data.material_name = this.searchForm.material_name
@@ -279,9 +279,9 @@ export default {
           )
         }
 
-        if (item.status) {
-          item.status_str = PICTURE_STATUS.toString(item.status)
-        }
+        // if (item.status) {
+        //   item.status_str = PICTURE_STATUS.toString(item.status)
+        // }
 
         item.material_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${item.material_img}`
         return item
@@ -339,12 +339,12 @@ export default {
         opr: 'save_material',
         material_name: this.pictureForm.material_name,
         theme: this.pictureForm.theme,
-        material_img: this.pictureForm.material_img,
-        status: 1       // 默认启用
+        material_img: this.pictureForm.material_img
+        // status: 1       // 默认启用
       }
 
       if (this.editPictureId) {
-        data.status = this.pictureForm.status
+        // data.status = this.pictureForm.status
         data.material_id = this.editPictureId
       }
 
@@ -367,7 +367,7 @@ export default {
       this.editPictureId = row.material_id
       this.pictureForm.material_name = row.material_name
       this.pictureForm.theme = row.theme
-      this.pictureForm.status = row.status
+      // this.pictureForm.status = row.status
       this.pictureForm.material_img = row.material_img
       this.pictureForm.material_img_url = row.material_img_url
       this.$refs.pictureEditDialog.show()
@@ -377,7 +377,7 @@ export default {
       this.editPictureId = ''
       this.pictureForm.material_name = ''
       this.pictureForm.theme = ''
-      this.pictureForm.status = ''
+      // this.pictureForm.status = ''
       this.pictureForm.material_img = ''
       this.pictureForm.material_img_url = ''
     }

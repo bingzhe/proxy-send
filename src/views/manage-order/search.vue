@@ -4,7 +4,15 @@
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
         <el-form-item label="订单状态" prop="order_status" label-width="70px">
-          <el-input v-model.trim="searchForm.order_status" placeholder="请输入" />
+          <el-select v-model="searchForm.order_status" placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option
+              v-for="item in orderStausOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="订单编号" prop="order_id" label-width="70px">
           <el-input v-model.trim="searchForm.order_id" placeholder="请输入" />
@@ -20,7 +28,15 @@
         </el-form-item>
         <br>
         <el-form-item label="下单时间" prop="order_time" label-width="70px">
-          <el-input v-model.trim="searchForm.order_time" placeholder="请输入" />
+          <el-date-picker
+            v-model="searchForm.order_time"
+            type="datetimerange"
+            :picker-options="pickerOptions"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            :default-time="['00:00:00', '23:59:59']"
+          />
         </el-form-item>
         <el-form-item>
           <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
@@ -48,49 +64,58 @@
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="55" />
 
-          <el-table-column prop="goods_id" label="订单编号" min-width="60">
+          <el-table-column prop="order_id" label="订单编号" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.order_id }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="商户名" min-width="60">
+          <el-table-column prop="business_name" label="商户名" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.business_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="收货人姓名" min-width="60">
+          <el-table-column prop="consignee_person" label="收货人姓名" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.consignee_person }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="收货人手机" min-width="60">
+          <el-table-column prop="consignee_phone" label="收货人手机" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.consignee_phone }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="订单金额" min-width="60">
+          <el-table-column prop="order_fee" label="订单金额" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>￥{{ scope.row.order_fee }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="业务员" min-width="60">
+          <el-table-column prop="salesman_name" label="业务员" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.salesman_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="下单时间" min-width="60">
+          <el-table-column prop="order_time" label="下单时间" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.order_time_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="订单状态" min-width="60">
+          <el-table-column prop="order_status" label="订单状态" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <span>{{ scope.row.order_status_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="操作" min-width="60">
+          <el-table-column prop="opr" label="操作" min-width="60">
             <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
+              <el-button type="text">订单详情</el-button>
+              <el-button
+                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_WAIT"
+                type="text"
+              >修改收货信息</el-button>
+              <el-button
+                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC "
+                type="text"
+              >物流跟踪</el-button>
+              <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC " type="text">退款</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -123,6 +148,8 @@
 </template>
 <script>
 import { orderGet } from '@/api/api'
+import moment from 'moment'
+import { ORDER_STATUS, pickerOptions } from '@/config/cfg'
 
 export default {
   data() {
@@ -142,20 +169,48 @@ export default {
         order_time_end: 0          // 终止时间（时间戳，秒）
       },
 
-      list: [
-        {
-          goods_id: '123'
-        }, {}, {}
-        // {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-      ],
+      list: [],
       multipleSelection: [],
       tableLoading: false,
       // 分页
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 10
-      }
+        limit: 20
+      },
+
+      orderStausOptions: [
+        {
+          label: ORDER_STATUS.toString(ORDER_STATUS.AUDIT_WAIT),
+          value: ORDER_STATUS.AUDIT_WAIT
+        },
+        {
+          label: ORDER_STATUS.toString(ORDER_STATUS.AUDIT_FAIL),
+          value: ORDER_STATUS.AUDIT_FAIL
+        },
+        {
+          label: ORDER_STATUS.toString(ORDER_STATUS.DELIVERY_WAIT),
+          value: ORDER_STATUS.DELIVERY_WAIT
+        },
+        {
+          label: ORDER_STATUS.toString(ORDER_STATUS.DELIVERY_SUC),
+          value: ORDER_STATUS.DELIVERY_SUC
+        },
+        {
+          label: ORDER_STATUS.toString(ORDER_STATUS.REVOCAT),
+          value: ORDER_STATUS.REVOCAT
+        },
+        {
+          label: ORDER_STATUS.toString(ORDER_STATUS.REFUND),
+          value: ORDER_STATUS.REFUND
+        },
+        {
+          label: ORDER_STATUS.toString(ORDER_STATUS.COMPLETE),
+          value: ORDER_STATUS.COMPLETE
+        }
+      ],
+      ORDER_STATUS,
+      pickerOptions
     }
   },
   computed: {
@@ -163,7 +218,68 @@ export default {
       return Math.ceil(this.total / this.listQuery.limit)
     }
   },
+  mounted() {
+    this.getList()
+  },
   methods: {
+    async getList() {
+      const data = {
+        opr: 'get_order_list',
+        page_no: this.listQuery.page
+      }
+
+      // 订单状态
+      if (this.searchForm.order_status) {
+        data.order_status = this.searchForm.order_status
+      }
+      // 订单id(编号)
+      if (this.searchForm.order_id) {
+        data.order_id = this.searchForm.order_id
+      }
+      // 收货人手机号码
+      if (this.searchForm.consignee_phone) {
+        data.consignee_phone = this.searchForm.consignee_phone
+      }
+      // 商户名称
+      if (this.searchForm.business_name) {
+        data.business_name = this.searchForm.business_name
+      }
+      // 业务员(跟单人)
+      if (this.searchForm.salesman) {
+        data.salesman = this.searchForm.salesman
+      }
+      // 下单时间
+      if (this.searchForm.order_time) {
+        data.order_time_begin = parseInt(moment(this.searchForm.order_time[0]).format('X'))
+        data.order_time_end = parseInt(moment(this.searchForm.order_time[1]).format('X'))
+      }
+
+      this.tableLoading = true
+
+      console.log('订单列表 req=>', data)
+      const resp = await orderGet(data)
+      console.log('订单列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.tableLoading = false
+
+      this.list = resp.data.list
+      this.total = resp.data.total
+
+      this.list = this.list.map(item => {
+        if (item.order_time) {
+          item.order_time_str = moment(item.order_time * 1000).format(
+            'YYYY-MM-DD HH:mm:ss'
+          )
+        }
+
+        if (item.order_status) {
+          item.order_status_str = ORDER_STATUS.toString(item.order_status)
+        }
+
+        return item
+      })
+    },
     // 多选
     handleSelectionChange(val) {
       this.multipleSelection = val
@@ -171,16 +287,15 @@ export default {
     handleSizeChange(val) {
       this.listQuery.page = 1
       this.listQuery.limit = val
-      // this.getList()
-      //   PageSize.set(this.$route, val);
+      this.getList()
     },
     handleCurrentChange(val) {
       this.listQuery.page = val
-      // this.getList()
+      this.getList()
     },
     handlerSearchClick() {
       this.listQuery.page = 1
-      this.getPhoneModelList()
+      this.getList()
     }
   }
 }

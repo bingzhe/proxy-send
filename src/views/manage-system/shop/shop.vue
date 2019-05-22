@@ -253,14 +253,14 @@ export default {
       console.log('商户列表 req=>', data)
       const resp = await businessGet(data)
       console.log('商户列表 res=>', resp)
-      if (resp.ret !== 0) return
 
+      if (resp.ret !== 0) return
       this.tableLoading = false
 
       this.list = resp.data.list
       this.total = resp.data.total
 
-      this.list.map(item => {
+      this.list = this.list.map(item => {
         if (item.status) {
           item.status_str = BUSINESS_STATUS.toString(item.status)
         }

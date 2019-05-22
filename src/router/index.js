@@ -143,7 +143,7 @@ export const constantRoutes = [
     path: '/manage-fabricate',
     component: Layout,
     name: 'manage-fabricate',
-    meta: { title: '生产管理', icon: 'example' },
+    meta: { title: '生产管理', icon: 'shengcahnguanli' },
     children: [
       {
         path: 'list',
