@@ -106,16 +106,7 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" min-width="60">
             <template slot-scope="scope">
-              <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)">订单详情</el-button>
-              <el-button
-                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_WAIT"
-                type="text"
-              >修改收货信息</el-button>
-              <el-button
-                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC "
-                type="text"
-              >物流跟踪</el-button>
-              <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC " type="text">退款</el-button>
+              <el-button type="text" @click="goOrderinfo(scope.row.order_id)">审单</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -297,9 +288,9 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-    goSearchOrderinfo(id) {
+    goOrderinfo(id) {
       this.$router.push({
-        path: '/manage-order/searchorderinfo',
+        path: '/manage-order/orderinfo',
         query: {
           orderid: id
         }
