@@ -10,14 +10,14 @@
 
     <div class="right-menu">
       <div class="right-menu-item admin-wrapper">
-        <i class="el-icon-circle-close" />
-        <span>Admin</span>
+        <img class="user-icon" src="@/assets/images/user_icon.png">
+        <span>{{ username }}</span>
       </div>
-      <div class="right-menu-item home-wrapper">
-        <i class="el-icon-circle-close" />
+      <div class="right-menu-item home-wrapper" @click="goHome">
+        <img class="home-icon" src="@/assets/images/home.png">
       </div>
       <div class="right-menu-item logout-wrapper" @click="openLogout">
-        <i class="el-icon-circle-close" />
+        <img class="logout-icon" src="@/assets/images/logout.png">
       </div>
       <!-- <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
@@ -45,20 +45,21 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import Hamburger from '@/components/Hamburger'
+// import Breadcrumb from '@/components/Breadcrumb'
+// import Hamburger from '@/components/Hamburger'
 import { loginSave } from '@/api/api'
 import { delEmployeeId } from '@/config/global-store'
 
 export default {
   components: {
-    Breadcrumb,
-    Hamburger
+    // Breadcrumb,
+    // Hamburger
   },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'username'
     ])
   },
   methods: {
@@ -94,6 +95,9 @@ export default {
       delEmployeeId()
 
       this.$router.push('/login')
+    },
+    goHome() {
+      this.$router.push('/')
     }
 
   }
@@ -131,20 +135,24 @@ export default {
     line-height: 66px;
     text-align: center;
     font-size: 0;
+    display: flex;
 
     &:focus {
       outline: none;
     }
 
     .right-menu-item {
-      display: inline-block;
+      // display: inline-block;
       height: 100%;
       min-width: 66px;
       font-size: 20px;
-      color: #8a8a8a;
+      // color: #8a8a8a;
       vertical-align: text-bottom;
       border-left: 1px solid #d3d3d3;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       &:first-child {
         border-left: none;
@@ -152,6 +160,7 @@ export default {
 
         span {
           font-size: 14px;
+          color: #333;
         }
       }
     }
@@ -180,5 +189,9 @@ export default {
       }
     }
   }
+}
+
+.user-icon {
+  margin-right: 10px;
 }
 </style>

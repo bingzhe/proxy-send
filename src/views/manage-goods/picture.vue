@@ -19,7 +19,7 @@
               :value="item.value"
             />
           </el-select>
-        </el-form-item> -->
+        </el-form-item>-->
         <el-form-item label="素材名称" prop="material_name" label-width="70px">
           <el-input v-model="searchForm.material_name" placeholder="请输入" />
         </el-form-item>
@@ -76,7 +76,7 @@
             <template slot-scope="scope">
               <span>{{ scope.row.status_str }}</span>
             </template>
-          </el-table-column> -->
+          </el-table-column>-->
           <el-table-column prop="opr" label="操作" width="160" align="center">
             <template slot-scope="scope">
               <!-- <el-button
@@ -88,7 +88,7 @@
                 v-if="scope.row.status === PICTURE_STATUS.NORMAL"
                 class="btn-green"
                 type="text"
-              >停用</el-button> -->
+              >停用</el-button>-->
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
               <el-button class="btn-red" type="text danger">删除</el-button>
             </template>
@@ -152,7 +152,7 @@
                 :value="item.value"
               />
             </el-select>
-          </el-form-item> -->
+          </el-form-item>-->
           <el-form-item label="图片" prop="material_img">
             <el-upload
               class="outline-uploader"
@@ -162,6 +162,8 @@
               :show-file-list="false"
               :data="{upload:1}"
               name="imgfile"
+              :http-request="imgUpload"
+              @on-change="handlerFileUpload"
             >
               <img
                 v-if="pictureForm.material_img"
@@ -183,6 +185,7 @@ import moment from 'moment'
 import { mapState } from 'vuex'
 import { materialGet, materialSave } from '@/api/api'
 import { PICTURE_STATUS } from '@/config/cfg'
+import Http from '@/config/encsubmit'
 
 export default {
   components: {
@@ -317,7 +320,7 @@ export default {
     beforeOutlineImgUpload(file) {
       // console.log('beforeOutlineImgUpload file', file)
       // const isJPG = file.type === 'image/jpeg';
-      const isLt5M = file.size / 1024 / 1024 < 5
+      const isLt5M = file.size / 1024 / 1024 < 2
 
       // if (!isJPG) {
       //   this.$message.error('上传头像图片只能是 JPG 格式!');
@@ -380,6 +383,24 @@ export default {
       // this.pictureForm.status = ''
       this.pictureForm.material_img = ''
       this.pictureForm.material_img_url = ''
+    },
+    imgUpload({ file }) {
+      console.log(file)
+
+      const data = {
+        opr: 'save_img_file',
+        type: 1,
+        imgfile: file
+      }
+      console.log(data)
+      const base_url = process.env.VUE_APP_BASEURL
+      const url = base_url + '/img_save.php'
+      Http.EncSubmit(url, data, (resp) => {
+        console.log(resp)
+      })
+    },
+    handlerFileUpload(file) {
+      console.log('file', file)
     }
 
   }

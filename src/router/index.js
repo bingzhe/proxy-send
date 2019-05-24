@@ -162,7 +162,7 @@ export const constantRoutes = [
       {
         path: 'list',
         name: 'fabricateList',
-        component: () => import('@/views/manage-fabricate/list'),
+        component: () => import('@/views/manage-fabricate/product/list'),
         meta: { title: '生产单管理', icon: 'shengchanguanli' }
       },
       {

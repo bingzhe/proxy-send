@@ -105,3 +105,17 @@ export const orderGet = generateRequestFn('order_get.php')
 
 // order_save
 export const orderSave = generateRequestFn('order_save.php')
+
+// =================== 生产单管理======================
+// production_order_get
+export const productionOrderGet = generateRequestFn('production_order_get.php')
+
+// production_order_save
+export const productionOrderSave = generateRequestFn('production_order_save.php')
+
+// =================== 物流单管理 ======================
+// delivery_order_get
+export const deliveryOrderGet = generateRequestFn('delivery_order_get.php')
+
+// delivery_order_save
+export const deliveryOrderSave = generateRequestFn('delivery_order_save.php')
