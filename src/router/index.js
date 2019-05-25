@@ -140,13 +140,13 @@ export const constantRoutes = [
       {
         path: 'recharge',
         name: 'financeRecharge',
-        component: () => import('@/views/manage-finance/recharge'),
+        component: () => import('@/views/manage-finance/recharge/recharge'),
         meta: { title: '充值受理', icon: 'chongzhishouli' }
       },
       {
         path: 'bill',
         name: 'financeBill',
-        component: () => import('@/views/manage-finance/bill'),
+        component: () => import('@/views/manage-finance/bill/bill'),
         meta: { title: '对账单', icon: 'duizhangdan' }
       }
     ]
@@ -168,7 +168,7 @@ export const constantRoutes = [
       {
         path: 'logistics',
         name: 'fabricateLogistics',
-        component: () => import('@/views/manage-fabricate/logistics'),
+        component: () => import('@/views/manage-fabricate/logistics/logistics'),
         meta: { title: '物流单管理', icon: 'wuliudanguanli' }
       },
       {

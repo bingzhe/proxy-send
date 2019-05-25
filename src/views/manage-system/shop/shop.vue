@@ -220,7 +220,8 @@ export default {
   methods: {
     async getBusinessList() {
       const data = {
-        opr: 'get_business_list'
+        opr: 'get_business_list',
+        page_no: this.listQuery.page
       }
       // 状态
       if (this.searchForm.status) {

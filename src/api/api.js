@@ -119,3 +119,10 @@ export const deliveryOrderGet = generateRequestFn('delivery_order_get.php')
 
 // delivery_order_save
 export const deliveryOrderSave = generateRequestFn('delivery_order_save.php')
+
+// =================== 充值申请 ======================
+// recharge_get
+export const rechargeGet = generateRequestFn('recharge_get.php')
+
+// recharge_save
+export const rechargeSave = generateRequestFn('recharge_save.php')

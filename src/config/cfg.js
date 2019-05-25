@@ -283,13 +283,33 @@ export const ORDER_STATUS = {
  */
 export const RECHARGE_STATUS = {
   AUDIT: 1,
-  SUCCESS: 2,
-  FAIL: 3,
+  FAIL: 2,
+  SUCCESS: 3,
 
   code: {
     1: '待审核',
-    2: '充值成功',
-    3: '充值失败'
+    2: '充值失败',
+    3: '充值成功'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
+
+/**
+ * 充值渠道
+ */
+export const RECHARGE_CHANNEL = {
+  WX: 1,
+  ALIPAY: 2,
+  OTHER: 3,
+
+  code: {
+    1: '微信',
+    2: '支付宝',
+    3: '其他'
   },
 
   toString: function(code) {

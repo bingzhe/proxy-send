@@ -53,11 +53,27 @@
           <span>物流单列表</span>
         </div>
         <div class="add-button-group">
-          <router-link to="/manage-goods/goods/edit">
+          <el-button
+            v-if="multipleSelectionLength === 0"
+            class="goods-add btn-h-38"
+            type="primary"
+            @click="handelrNoSelectExportClick"
+          >导出</el-button>
+          <a v-else :href="exportOrderListUrl">
             <el-button class="goods-add btn-h-38" type="primary">导出</el-button>
+          </a>
+          <!-- target="_blank" -->
+          <a :href="exportOrderAllUrl">
             <el-button class="goods-add btn-h-38" type="primary">全部导出</el-button>
-            <el-button class="goods-add btn-h-38" type="primary">导入</el-button>
-          </router-link>
+          </a>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handlerImportClick">导入</el-button>
+          <input
+            ref="uploadFile"
+            style="display:none"
+            type="file"
+            accept=".xlsx"
+            @change="uploadFile($event.target)"
+          >
         </div>
       </div>
 
@@ -74,7 +90,7 @@
           <el-table-column prop="opr" label="操作" width="200" align="center">
             <template slot-scope="scope">
               <el-button type="text">订单详情</el-button>
-              <el-button type="text">修改物流单号</el-button>
+              <el-button type="text" @click="openChangeDelivery(scope.row)">修改物流单号</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -103,16 +119,29 @@
         <!-- 分页 end -->
       </div>
     </div>
+
+    <change-deliverynum
+      ref="changeDeliveryDialog"
+      :delivery="curDialog"
+      @close="handlerChangeDeliverClose"
+      @on-success="handlerChagneDeliverSuccess"
+    />
   </div>
 </template>
 <script>
 import { deliveryOrderGet } from '@/api/api'
 import { pickerOptions } from '@/config/cfg'
+import ChangeDeliverynum from './ChangeDeliverynum'
 import moment from 'moment'
 
 export default {
+  components: {
+    ChangeDeliverynum
+  },
   data() {
     return {
+      token: window.Store.GetGlobalData('token'),
+      base_url: process.env.VUE_APP_BASEURL,
       // search
       searchForm: {
         status_txt: '',            // 物流单状态('未导出', '成功导出', '成功导入', '导出失败', '导入失败', '作废')
@@ -137,13 +166,23 @@ export default {
       },
 
       statusList: ['未导出', '成功导出', '成功导入', '导出失败', '导入失败', '作废'],
-      pickerOptions
+      pickerOptions,
+
+      curDialog: {}, // 打开弹窗处理的物流单
+      exportOrderListUrl: ''
     }
   },
   computed: {
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
+    },
+    exportOrderAllUrl() {
+      return `${this.base_url}/delivery_order_get.php?token=${this.token}&opr=export_delivery_order_list_all`
+    },
+    multipleSelectionLength() {
+      return this.multipleSelection.length
     }
+
   },
   mounted() {
     this.getList()
@@ -206,6 +245,12 @@ export default {
     // 多选
     handleSelectionChange(val) {
       this.multipleSelection = val
+
+      const multipSelectId = this.multipleSelection.map(item => {
+        return item.delivery_id
+      })
+      const encodeId = encodeURIComponent(multipSelectId)
+      this.exportOrderListUrl = `${this.base_url}/delivery_order_get.php?token=${this.token}&opr=export_delivery_order_list&list=${encodeId}`
     },
     handleSizeChange(val) {
       this.listQuery.page = 1
@@ -219,6 +264,41 @@ export default {
     handlerSearchClick() {
       this.listQuery.page = 1
       this.getList()
+    },
+    openChangeDelivery(row) {
+      this.curDialog = row
+      this.$refs.changeDeliveryDialog.show()
+    },
+    handlerChangeDeliverClose() {
+      this.curDialog = {}
+    },
+    handlerChagneDeliverSuccess() {
+      this.getList()
+    },
+    handelrNoSelectExportClick() {
+      this.$message.error('请选择需要导出的物流单')
+    },
+    async uploadFile(target) {
+      if (target.files.length === 0) return
+
+      const data = {
+        opr: 'import_delivery_order',
+        file: target.files[0]
+      }
+
+      const resp = await deliveryOrderGet(data)
+      console.log('导入文件 resp=>', resp)
+
+      if (resp.ret !== 0) return
+      this.$notify({
+        title: '成功',
+        message: '导入成功',
+        type: 'success'
+      })
+    },
+    handlerImportClick() {
+      console.log(this.$refs.uploadFile)
+      this.$refs.uploadFile.click()
     }
   }
 
