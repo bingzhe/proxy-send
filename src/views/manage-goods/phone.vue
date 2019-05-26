@@ -142,22 +142,14 @@
           </el-input>
         </el-form-item>-->
         <el-form-item label="轮廓图" prop="outline_img">
-          <el-upload
-            class="outline-uploader"
-            action="http://platform.jzzwlcm.com/php/img_save.php"
-            :on-success="handlerOutlineImgSuccess"
-            :before-upload="beforeOutlineImgUpload"
-            :show-file-list="false"
-            :data="{upload:1}"
-            name="imgfile"
-          >
+          <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
             <img
               v-if="modelForm.outline_img"
               :src="modelForm.outline_img_url"
               class="upload-preview"
             >
             <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
+          </sl-upload>
         </el-form-item>
       </el-form>
     </sl-dialog>
@@ -213,10 +205,12 @@ import {
 } from '@/api/api'
 import { PHONE_STATUS } from '@/config/cfg'
 import moment from 'moment'
+import SlUpload from '@/components/upload/index'
 
 export default {
   components: {
-    SlDialog
+    SlDialog,
+    SlUpload
   },
   data() {
     /**
@@ -232,6 +226,7 @@ export default {
     }
 
     return {
+      token: window.Store.GetGlobalData('token'),
 
       searchForm: {
         brand_name: '',     // 品牌
@@ -325,7 +320,9 @@ export default {
         //   item.status_str = PHONE_STATUS.toString(item.status)
         // }
 
-        item.outline_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${item.outline_img}`
+        item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&type=1&img_name=${item.outline_img}`
 
         return item
       })
@@ -373,24 +370,11 @@ export default {
     handlerAddModelClick() {
       this.$refs.modelEditDialog.show()
     },
-    handlerOutlineImgSuccess(response, file, fileList) {
-      const fileName = response.data.filename
-
-      this.modelForm.outline_img = fileName
-      this.modelForm.outline_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${fileName}`
-    },
-    beforeOutlineImgUpload(file) {
-      // console.log('beforeOutlineImgUpload file', file)
-      // const isJPG = file.type === 'image/jpeg';
-      const isLt5M = file.size / 1024 / 1024 < 5
-
-      // if (!isJPG) {
-      //   this.$message.error('上传头像图片只能是 JPG 格式!');
-      // }
-      if (!isLt5M) {
-        this.$message.error('上传轮廓图大小不能超过 5MB!')
-      }
-      return isLt5M
+    handlerOutlineImgSuccess({ img_name }) {
+      this.modelForm.outline_img = img_name
+      this.modelForm.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+        this.token
+      }&opr=get_img&type=1&img_name=${img_name}`
     },
     handlerModelEditDialogClose() {
       this.$refs.modelForm.resetFields()

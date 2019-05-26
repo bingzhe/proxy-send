@@ -83,47 +83,56 @@ export default {
 
   data() {
     return {
+      token: window.Store.GetGlobalData('token'),
+
       order_id: '',
       order_status: '',
       status_remark: '', // 订单状态原因，审核不通过等
       // 基本信息
       baseinfoList: [
         {
-          order_id: '',            // 商品编号
-          company_name: '',        // 物流公司
-          business_name: '',       // 商户名称
-          business_phone: '',      // 商户电话
-          delivery_number: '',     // 物流单号
-          order_time: ''           // 下单时间
+          order_id: '', // 商品编号
+          company_name: '', // 物流公司
+          business_name: '', // 商户名称
+          business_phone: '', // 商户电话
+          delivery_number: '', // 物流单号
+          order_time: '' // 下单时间
         },
-        { order_id: '配送礼品', company_name: '22' },  // 配送礼品
-        { order_id: '订单留言', company_name: '22' }   // 订单留言
+        { order_id: '配送礼品', company_name: '22' }, // 配送礼品
+        { order_id: '订单留言', company_name: '22' } // 订单留言
       ],
 
       // 商品信息
       goodsList: [],
 
       // 收货人信息
-      consigneeinfo: [{
-        person: '',
-        phone: '',
-        address: ''
-      }],
+      consigneeinfo: [
+        {
+          person: '',
+          phone: '',
+          address: ''
+        }
+      ],
 
       // 费用信息
       orderFeeList: [
         {
-          goods_fee: '',           // 商品合计费用
-          freight_fee: '',         // 运费
-          discount_fee: '',        // 折扣金额
-          attach_fee: ''           // 配送礼品费用
+          goods_fee: '', // 商品合计费用
+          freight_fee: '', // 运费
+          discount_fee: '', // 折扣金额
+          attach_fee: '' // 配送礼品费用
         },
-        { goods_fee: '调整费用', freight_fee: '其他费用', discount_fee: '订单总金额', attach_fee: '实付金额' },
         {
-          goods_fee: '',           // 调整费用 adjust_fee
-          freight_fee: '',         // 其他费用  other_fee
-          discount_fee: '',        // 订单总金额 order_fee
-          attach_fee: ''           // 实付金额 actual_fee
+          goods_fee: '调整费用',
+          freight_fee: '其他费用',
+          discount_fee: '订单总金额',
+          attach_fee: '实付金额'
+        },
+        {
+          goods_fee: '', // 调整费用 adjust_fee
+          freight_fee: '', // 其他费用  other_fee
+          discount_fee: '', // 订单总金额 order_fee
+          attach_fee: '' // 实付金额 actual_fee
         }
       ],
 
@@ -161,7 +170,8 @@ export default {
 
       // 基本信息
       this.baseinfoList[0].order_id = info.order_id
-      this.baseinfoList[0].company_name = (info.delivery_info || {}).company_name || '-'
+      this.baseinfoList[0].company_name =
+        (info.delivery_info || {}).company_name || '-'
       this.baseinfoList[0].business_name = info.business_name || '-'
       this.baseinfoList[0].business_phone = info.business_phone || '-'
       this.baseinfoList[0].delivery_number = info.delivery_number || '-'
@@ -175,10 +185,16 @@ export default {
       // 商品信息
       this.goodsList = info.goods_list.map(goods => {
         // 少边框   <<<<<<<<<<<<<
-        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.goods_id}`
+        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${
+          goods.model_txt
+        }_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
-        goods.goods_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${goods.goods_img}`
+        goods.goods_img_url = `${
+          process.env.VUE_APP_BASEURL
+        }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+          goods.goods_img
+        }`
         return goods
       })
 
@@ -188,14 +204,30 @@ export default {
       this.consigneeinfo[0].address = info.consignee_info.address
 
       // 费用信息
-      this.orderFeeList[0].goods_fee = info.goods_fee ? `¥ ${info.goods_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].freight_fee = info.freight_fee ? `¥ ${info.freight_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].discount_fee = info.discount_fee ? `- ¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.other_fee ? `¥ ${info.other_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.discount_fee ? `¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].goods_fee = info.goods_fee
+        ? `¥ ${info.goods_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].freight_fee = info.freight_fee
+        ? `¥ ${info.freight_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].discount_fee = info.discount_fee
+        ? `- ¥ ${info.discount_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].attach_fee = info.attach_fee
+        ? `¥ ${info.attach_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].goods_fee = info.adjust_fee
+        ? `¥ ${info.adjust_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.other_fee
+        ? `¥ ${info.other_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.discount_fee
+        ? `¥ ${info.discount_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.attach_fee
+        ? `¥ ${info.attach_fee.toFixed(2)}`
+        : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (this.order_track || []).map(track => {
@@ -210,7 +242,6 @@ export default {
       this.$router.go(-1)
     }
   }
-
 }
 </script>
 

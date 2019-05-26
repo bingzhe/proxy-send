@@ -68,7 +68,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="deposit_time_str" label="充值时间" min-width="60" />
-          <el-table-column prop="amount" label="账户余额" min-width="60" />
+          <el-table-column prop="account_balance" label="账户余额" min-width="60" />
           <el-table-column prop="status_str" label="状态" min-width="60" />
           <el-table-column prop="opr" label="操作" width="80" align="center">
             <template slot-scope="scope">
@@ -111,7 +111,7 @@
     />
 
     <!-- 调整账户余额 -->
-    <adjust-balance-dialog ref="adjustBalanceDialog" :business-list="businessList" />
+    <adjust-balance-dialog ref="adjustBalanceDialog" :business-list="businessList" @on-success="handlerAjustSuc" />
   </div>
 </template>
 <script>
@@ -182,6 +182,7 @@ export default {
   },
   mounted() {
     this.getList()
+    this.getBusinessList()
   },
   methods: {
     async getList() {
@@ -259,6 +260,17 @@ export default {
     },
     openAdjustBalanceDialog() {
       this.$refs.adjustBalanceDialog.show()
+    },
+    async getBusinessList() {
+      const resp = await rechargeGet({ opr: 'get_recharge_business_list' })
+      console.log('商户列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+
+      this.businessList = resp.data.list || []
+    },
+    handlerAjustSuc() {
+      this.getList()
     }
   }
 }

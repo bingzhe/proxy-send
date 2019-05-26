@@ -86,6 +86,8 @@ export default {
 
   data() {
     return {
+      token: window.Store.GetGlobalData('token'),
+
       order_id: '',
       order_status: '',
       status_remark: '', // 订单状态原因，审核不通过等
@@ -181,7 +183,11 @@ export default {
         goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
-        goods.goods_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${goods.goods_img}`
+        goods.goods_img_url = goods.goods_img_url = `${
+          process.env.VUE_APP_BASEURL
+        }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+          goods.goods_img
+        }`
         return goods
       })
 

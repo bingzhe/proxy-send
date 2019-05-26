@@ -154,24 +154,14 @@
             </el-select>
           </el-form-item>-->
           <el-form-item label="图片" prop="material_img">
-            <el-upload
-              class="outline-uploader"
-              action="http://platform.jzzwlcm.com/php/img_save.php"
-              :on-success="handlerOutlineImgSuccess"
-              :before-upload="beforeOutlineImgUpload"
-              :show-file-list="false"
-              :data="{upload:1}"
-              name="imgfile"
-              :http-request="imgUpload"
-              @on-change="handlerFileUpload"
-            >
+            <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
               <img
                 v-if="pictureForm.material_img"
                 :src="pictureForm.material_img_url"
                 class="upload-preview"
               >
               <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+            </sl-upload>
           </el-form-item>
         </el-form>
       </sl-dialog>
@@ -185,20 +175,21 @@ import moment from 'moment'
 import { mapState } from 'vuex'
 import { materialGet, materialSave } from '@/api/api'
 import { PICTURE_STATUS } from '@/config/cfg'
-import Http from '@/config/encsubmit'
+import SlUpload from '@/components/upload/index'
 
 export default {
   components: {
-    SlDialog
+    SlDialog,
+    SlUpload
   },
   data() {
     return {
-
+      token: window.Store.GetGlobalData('token'),
       // search
       searchForm: {
-        theme: '',            // 图片分类
+        theme: '', // 图片分类
         // status: '',       // 状态
-        material_name: ''     // 素材名
+        material_name: '' // 素材名
       },
 
       list: [],
@@ -221,8 +212,12 @@ export default {
         material_img_url: ''
       },
       pictureFormRules: {
-        material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
-        theme: [{ required: true, message: '请选择主题分类', trigger: 'change' }],
+        material_name: [
+          { required: true, message: '请输入图片名称', trigger: 'blur' }
+        ],
+        theme: [
+          { required: true, message: '请选择主题分类', trigger: 'change' }
+        ],
         // status: [{ required: true, message: '请选择状态', trigger: 'change' }],
         material_img: [{ required: true, message: '请上传轮廓图' }]
       },
@@ -286,7 +281,10 @@ export default {
         //   item.status_str = PICTURE_STATUS.toString(item.status)
         // }
 
-        item.material_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${item.material_img}`
+        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&type=1&img_name=${item.material_img}`
+
         return item
       })
       this.tableLoading = false
@@ -312,23 +310,12 @@ export default {
     handlerAddPicClick() {
       this.$refs.pictureEditDialog.show()
     },
-    handlerOutlineImgSuccess(response, file, fileList) {
-      const fileName = response.data.filename
-      this.pictureForm.material_img = fileName
-      this.pictureForm.material_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${fileName}`
-    },
-    beforeOutlineImgUpload(file) {
-      // console.log('beforeOutlineImgUpload file', file)
-      // const isJPG = file.type === 'image/jpeg';
-      const isLt5M = file.size / 1024 / 1024 < 2
-
-      // if (!isJPG) {
-      //   this.$message.error('上传头像图片只能是 JPG 格式!');
-      // }
-      if (!isLt5M) {
-        this.$message.error('上传轮廓图大小不能超过 5MB!')
-      }
-      return isLt5M
+    handlerOutlineImgSuccess({ img_name }) {
+      this.pictureForm.material_img = img_name
+      // http://f.pso.rockyshi.cn/php/img_get.php?token=TestToken&opr=get_img&type=1&img_name=d508bf88200289028d152ace532dbc6a.jpg
+      this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+        this.token
+      }&opr=get_img&type=1&img_name=${img_name}`
     },
     handlerPicEditDialogConfirm() {
       this.$refs.pictureForm.validate(valid => {
@@ -383,26 +370,7 @@ export default {
       // this.pictureForm.status = ''
       this.pictureForm.material_img = ''
       this.pictureForm.material_img_url = ''
-    },
-    imgUpload({ file }) {
-      console.log(file)
-
-      const data = {
-        opr: 'save_img_file',
-        type: 1,
-        imgfile: file
-      }
-      console.log(data)
-      const base_url = process.env.VUE_APP_BASEURL
-      const url = base_url + '/img_save.php'
-      Http.EncSubmit(url, data, (resp) => {
-        console.log(resp)
-      })
-    },
-    handlerFileUpload(file) {
-      console.log('file', file)
     }
-
   }
 }
 </script>

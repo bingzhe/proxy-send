@@ -16,7 +16,7 @@
     >
       <el-form-item label="商户名称" prop="business_id">
         <!-- <el-input v-model.trim="adjustBalanceForm.business_id" placeholder="请输入" /> -->
-        <el-select v-model="adjustBalanceForm.business_id" filterable placeholder="请选择">
+        <el-select v-model="adjustBalanceForm.business_id" filterable placeholder="请选择" @change="handlerBusinessChange">
           <el-option
             v-for="item in businessList"
             :key="item.business_id"
@@ -25,9 +25,9 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="当前余额" prop="balance">
+      <el-form-item label="当前余额" prop="account_balance">
         <!-- <el-input v-model.trim="adjustBalanceForm.business_id" placeholder="请输入" /> -->
-        <span>{{ adjustBalanceForm.balance }} 元</span>
+        <span>{{ adjustBalanceForm.account_balance }} 元</span>
       </el-form-item>
       <el-form-item label="调整方式" prop="way">
         <el-radio v-model="adjustBalanceForm.way" :label="1">扣除</el-radio>
@@ -76,7 +76,7 @@ export default {
   data() {
     return {
       adjustBalanceForm: {
-        balance: 0,
+        account_balance: 0,
         business_id: '',                 // 商户ID
         way: '',                          // 调整方式(1:扣除商户账户, 2:增加商户账户)
         amount: '',                     // 调整金额(元)
@@ -128,6 +128,13 @@ export default {
     handlerAdjustClose() {
       this.$refs.adjustBalanceForm.resetFields()
       this.$emit('close')
+    },
+    handlerBusinessChange(item) {
+      this.businessList.forEach(business => {
+        if (business.business_id === item) {
+          this.adjustBalanceForm.account_balance = business.account_balance
+        }
+      })
     }
     // handlerAdjustOpen() {
     // }

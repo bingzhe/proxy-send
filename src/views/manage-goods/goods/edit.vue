@@ -265,14 +265,9 @@
                   :rules="{required: true, message: '图片不能为空'}"
                   :prop="'opt_color_list.' + scope.$index + '.color_img'"
                 >
-                  <el-upload
+                  <sl-upload
                     class="outline-uploader"
-                    action="http://platform.jzzwlcm.com/php/img_save.php"
-                    :on-success="(res,file,filelist) => {return handlerOutlineImgSuccess(res,file,filelist,scope.row)}"
-                    :before-upload="beforeOutlineImgUpload"
-                    :show-file-list="false"
-                    :data="{upload:1}"
-                    name="imgfile"
+                    @on-success="(res) => {return handlerOutlineImgSuccess(res,scope.row)}"
                   >
                     <img
                       v-if="scope.row.color_img"
@@ -280,7 +275,7 @@
                       class="upload-preview"
                     >
                     <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
+                  </sl-upload>
                 </el-form-item>
               </template>
             </el-table-column>
@@ -311,33 +306,37 @@ import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import { GOODS_TYPE, GOODS_PRINT_POSITION } from '@/config/cfg'
 import { goodsSave, goodsGet } from '@/api/api'
 import { mapState } from 'vuex'
+import SlUpload from '@/components/upload/index'
 
 export default {
   components: {
-    BaseinfoTitle
+    BaseinfoTitle,
+    SlUpload
   },
   data() {
     return {
+      token: window.Store.GetGlobalData('token'),
+
       goods_id: '',
       goodsType: 1,
 
       baseinfoForm: {
-        goods_name: '',       // 商品名称
-        type: '',             // 商品种类
-        raw_material: '',     // 材质
-        brand: '',            // 品牌
-        model: '',            // 型号
-        price: '',            // 单价
-        remark: '',           // 备注
-        inventory: ''         // 商品库存
+        goods_name: '', // 商品名称
+        type: '', // 商品种类
+        raw_material: '', // 材质
+        brand: '', // 品牌
+        model: '', // 型号
+        price: '', // 单价
+        remark: '', // 备注
+        inventory: '' // 商品库存
       },
       printinfoForm: {
-        height: '',          // 图像高
-        width: '',           // 图像宽
-        radius: '',          // 四角弧度
-        pos: '',        // 定位角
+        height: '', // 图像高
+        width: '', // 图像宽
+        radius: '', // 四角弧度
+        pos: '', // 定位角
         x_offset: '', // 与横边距离
-        y_offset: ''    // 与纵边距离
+        y_offset: '' // 与纵边距离
       },
 
       // opt_color_list : [{ color_name: '', inventory: '', color_img: '' } ]
@@ -346,26 +345,40 @@ export default {
       },
 
       baseinfoFormRules: {
-        goods_name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
-        type: [{ required: true, message: '请选择商品种类', trigger: 'change' }],
-        raw_material: [{ required: true, message: '请选择材质', trigger: 'change' }],
+        goods_name: [
+          { required: true, message: '请输入商品名称', trigger: 'blur' }
+        ],
+        type: [
+          { required: true, message: '请选择商品种类', trigger: 'change' }
+        ],
+        raw_material: [
+          { required: true, message: '请选择材质', trigger: 'change' }
+        ],
         brand: [{ required: true, message: '请选择品牌', trigger: 'change' }],
         model: [{ required: true, message: '请选择型号', trigger: 'change' }],
         price: [{ required: true, message: '请输入单价', trigger: 'blur' }],
-        inventory: [{ required: true, message: '请输入商品库存', trigger: 'blur' }]
+        inventory: [
+          { required: true, message: '请输入商品库存', trigger: 'blur' }
+        ]
       },
 
       printinfoFormRules: {
         height: [{ required: true, message: '请输入图像高', trigger: 'blur' }],
         width: [{ required: true, message: '请输入图像宽', trigger: 'blur' }],
-        radius: [{ required: true, message: '请输入四角弧度', trigger: 'blur' }],
+        radius: [
+          { required: true, message: '请输入四角弧度', trigger: 'blur' }
+        ],
         pos: [{ required: true, message: '请选择定位角', trigger: 'change' }],
-        x_offset: [{ required: true, message: '请输入与横边距离', trigger: 'blur' }],
-        y_offset: [{ required: true, message: '请输入与纵边距离', trigger: 'blur' }]
+        x_offset: [
+          { required: true, message: '请输入与横边距离', trigger: 'blur' }
+        ],
+        y_offset: [
+          { required: true, message: '请输入与纵边距离', trigger: 'blur' }
+        ]
       },
 
       GOODS_TYPE,
-      model_list: [],   // 手机型号 list
+      model_list: [], // 手机型号 list
 
       // 商品种类
       goodsTypeOptions: [
@@ -478,11 +491,18 @@ export default {
         this.printinfoForm.y_offset = info.img_print_param.y_offset
       }
 
-      if (this.goodsType === GOODS_TYPE.DIY || this.goodsType === GOODS_TYPE.NORM) {
+      if (
+        this.goodsType === GOODS_TYPE.DIY ||
+        this.goodsType === GOODS_TYPE.NORM
+      ) {
         this.basePicForm.opt_color_list = info.opt_color_list
 
         this.basePicForm.opt_color_list.forEach(item => {
-          item.color_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${item.color_img}`
+          item.color_img_url = `${
+            process.env.VUE_APP_BASEURL
+          }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+            item.color_img
+          }`
         })
       }
     },
@@ -556,24 +576,11 @@ export default {
       }, 2000)
     },
 
-    handlerOutlineImgSuccess(response, file, fileList, row) {
-      const fileName = response.data.filename
-
-      row.color_img = fileName
-      row.color_img_url = `http://platform.jzzwlcm.com/php/img_get.php?img=1&imgname=${fileName}`
-    },
-    beforeOutlineImgUpload(file) {
-      // console.log('beforeOutlineImgUpload file', file)
-      // const isJPG = file.type === 'image/jpeg';
-      const isLt5M = file.size / 1024 / 1024 < 5
-
-      // if (!isJPG) {
-      //   this.$message.error('上传头像图片只能是 JPG 格式!');
-      // }
-      if (!isLt5M) {
-        this.$message.error('上传轮廓图大小不能超过 5MB!')
-      }
-      return isLt5M
+    handlerOutlineImgSuccess({ img_name }, row) {
+      row.color_img = img_name
+      row.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+        this.token
+      }&opr=get_img&type=1&img_name=${img_name}`
     },
     handlerBrandChange(brand_id) {
       this.baseinfoForm.model = ''
