@@ -41,6 +41,14 @@ const Http = new function() {
   //     return p;
   // }
 
+  const JsonToUrlParam = function(param) {
+    const p = new URLSearchParams()
+    for (var i in param) {
+      p.append(i, param[i])
+    }
+    return p
+  }
+
   axios.defaults.timeout = 30000 // 设置超时时间(毫秒)
   // axios.defaults.responseType = 'json';
   const Post = function(url, param, callback, opt) {
@@ -84,7 +92,9 @@ const Http = new function() {
   }
 
   const GetPublicKey = function(callback) {
-    Post(RSA_SVC_PATH, { publickey: 1 }, callback)
+    const param = JsonToUrlParam({ publickey: 1 })
+    // Post(RSA_SVC_PATH, { publickey: 1 }, callback)
+    Post(RSA_SVC_PATH, param, callback)
   }
 
   const SubmitDataKey = function(publickey, callback) {
@@ -99,7 +109,8 @@ const Http = new function() {
       'key_enc': key_enc,
       'token': THIS.token
     }
-    Post(RSA_SVC_PATH, p, resp => {
+    const param = JsonToUrlParam(p)
+    Post(RSA_SVC_PATH, param, resp => {
       THIS.data_key = key
       window.Store.SetGlobalData('key', key)
       callback(resp)

@@ -133,7 +133,7 @@ const Http = new function() {
             resp_callback(resp)
             window.Store.SetGlobalData('key', '')
           }
-          if (resp.ret === 0 && resp.crypt == '1' && resp.data !== '') {
+          if (resp.ret === 0 && resp.crypt === '1' && resp.data !== '') {
             resp.data = JSON.parse(decrypt(THIS.data_key, resp.data))
             delete resp.crypt
           }
