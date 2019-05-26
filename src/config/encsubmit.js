@@ -54,6 +54,7 @@ const Http = new function() {
   const Post = function(url, param, callback, opt) {
     opt = opt || {}
     const UploadProgress = opt.UploadProgress || function() { }      // 文件上传回调
+    // eslint-disable-next-line no-unused-vars
     const DownloadProgress = opt.DownloadProgress || function() { }  // 文件下载回调
     const config = {
       onUploadProgress: (v) => {

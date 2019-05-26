@@ -174,7 +174,7 @@ export const constantRoutes = [
       {
         path: 'deliver',
         name: 'fabricateDeliver',
-        component: () => import('@/views/manage-fabricate/deliver'),
+        component: () => import('@/views/manage-fabricate/deliver/deliver'),
         meta: { title: '发货管理', icon: 'fahuoguanli' }
       }
     ]

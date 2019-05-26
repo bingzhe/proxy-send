@@ -83,7 +83,7 @@ export default {
         channel: { label: '转账渠道', value: '' },          // 充值渠道(1:微信, 2:支付宝, 3:其他)
         deposit_number: { label: '订单号', value: '' },     // 充值单号/转账订单号（外部充值订单号，对应各类充值，如微信、支付宝等）
         business_name: { label: '商户名称', value: '' },    // 商户名称
-        business_phone: { label: '商户电话', value: '' },   // 商户电话
+        business_telephone: { label: '商户电话', value: '' },   // 商户电话
         amount: { label: '充值金额', value: '' },           // 转账金额
         deposit_time: { label: '充值时间', value: '' },     // 充值时间
         input_remark: { label: '留言', value: '' }       // 留言
@@ -157,6 +157,7 @@ export default {
       this.recharegeInfo.channel.value = RECHARGE_CHANNEL.toString(info.channel)
       this.recharegeInfo.deposit_number.value = info.deposit_number
       this.recharegeInfo.business_name.value = info.business_name
+      this.recharegeInfo.business_telephone.value = info.business_telephone
       this.recharegeInfo.amount.value = info.amount
       this.recharegeInfo.deposit_time.value = moment(info.deposit_time * 1000).format(
         'YYYY-MM-DD HH:mm:ss'
