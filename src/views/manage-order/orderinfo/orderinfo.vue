@@ -1,60 +1,88 @@
 <template>
   <div class="app-container">
-    <div class="order-title-wrapper">
-      <div class="order-title-left">
-        <div class="order-status-wrapper">
-          <div class="order-status">订单信息</div>
+    <div class="order-info-wrapper">
+      <div class="order-title-wrapper">
+        <div class="order-title-left">
+          <div class="order-status-wrapper">
+            <div class="order-status">订单信息</div>
+          </div>
+        </div>
+        <div class="btn-group-wrapper">
+          <el-button class="btn-bd-primary" @click="handlerGoBackClick">修改收货人信息</el-button>
+          <el-button class="btn-bd-primary" @click="handlerGoBackClick">调整订单金额</el-button>
+          <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
         </div>
       </div>
-      <div class="btn-group-wrapper">
-        <el-button class="btn-bd-primary" @click="handlerGoBackClick">修改收货人信息</el-button>
-        <el-button class="btn-bd-primary" @click="handlerGoBackClick">调整订单金额</el-button>
-        <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
+      <!-- 基本信息 -->
+      <div class="info-wrapper baseinfo-wrapper">
+        <div class="baseinfo-title-wrapper">
+          <baseinfo-title color="#F348A1" text="基本信息" />
+        </div>
+        <div class="info-content-wrapper">
+          <table-baseinfo :baseinfo-list="baseinfoList" />
+        </div>
       </div>
-    </div>
-    <!-- 基本信息 -->
-    <div class="info-wrapper baseinfo-wrapper">
-      <div class="baseinfo-title-wrapper">
-        <baseinfo-title color="#F348A1" text="基本信息" />
+      <!-- 商品信息 -->
+      <div class="info-wrapper goodsinfo-wrapper">
+        <div class="baseinfo-title-wrapper">
+          <baseinfo-title color="#F37948" text="商品信息" />
+        </div>
+        <div class="info-content-wrapper">
+          <table-goodsinfo :goods-list="goodsList" />
+        </div>
       </div>
-      <div class="info-content-wrapper">
-        <table-baseinfo :baseinfo-list="baseinfoList" />
+      <!-- 收货人信息 -->
+      <div class="info-wrapper consigneeinfo-wrapper">
+        <div class="baseinfo-title-wrapper">
+          <baseinfo-title color="#F3C148" text="收货人信息" />
+        </div>
+        <div class="info-content-wrapper">
+          <table-consignee :consigneeinfo="consigneeinfo" />
+        </div>
       </div>
-    </div>
-    <!-- 商品信息 -->
-    <div class="info-wrapper goodsinfo-wrapper">
-      <div class="baseinfo-title-wrapper">
-        <baseinfo-title color="#F37948" text="商品信息" />
+      <!-- 费用信息 -->
+      <div class="info-wrapper feeinfo-wrapper">
+        <div class="baseinfo-title-wrapper">
+          <baseinfo-title color="#4880F3" text="费用信息" />
+        </div>
+        <div class="info-content-wrapper">
+          <table-order-feeinfo :order-fee-list="orderFeeList" />
+        </div>
       </div>
-      <div class="info-content-wrapper">
-        <table-goodsinfo :goods-list="goodsList" />
-      </div>
-    </div>
-    <!-- 收货人信息 -->
-    <div class="info-wrapper consigneeinfo-wrapper">
-      <div class="baseinfo-title-wrapper">
-        <baseinfo-title color="#F3C148" text="收货人信息" />
-      </div>
-      <div class="info-content-wrapper">
-        <table-consignee :consigneeinfo="consigneeinfo" />
-      </div>
-    </div>
-    <!-- 费用信息 -->
-    <div class="info-wrapper feeinfo-wrapper">
-      <div class="baseinfo-title-wrapper">
-        <baseinfo-title color="#4880F3" text="费用信息" />
-      </div>
-      <div class="info-content-wrapper">
-        <table-order-feeinfo :order-fee-list="orderFeeList" />
-      </div>
-    </div>
-    <!-- 操作历史信息 -->
-    <div class="info-wrapper order-track-info-wrapper">
+      <!-- 操作历史信息 -->
+      <!-- <div class="info-wrapper order-track-info-wrapper">
       <div class="baseinfo-title-wrapper">
         <baseinfo-title color="#333333" text="操作历史信息" />
       </div>
       <div class="info-content-wrapper">
         <table-order-track :order-track="orderTrack" />
+      </div>
+      </div>-->
+    </div>
+    <div class="audit-wrapper">
+      <div class="audit-title">审单处理</div>
+      <div class="audit-form-wrapper">
+        <el-form ref="auditForm" :model="auditForm" label-width="107px">
+          <el-form-item label="结论：" prop="pass">
+            <el-radio v-model="auditForm.pass" :label="1">通过</el-radio>
+            <el-radio v-model="auditForm.pass" :label="0">不通过</el-radio>
+          </el-form-item>
+          <el-form-item label="原因：" prop="remark">
+            <el-input
+              v-model="auditForm.remark"
+              :rows="4"
+              type="textarea"
+              placeholder="请输入内容"
+              maxlength="200"
+              show-word-limit
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="audit-opr">
+        <el-button class="btn-bd-primary">取消</el-button>
+        <el-button type="primary">提交</el-button>
+        <el-button class="btn-bd-primary">提交并审核下一单</el-button>
       </div>
     </div>
   </div>
@@ -139,7 +167,12 @@ export default {
       // 操作历史
       orderTrack: [],
 
-      ORDER_STATUS
+      ORDER_STATUS,
+
+      auditForm: {
+        pass: 1, // 结论(1:审核通过, 0:不通过)
+        remark: '' // 原因(不通过时说明原因)
+      }
     }
   },
   created() {
@@ -246,7 +279,12 @@ export default {
 </script>
 
 <style  lang="scss" scoped>
-.app-container {
+.order-info-wrapper {
+  background: rgba(255, 255, 255, 1);
+  border-radius: 2px;
+  margin-bottom: 14px;
+}
+.audit-wrapper {
   background: rgba(255, 255, 255, 1);
   border-radius: 2px;
 }
@@ -305,6 +343,27 @@ export default {
   /deep/ &.el-table--border th,
   /deep/ &.el-table--border td {
     border-right: 1px solid #e6e6e6;
+  }
+}
+.audit-wrapper {
+  .audit-title {
+    height: 55px;
+    line-height: 55px;
+    padding: 0 20px;
+    color: #6666;
+    font-size: 16px;
+    border-bottom: 1px solid #e6e6e6;
+  }
+  .el-textarea {
+    width: 65%;
+  }
+  .audit-opr {
+    padding: 24px 0;
+    border-top: 1px solid #e6e6e6;
+    text-align: center;
+    .el-button + .el-button {
+      margin-left: 40px;
+    }
   }
 }
 </style>
