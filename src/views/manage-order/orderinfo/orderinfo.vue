@@ -59,7 +59,7 @@
       </div>
       </div>-->
     </div>
-    <div class="audit-wrapper">
+    <div v-loading="tableLoading" class="audit-wrapper" element-loading-text="拼命加载中">
       <div class="audit-title">审单处理</div>
       <div class="audit-form-wrapper">
         <el-form ref="auditForm" :model="auditForm" label-width="107px">
@@ -80,9 +80,9 @@
         </el-form>
       </div>
       <div class="audit-opr">
-        <el-button class="btn-bd-primary">取消</el-button>
-        <el-button type="primary">提交</el-button>
-        <el-button class="btn-bd-primary">提交并审核下一单</el-button>
+        <el-button class="btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
+        <el-button type="primary" @click="auditOpr">提交</el-button>
+        <el-button class="btn-bd-primary" @click="auditOprAndNext">提交并审核下一单</el-button>
       </div>
     </div>
   </div>
@@ -94,10 +94,10 @@ import TableBaseinfo from '../components/TableBaseinfo'
 import TableGoodsinfo from '../components/TableGoodsinfo'
 import TableConsignee from '../components/TableConsigneeinfo'
 import TableOrderFeeinfo from '../components/TableOrderFeeinfo'
-import TableOrderTrack from '../components/TableOrderTrack'
+// import TableOrderTrack from '../components/TableOrderTrack'
 import moment from 'moment'
 import { GOODS_TYPE, ORDER_STATUS } from '@/config/cfg'
-import { orderGet } from '@/api/api'
+import { orderGet, orderSave } from '@/api/api'
 
 export default {
   components: {
@@ -105,8 +105,8 @@ export default {
     TableBaseinfo,
     TableGoodsinfo,
     TableConsignee,
-    TableOrderFeeinfo,
-    TableOrderTrack
+    TableOrderFeeinfo
+    // TableOrderTrack
   },
 
   data() {
@@ -172,7 +172,9 @@ export default {
       auditForm: {
         pass: 1, // 结论(1:审核通过, 0:不通过)
         remark: '' // 原因(不通过时说明原因)
-      }
+      },
+
+      tableLoading: false
     }
   },
   created() {
@@ -273,8 +275,81 @@ export default {
     },
     handlerGoBackClick() {
       this.$router.go(-1)
+    },
+    async auditOpr() {
+      const data = {
+        opr: 'order_audit',
+        order_id: this.order_id,             // 订单id
+        pass: this.auditForm.pass,           // 结论(1:审核通过, 0:不通过)
+        remark: this.auditForm.remark        // 原因(不通过时说明原因)
+      }
+
+      console.log('订单审核 req=>', data)
+      const resp = await orderSave(data)
+      console.log('订单审核 res=>', resp)
+
+      if (resp.ret !== 0) return
+
+      this.$notify({
+        title: '成功',
+        message: '提交成功',
+        type: 'success',
+        duration: 2000
+      })
+      this.$router.go(-1)
+    },
+    async auditOprAndNext() {
+      // 审核订单
+      const dataAudit = {
+        opr: 'order_audit',
+        order_id: this.order_id,             // 订单id
+        pass: this.auditForm.pass,           // 结论(1:审核通过, 0:不通过)
+        remark: this.auditForm.remark        // 原因(不通过时说明原因)
+      }
+
+      this.tableLoading = true
+      const respAudit = await orderSave(dataAudit)
+      console.log('订单审核 res=>', respAudit)
+      if (respAudit.ret !== 0) return
+
+      // 取还没有审核的订单
+      const dataList = {
+        opr: 'get_audit_order_list',
+        page_no: 1,
+        order_status: ORDER_STATUS.AUDIT_WAIT
+      }
+
+      const respList = await orderGet(dataList)
+      console.log('订单列表 res=>', respList)
+      if (respAudit.ret !== 0) return
+
+      const list = respList.data.list || []
+
+      if (list.length === 0) {
+        this.$notify({
+          title: '警告',
+          message: '已经没有需要审核的订单了',
+          type: 'warning'
+        })
+        this.$router.go(-1)
+        this.tableLoading = false
+        return
+      }
+
+      const nextOrderid = list[0].order_id
+
+      this.order_id = nextOrderid
+      this.$router.replace({
+        path: '/manage-order/orderinfo',
+        query: {
+          orderid: nextOrderid
+        }
+      })
+      this.tableLoading = false
+      this.getOrderinfo()
     }
   }
+
 }
 </script>
 

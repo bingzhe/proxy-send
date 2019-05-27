@@ -20,11 +20,11 @@
         <el-form-item label="收货人手机" prop="consignee_phone" label-width="85px">
           <el-input v-model.trim="searchForm.consignee_phone" placeholder="请输入" />
         </el-form-item>
+        <el-form-item label="收货人姓名" prop="consignee_person" label-width="85px">
+          <el-input v-model.trim="searchForm.consignee_person" placeholder="请输入" />
+        </el-form-item>
         <el-form-item label="商户名" prop="business_name" label-width="70px">
           <el-input v-model.trim="searchForm.business_name" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="业务员" prop="salesman" label-width="70px">
-          <el-input v-model.trim="searchForm.salesman" placeholder="请输入" />
         </el-form-item>
         <br>
         <el-form-item label="下单时间" prop="order_time" label-width="70px">
@@ -106,7 +106,10 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" min-width="60">
             <template slot-scope="scope">
-              <el-button type="text" @click="goOrderinfo(scope.row.order_id)">审单</el-button>
+              <el-button
+                type="text"
+                @click="goOrderinfo(scope.row.order_id)"
+              >{{ ORDER_STATUS.AUDIT_WAIT === scope.row.order_status ? '审单' : '重新审单' }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -152,9 +155,9 @@ export default {
         order_id: '',              // 订单id(编号)
         consignee_phone: '',       // 收货人手机号码
         business_name: '',         // 商户名称
-        salesman: '',              // 业务员(跟单人)
+        // salesman: '',              // 业务员(跟单人)
         // goods_name: '',            // 商品名称
-        // consignee_person: '',      // 收货人名
+        consignee_person: '',      // 收货人名
         order_time: '',            // 下单时间
         order_time_begin: 0,       // 开始时间（时间戳，秒）
         order_time_end: 0          // 终止时间（时间戳，秒）
@@ -178,27 +181,11 @@ export default {
         {
           label: ORDER_STATUS.toString(ORDER_STATUS.AUDIT_FAIL),
           value: ORDER_STATUS.AUDIT_FAIL
-        },
-        {
-          label: ORDER_STATUS.toString(ORDER_STATUS.DELIVERY_WAIT),
-          value: ORDER_STATUS.DELIVERY_WAIT
-        },
-        {
-          label: ORDER_STATUS.toString(ORDER_STATUS.DELIVERY_SUC),
-          value: ORDER_STATUS.DELIVERY_SUC
-        },
-        {
-          label: ORDER_STATUS.toString(ORDER_STATUS.REVOCAT),
-          value: ORDER_STATUS.REVOCAT
-        },
-        {
-          label: ORDER_STATUS.toString(ORDER_STATUS.REFUND),
-          value: ORDER_STATUS.REFUND
-        },
-        {
-          label: ORDER_STATUS.toString(ORDER_STATUS.COMPLETE),
-          value: ORDER_STATUS.COMPLETE
         }
+        // {
+        //   label: '已通过',
+        //   value: ORDER_STATUS.DELIVERY_WAIT
+        // }
       ],
       ORDER_STATUS,
       pickerOptions
@@ -215,7 +202,7 @@ export default {
   methods: {
     async getList() {
       const data = {
-        opr: 'get_order_list',
+        opr: 'get_audit_order_list',
         page_no: this.listQuery.page
       }
 
@@ -236,8 +223,8 @@ export default {
         data.business_name = this.searchForm.business_name
       }
       // 业务员(跟单人)
-      if (this.searchForm.salesman) {
-        data.salesman = this.searchForm.salesman
+      if (this.searchForm.consignee_person) {
+        data.consignee_person = this.searchForm.consignee_person
       }
       // 下单时间
       if (this.searchForm.order_time) {

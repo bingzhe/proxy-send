@@ -317,6 +317,33 @@ export const RECHARGE_CHANNEL = {
     return this.code[code] || '未知[' + code + ']'
   }
 }
+/**
+ * 操作类型
+ */
+export const OPR_TYPE = {
+  RECHARGE: 1,
+  ORDER: 2,
+  ADJUST_ORDER_FEE: 3,
+  ORDER_FAIL_REFUND: 4,
+  ADUIT_FAIL_REFUND: 5,
+  ADJUST_BALANCE: 6,
+  REFUND: 7,
+
+  code: {
+    1: '充值',
+    2: '下单',
+    3: '调整订单金额',
+    4: '撤销订单退款',
+    5: '审核不通过退款',
+    6: '调整账户余额',
+    7: '退款'
+  },
+
+  toString: function(code) {
+    code = parseInt(code || 0)
+    return this.code[code] || '未知[' + code + ']'
+  }
+}
 
 // ================== 商户管理 ============================
 

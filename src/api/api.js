@@ -126,3 +126,7 @@ export const rechargeGet = generateRequestFn('recharge_get.php')
 
 // recharge_save
 export const rechargeSave = generateRequestFn('recharge_save.php')
+
+// =================== 对账单 ======================
+// accounttrack_get
+export const accounttrackGet = generateRequestFn('accounttrack_get.php')
