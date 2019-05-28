@@ -9,7 +9,7 @@
         </div>
         <div class="btn-group-wrapper">
           <el-button class="btn-bd-primary" @click="handlerGoBackClick">修改收货人信息</el-button>
-          <el-button class="btn-bd-primary" @click="handlerGoBackClick">调整订单金额</el-button>
+          <el-button class="btn-bd-primary" @click="oprAdjustFeeDialog">调整订单金额</el-button>
           <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
         </div>
       </div>
@@ -85,6 +85,14 @@
         <el-button class="btn-bd-primary" @click="auditOprAndNext">提交并审核下一单</el-button>
       </div>
     </div>
+
+    <!-- 调整订单金额 -->
+    <dialog-adjust-order-fee
+      ref="adjustFeeDialog"
+      :order-id="order_id"
+      @on-success="handlerAdjustFeeSuc"
+    />
+    <!-- @close="handlerAdjustFeeClose" -->
   </div>
 </template>
 
@@ -94,6 +102,7 @@ import TableBaseinfo from '../components/TableBaseinfo'
 import TableGoodsinfo from '../components/TableGoodsinfo'
 import TableConsignee from '../components/TableConsigneeinfo'
 import TableOrderFeeinfo from '../components/TableOrderFeeinfo'
+import DialogAdjustOrderFee from '../components/DialogAdjustOrderFee'
 // import TableOrderTrack from '../components/TableOrderTrack'
 import moment from 'moment'
 import { GOODS_TYPE, ORDER_STATUS } from '@/config/cfg'
@@ -105,7 +114,8 @@ export default {
     TableBaseinfo,
     TableGoodsinfo,
     TableConsignee,
-    TableOrderFeeinfo
+    TableOrderFeeinfo,
+    DialogAdjustOrderFee
     // TableOrderTrack
   },
 
@@ -338,6 +348,14 @@ export default {
         }
       })
       this.tableLoading = false
+      this.getOrderinfo()
+    },
+
+    oprAdjustFeeDialog() {
+      this.$refs.adjustFeeDialog.show()
+    },
+    // handlerAdjustFeeClose() {},
+    handlerAdjustFeeSuc() {
       this.getOrderinfo()
     }
   }
