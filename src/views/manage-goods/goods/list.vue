@@ -315,12 +315,11 @@ export default {
     handleSizeChange(val) {
       this.listQuery.page = 1
       this.listQuery.limit = val
-      // this.getList()
-      //   PageSize.set(this.$route, val);
+      this.getGoodsList()
     },
     handleCurrentChange(val) {
       this.listQuery.page = val
-      // this.getList()
+      this.getGoodsList()
     },
     handlerEditBtnClick(id) {
       this.$router.push({
@@ -331,10 +330,28 @@ export default {
       })
     },
     handlerDeleteBtnClick(id) {
-      /**
-       * 掉接口  删除商品
-       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-       */
+      this.$confirm('确认要删除选中商品？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.delOpr(id)
+      }).catch(() => { })
+    },
+    async delOpr(id) {
+      const data = {
+        opr: 'delete_goods',
+        goods_id: id
+      }
+
+      const resp = await goodsSave(data)
+      if (resp.ret !== 0) return
+      this.getGoodsList()
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success'
+      })
     },
     handlerOnOffClick(id) {
       /**

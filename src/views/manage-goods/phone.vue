@@ -77,7 +77,7 @@
                 type="text"
               >停用</el-button>-->
               <el-button type="text" @click="handlerModelEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text danger">删除</el-button>
+              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -474,8 +474,32 @@ export default {
        * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
        */
       this.getBrandList()
-    }
+    },
+    handlerDelClick(row) {
+      const model_id = row.model_id
+      this.$confirm('确认要删除选中型号？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.delOpr(model_id)
+      }).catch(() => { })
+    },
+    async delOpr(id) {
+      const data = {
+        opr: 'delete_phone_model',
+        model_id: id
+      }
 
+      const resp = await phonemodelSave(data)
+      if (resp.ret !== 0) return
+      this.getPhoneModelList()
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success'
+      })
+    }
   }
 
 }

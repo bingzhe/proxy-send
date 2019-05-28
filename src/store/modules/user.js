@@ -2,12 +2,15 @@ import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import { loginGet } from '@/api/api'
+import { constantRoutes } from '@/router/index.js'
 
 const state = {
   token: getToken(),
   name: '',
   avatar: '',
+
   employee_id: '',
+
   siteInfo: {},                          // 网站基本 信息
   username: '',                          // 用户名
   permmap: {},                           // 权限 map
@@ -35,6 +38,7 @@ const mutations = {
   USER_SET_SITEINFO: (state, siteInfo) => {
     state.siteInfo = siteInfo
     state.username = siteInfo.username
+    state.employee_id = siteInfo.employee_id
     state.permmap = siteInfo.permmap
     state.vip_level_list = siteInfo.vip_level_list
     state.employee_list = siteInfo.employee_list
@@ -100,26 +104,64 @@ const actions = {
   // },
 
   async getUserInfo({ commit }) {
-    const data = {
-      opr: 'get_home_data'
-    }
-    const resp = await loginGet(data)
-    console.log('界面初始化数据 res=>', resp)
-    if (resp.ret !== 0) return
+    return new Promise((resolve, reject) => {
+      const data = {
+        opr: 'get_home_data'
+      }
+      loginGet(data).then(resp => {
+        console.log('界面初始化数据 res=>', resp)
+        if (resp.ret !== 0) {
+          reject()
+          return
+        }
 
-    const siteInfo = resp.data
-    const phone_brand_list = siteInfo.phone_brand_list || []
+        const siteInfo = resp.data
+        const phone_brand_list = siteInfo.phone_brand_list || []
 
-    let model_list = []
+        let model_list = []
 
-    phone_brand_list.forEach(brand => {
-      brand.model_list = brand.model_list || []
-      model_list = [...model_list, ...brand.model_list]
+        phone_brand_list.forEach(brand => {
+          brand.model_list = brand.model_list || []
+          model_list = [...model_list, ...brand.model_list]
+        })
+
+        siteInfo.model_list = model_list
+
+        commit('USER_SET_SITEINFO', siteInfo)
+
+        // 根据取到的权限 进行处理
+        // access存在 并且 permap 中不存在  隐藏
+        // access存在 并且 permap存在  并且 permap中check为0 隐藏
+        const permmap = siteInfo.permmap
+
+        constantRoutes.forEach(router => {
+          if (router.access) {
+            if (!permmap[router.access]) {
+              router.hidden = true
+            } else {
+              if (!(permmap[router.access].checked)) {
+                router.hidden = true
+              }
+            }
+          }
+
+          if (router.children) {
+            router.children.forEach(ch_router => {
+              if (ch_router.access) {
+                if (!permmap[ch_router.access]) {
+                  ch_router.hidden = true
+                } else {
+                  if (!(permmap[ch_router.access].checked)) {
+                    ch_router.hidden = true
+                  }
+                }
+              }
+            })
+          }
+        })
+        resolve()
+      })
     })
-
-    siteInfo.model_list = model_list
-
-    commit('USER_SET_SITEINFO', siteInfo)
   },
 
   // remove token

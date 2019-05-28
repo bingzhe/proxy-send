@@ -42,12 +42,6 @@ export default {
       }
     }
   },
-  created() {
-    /**
-     * 更新页面全局数据
-     */
-    this.$store.dispatch('user/getUserInfo')
-  },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })

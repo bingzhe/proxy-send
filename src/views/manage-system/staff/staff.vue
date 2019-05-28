@@ -108,7 +108,7 @@
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="handlerStaffEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text">删除</el-button>
+              <el-button class="btn-red" type="text" @click="handlerDelClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -301,6 +301,31 @@ export default {
        * 更新页面全局数据
        */
       this.$store.dispatch('user/getUserInfo')
+    },
+    handlerDelClick(row) {
+      const employee_id = row.employee_id
+      this.$confirm('确认要删除选中员工？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.delOpr(employee_id)
+      }).catch(() => {})
+    },
+    async delOpr(id) {
+      const data = {
+        opr: 'delete_employee',
+        employee_id: id
+      }
+
+      const resp = await employeeSave(data)
+      if (resp.ret !== 0) return
+      this.getStaffList()
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success'
+      })
     }
   }
 }

@@ -55,6 +55,9 @@ export const constantRoutes = [
     component: Layout,
     name: 'manage-goods',
     meta: { title: '商品管理', icon: 'shangpinguanli' },
+    access: '1',
+    hidden: false,
+    alwaysShow: true,
     children: [
       {
         path: 'goods',
@@ -99,18 +102,22 @@ export const constantRoutes = [
     path: '/manage-order',
     component: Layout,
     name: 'manage-order',
+    hidden: false,
+    alwaysShow: true,
     meta: { title: '订单管理', icon: 'dingdanguagnli' },
     children: [
       {
         path: 'list',
         name: 'orderList',
         component: () => import('@/views/manage-order/list'),
+        access: '6',
         meta: { title: '订单审核', icon: 'dingdanshenhe' }
       },
       {
         path: 'search',
         name: 'orderSearch',
         component: () => import('@/views/manage-order/search'),
+        access: '7',
         meta: { title: '订单查询', icon: 'dingdanchaxun' }
       },
       {
@@ -135,12 +142,15 @@ export const constantRoutes = [
     path: '/manage-finance',
     component: Layout,
     name: 'manage-finance',
+    hidden: false,
+    alwaysShow: true,
     meta: { title: '财务', icon: 'caiwu' },
     children: [
       {
         path: 'recharge',
         name: 'financeRecharge',
         component: () => import('@/views/manage-finance/recharge/recharge'),
+        access: '5',
         meta: { title: '充值受理', icon: 'chongzhishouli' }
       },
       {
@@ -157,6 +167,8 @@ export const constantRoutes = [
     path: '/manage-fabricate',
     component: Layout,
     name: 'manage-fabricate',
+    hidden: false,
+    alwaysShow: true,
     meta: { title: '生产管理', icon: 'shengcahnguanli' },
     children: [
       {
@@ -175,6 +187,7 @@ export const constantRoutes = [
         path: 'deliver',
         name: 'fabricateDeliver',
         component: () => import('@/views/manage-fabricate/deliver/deliver'),
+        access: '8',
         meta: { title: '发货管理', icon: 'fahuoguanli' }
       }
     ]
@@ -185,6 +198,8 @@ export const constantRoutes = [
     path: '/manage-system',
     component: Layout,
     name: 'manage-system',
+    hidden: false,
+    alwaysShow: true,
     meta: { title: '系统', icon: 'system' },
     children: [
       {
@@ -197,17 +212,20 @@ export const constantRoutes = [
         path: 'param',
         name: 'param',
         component: () => import('@/views/manage-system/param/param'),
+        access: '2',
         meta: { title: '参数配置', icon: 'canshupeizhi' }
       },
       {
         path: 'staff',
         name: 'staff',
         component: () => import('@/views/manage-system/staff/staff'),
+        access: '3',
         meta: { title: '员工管理', icon: 'yuangongguanli' }
       },
       {
         path: 'role',
         name: 'role',
+        access: '4',
         component: () => import('@/views/manage-system/role/role'),
         meta: { title: '角色管理', icon: 'jueseguangli' }
       }

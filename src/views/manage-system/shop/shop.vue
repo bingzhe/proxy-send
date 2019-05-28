@@ -113,7 +113,7 @@
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="handlerShopEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text">删除</el-button>
+              <el-button class="btn-red" type="text" @click="handlerDelClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -153,8 +153,7 @@
 </template>
 <script>
 import { BUSINESS_STATUS, pickerOptions } from '@/config/cfg'
-// businessSave
-import { businessGet } from '@/api/api'
+import { businessGet, businessSave } from '@/api/api'
 import moment from 'moment'
 import ShopEdit from './ShopEdit'
 import { mapState } from 'vuex'
@@ -299,6 +298,33 @@ export default {
     handlerShopEditClick(row) {
       this.editbBusinessId = row.business_id
       this.$refs.shopEdit.show()
+    },
+    handlerDelClick(row) {
+      const business_id = row.business_id
+      this.$confirm('确认要删除选中商户？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.delOpr(business_id)
+      }).catch(() => {
+
+      })
+    },
+    async delOpr(id) {
+      const data = {
+        opr: 'delete_business',
+        business_id: id
+      }
+
+      const resp = await businessSave(data)
+      if (resp.ret !== 0) return
+      this.getBusinessList()
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success'
+      })
     }
   }
 }
