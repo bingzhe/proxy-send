@@ -101,8 +101,8 @@ export default {
           delivery_number: '',     // 物流单号
           order_time: ''           // 下单时间
         },
-        { order_id: '配送礼品', company_name: '22' },  // 配送礼品
-        { order_id: '订单留言', company_name: '22' }   // 订单留言
+        { order_id: '配送礼品', company_name: '' },  // 配送礼品
+        { order_id: '订单留言', company_name: '' }   // 订单留言
       ],
 
       // 商品信息
@@ -123,10 +123,10 @@ export default {
           discount_fee: '',        // 折扣金额
           attach_fee: ''           // 配送礼品费用
         },
-        { goods_fee: '调整费用', freight_fee: '其他费用', discount_fee: '订单总金额', attach_fee: '实付金额' },
+        { goods_fee: '调整费用', freight_fee: '退款金额', discount_fee: '订单总金额', attach_fee: '实付金额' },
         {
           goods_fee: '',           // 调整费用 adjust_fee
-          freight_fee: '',         // 其他费用  other_fee
+          freight_fee: '',         // 其他费用  refund_fee
           discount_fee: '',        // 订单总金额 order_fee
           attach_fee: ''           // 实付金额 actual_fee
         }
@@ -202,9 +202,9 @@ export default {
       this.orderFeeList[0].discount_fee = info.discount_fee ? `- ¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
       this.orderFeeList[0].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
       this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.other_fee ? `¥ ${info.other_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.discount_fee ? `¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.refund_fee ? `¥ ${info.refund_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.order_fee ? `¥ ${info.order_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (this.order_track || []).map(track => {

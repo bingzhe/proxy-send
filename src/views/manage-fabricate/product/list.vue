@@ -32,11 +32,12 @@
           </el-form-item>
           <el-form-item label="状态" prop="status_txt" label-width="70px">
             <el-select v-model="searchForm.status_txt" placeholder="请选择">
+              <el-option key="全部" label="全部" value />
               <el-option
-                v-for="(item,key) in statusList"
-                :key="key"
-                :label="item.text"
-                :value="item.value"
+                v-for="item in production_order_status_list"
+                :key="item"
+                :label="item"
+                :value="item"
               />
             </el-select>
           </el-form-item>
@@ -84,10 +85,12 @@
             <span>生产单列表</span>
           </div>
           <div class="add-button-group">
-            <router-link to="/manage-goods/goods/edit">
-              <el-button class="goods-add btn-h-38" type="primary">下载</el-button>
-              <el-button class="goods-add btn-h-38" type="primary">全部下载</el-button>
-            </router-link>
+            <el-button class="goods-add btn-h-38" type="primary" @click="handlerDownloadClick">下载</el-button>
+            <el-button
+              class="goods-add btn-h-38"
+              type="primary"
+              @click="handlerDownloadAllClick"
+            >全部下载</el-button>
           </div>
         </div>
 
@@ -136,20 +139,33 @@
       </div>
     </div>
 
-    <product-info-dialog ref="productInfoDialog" />
+    <product-info-dialog
+      ref="productInfoDialog"
+      :product-info="productInfo"
+      @close="handlerProductInfoClose"
+    />
+
+    <change-product-status
+      ref="changeProductStatusDialog"
+      :product-info="productInfo"
+      @close="handlerChangeProductClose"
+      @on-success="handlerChagneProductSuc"
+    />
   </div>
 </template>
 
 <script>
-import { productionOrderGet } from '@/api/api'
+import { productionOrderGet, productionOrderSave } from '@/api/api'
 import { pickerOptions } from '@/config/cfg'
 import { mapState } from 'vuex'
 import moment from 'moment'
 import ProductInfoDialog from './ProductInfoDialog'
+import ChangeProductStatus from './ChangeProductStatus'
 
 export default {
   components: {
-    ProductInfoDialog
+    ProductInfoDialog,
+    ChangeProductStatus
   },
 
   data() {
@@ -178,18 +194,21 @@ export default {
 
       statusList: {
         all: { value: '', text: '全部', num: 0 },
-        noUpdate: { value: '未下载', text: '未下载', num: 0 },
-        updateSuc: { value: '已下载', text: '已下载', num: 0 },
-        updateFail: { value: '下载失败', text: '下载失败', num: 0 }
+        no_download: { value: '未下载', text: '未下载', num: 0 },
+        download_err: { value: '下载失败', text: '下载失败', num: 0 },
+        download_ok: { value: '下载成功', text: '下载成功', num: 0 },
+        cancel: { value: '作废', text: '作废', num: 0 }
       },
-      pickerOptions
+      pickerOptions,
 
+      productInfo: {}
     }
   },
   computed: {
     ...mapState({
       phone_brand_list: state => state.user.phone_brand_list,
-      raw_material_list: state => state.user.raw_material_list
+      raw_material_list: state => state.user.raw_material_list,
+      production_order_status_list: state => state.user.production_order_status_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -197,6 +216,7 @@ export default {
   },
   mounted() {
     this.getList()
+    this.getStatusNum()
   },
   methods: {
     async getList() {
@@ -252,6 +272,19 @@ export default {
         return item
       })
     },
+    async getStatusNum() {
+      const resp = await productionOrderGet({ opr: 'get_production_order_stat' })
+      console.log('生产单数量 res=>', resp)
+
+      if (resp.ret !== 0) return
+      const info = resp.data
+
+      this.statusList.all.num = info.total
+      this.statusList.no_download.num = info.no_download
+      this.statusList.download_ok.num = info.download_ok
+      this.statusList.download_err.num = info.download_err
+      this.statusList.cancel.num = info.cancel
+    },
     // 多选
     handleSelectionChange(val) {
       this.multipleSelection = val
@@ -260,24 +293,80 @@ export default {
       this.listQuery.page = 1
       this.listQuery.limit = val
       this.getList()
+      this.getStatusNum()
     },
     handleCurrentChange(val) {
       this.listQuery.page = val
       this.getList()
+      this.getStatusNum()
     },
     handlerSearchClick() {
       this.listQuery.page = 1
       this.getList()
+      this.getStatusNum()
     },
     openProductInfo(row) {
-      console.log(this.$refs.productInfoDialog)
+      this.productInfo = row
       this.$refs.productInfoDialog.show()
     },
+    handlerProductInfoClose() {
+      this.productInfo = {}
+    },
     handlerChangeStatusClick(row) {
-
+      this.productInfo = row
+      this.$refs.changeProductStatusDialog.show()
+    },
+    handlerChangeProductClose() {
+      this.productInfo = {}
+    },
+    handlerChagneProductSuc() {
+      this.getList()
+      this.getStatusNum()
     },
     handlerStatusCardClick(item) {
-      this.searchForm.status_txt = item.text
+      this.searchForm.status_txt = item.value
+      this.getList()
+      this.getStatusNum()
+    },
+    async  handlerDownloadClick() {
+      const productList = this.multipleSelection.map(item => { return item.production_id })
+      const dataList = productList.map(item => {
+        const opr = {
+          production_id: item,     // 生产单ID
+          status_txt: '未下载',     // 生产单状态('未下载', '下载失败', '下载成功', '作废')
+          reremark: '重新下载'
+        }
+        return opr
+      })
+      const data = {
+        opr: 'batch_modify_production_order_status',
+        list: dataList
+      }
+
+      console.log('下载 req=>', data)
+      const resp = await productionOrderSave(data)
+      console.log('下载 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.getList()
+      this.getStatusNum()
+      this.$notify({
+        title: '成功',
+        message: '下载成功',
+        type: 'success'
+      })
+    },
+    async handlerDownloadAllClick() {
+      const resp = await productionOrderSave({ opr: 'download_production_all' })
+      if (resp.ret !== 0) return
+
+      this.getList()
+      this.getStatusNum()
+      this.$notify({
+        title: '成功',
+        message: '全部下载成功',
+        type: 'success'
+      })
     }
   }
 }
@@ -297,6 +386,7 @@ export default {
     background: #fff;
     float: left;
     margin-bottom: 20px;
+    cursor: pointer;
 
     .status-num {
       color: #e33119;

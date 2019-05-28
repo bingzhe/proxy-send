@@ -104,7 +104,7 @@
               <span>{{ scope.row.order_status_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="opr" label="操作" min-width="60">
+          <el-table-column prop="opr" label="操作" width="200">
             <template slot-scope="scope">
               <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)">订单详情</el-button>
               <el-button
@@ -112,10 +112,14 @@
                 type="text"
               >修改收货信息</el-button>
               <el-button
-                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC "
+                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
                 type="text"
               >物流跟踪</el-button>
-              <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC " type="text">退款</el-button>
+              <el-button
+                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
+                type="text"
+                @click="openRefundDialog(scope.row)"
+              >退款</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -144,14 +148,26 @@
         <!-- 分页 end -->
       </div>
     </div>
+
+    <!-- 退款弹窗 -->
+    <dialog-refund
+      ref="refundDialog"
+      :refund-info="refundInfo"
+      @close="handlerRefundDialogClose"
+      @on-success="handlerRefundDialogSuc"
+    />
   </div>
 </template>
 <script>
 import { orderGet } from '@/api/api'
 import moment from 'moment'
 import { ORDER_STATUS, pickerOptions } from '@/config/cfg'
+import DialogRefund from './components/DialogRefund'
 
 export default {
+  components: {
+    DialogRefund
+  },
   data() {
     return {
 
@@ -210,7 +226,13 @@ export default {
         }
       ],
       ORDER_STATUS,
-      pickerOptions
+      pickerOptions,
+
+      // 退款弹窗信息
+      refundInfo: {
+        order_id: '',
+        actual_fee: ''
+      }
     }
   },
   computed: {
@@ -304,6 +326,18 @@ export default {
           orderid: id
         }
       })
+    },
+    openRefundDialog(row) {
+      this.refundInfo.order_id = row.order_id
+      this.refundInfo.actual_fee = row.actual_fee
+      this.$refs.refundDialog.show()
+    },
+    handlerRefundDialogClose() {
+      this.refundInfo.order_id = ''
+      this.refundInfo.actual_fee = ''
+    },
+    handlerRefundDialogSuc() {
+      this.getList()
     }
   }
 }
@@ -339,6 +373,9 @@ export default {
 
 .el-table {
   min-height: 400px;
+  /deep/ td {
+    padding: 4px 0;
+  }
 }
 </style>
 

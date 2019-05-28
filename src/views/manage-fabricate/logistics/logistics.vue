@@ -6,7 +6,12 @@
         <el-form-item label="物流单状态" prop="status_txt" label-width="84px">
           <el-select v-model="searchForm.status_txt" placeholder="请选择">
             <el-option key="全部" label="全部" value />
-            <el-option v-for="(item,key) in statusList" :key="key" :label="item" :value="item" />
+            <el-option
+              v-for="(item,key) in delivery_order_status_list"
+              :key="key"
+              :label="item"
+              :value="item"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="订单编号" prop="order_id" label-width="70px">
@@ -133,6 +138,7 @@ import { deliveryOrderGet } from '@/api/api'
 import { pickerOptions } from '@/config/cfg'
 import ChangeDeliverynum from './ChangeDeliverynum'
 import moment from 'moment'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -165,7 +171,7 @@ export default {
         limit: 20
       },
 
-      statusList: ['未导出', '成功导出', '成功导入', '导出失败', '导入失败', '作废'],
+      // statusList: ['未导出', '成功导出', '成功导入', '导出失败', '导入失败', '作废'],
       pickerOptions,
 
       curDialog: {}, // 打开弹窗处理的物流单
@@ -173,6 +179,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      delivery_order_status_list: state => state.user.delivery_order_status_list
+    }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
     },

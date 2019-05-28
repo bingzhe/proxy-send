@@ -317,6 +317,9 @@ export default {
 
 .el-table {
   min-height: 400px;
+  /deep/ td {
+    padding: 4px 0;
+  }
 }
 </style>
 

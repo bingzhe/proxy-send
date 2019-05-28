@@ -8,16 +8,18 @@ const state = {
   name: '',
   avatar: '',
   employee_id: '',
-  siteInfo: {},            // 网站基本 信息
-  username: '',            // 用户名
-  permmap: {},             // 权限 map
-  vip_level_list: [],      // vip list
-  employee_list: [],       // 员工 list
-  role_list: [],           // 角色列表
-  phone_brand_list: [],    // 品牌 型号 list
-  model_list: [],          // 型号list
-  raw_material_list: [],   // 材质 list
-  theme_list: []          // 图库主题分类
+  siteInfo: {},                          // 网站基本 信息
+  username: '',                          // 用户名
+  permmap: {},                           // 权限 map
+  vip_level_list: [],                    // vip list
+  employee_list: [],                     // 员工 list
+  role_list: [],                         // 角色列表
+  phone_brand_list: [],                  // 品牌 型号 list
+  model_list: [],                        // 型号list
+  raw_material_list: [],                 // 材质 list
+  theme_list: [],                        // 图库主题分类
+  delivery_order_status_list: [],        // 物流单状态列表
+  production_order_status_list: []       // 生产单状态列
 }
 
 const mutations = {
@@ -41,6 +43,8 @@ const mutations = {
     state.model_list = siteInfo.model_list
     state.raw_material_list = siteInfo.raw_material_list
     state.theme_list = siteInfo.theme_list
+    state.delivery_order_status_list = siteInfo.delivery_order_status_list
+    state.production_order_status_list = siteInfo.production_order_status_list
   }
 }
 
