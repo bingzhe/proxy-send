@@ -22,7 +22,8 @@ const state = {
   raw_material_list: [],                 // 材质 list
   theme_list: [],                        // 图库主题分类
   delivery_order_status_list: [],        // 物流单状态列表
-  production_order_status_list: []       // 生产单状态列
+  production_order_status_list: [],      // 生产单状态列
+  delivery_list: []                     // 快递公司
 }
 
 const mutations = {
@@ -49,6 +50,12 @@ const mutations = {
     state.theme_list = siteInfo.theme_list
     state.delivery_order_status_list = siteInfo.delivery_order_status_list
     state.production_order_status_list = siteInfo.production_order_status_list
+
+    siteInfo.delivery_list = siteInfo.delivery_list.map(item => {
+      item.delivery_str = item.price ? `${item.name}（邮费：${item.price}元）` : `${item.name}（邮费：包邮）`
+      return item
+    })
+    state.delivery_list = siteInfo.delivery_list
   }
 }
 

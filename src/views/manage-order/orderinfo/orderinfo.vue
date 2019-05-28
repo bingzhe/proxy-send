@@ -8,7 +8,7 @@
           </div>
         </div>
         <div class="btn-group-wrapper">
-          <el-button class="btn-bd-primary" @click="handlerGoBackClick">修改收货人信息</el-button>
+          <el-button class="btn-bd-primary" @click="openChangeAddressDialog">修改收货人信息</el-button>
           <el-button class="btn-bd-primary" @click="oprAdjustFeeDialog">调整订单金额</el-button>
           <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
         </div>
@@ -93,6 +93,12 @@
       @on-success="handlerAdjustFeeSuc"
     />
     <!-- @close="handlerAdjustFeeClose" -->
+    <!-- 调整地址 -->
+    <dialog-change-address
+      ref="changeAddress"
+      :order-id="order_id"
+      @on-success="handlerChangeAddrerss"
+    />
   </div>
 </template>
 
@@ -103,6 +109,7 @@ import TableGoodsinfo from '../components/TableGoodsinfo'
 import TableConsignee from '../components/TableConsigneeinfo'
 import TableOrderFeeinfo from '../components/TableOrderFeeinfo'
 import DialogAdjustOrderFee from '../components/DialogAdjustOrderFee'
+import DialogChangeAddress from '../components/DialogChangeAddress'
 // import TableOrderTrack from '../components/TableOrderTrack'
 import moment from 'moment'
 import { GOODS_TYPE, ORDER_STATUS } from '@/config/cfg'
@@ -115,7 +122,8 @@ export default {
     TableGoodsinfo,
     TableConsignee,
     TableOrderFeeinfo,
-    DialogAdjustOrderFee
+    DialogAdjustOrderFee,
+    DialogChangeAddress
     // TableOrderTrack
   },
 
@@ -126,6 +134,7 @@ export default {
       order_id: '',
       order_status: '',
       status_remark: '', // 订单状态原因，审核不通过等
+
       // 基本信息
       baseinfoList: [
         {
@@ -354,8 +363,14 @@ export default {
     oprAdjustFeeDialog() {
       this.$refs.adjustFeeDialog.show()
     },
+    openChangeAddressDialog() {
+      this.$refs.changeAddress.show()
+    },
     // handlerAdjustFeeClose() {},
     handlerAdjustFeeSuc() {
+      this.getOrderinfo()
+    },
+    handlerChangeAddrerss() {
       this.getOrderinfo()
     }
   }

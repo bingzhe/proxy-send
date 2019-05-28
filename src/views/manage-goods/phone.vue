@@ -463,16 +463,17 @@ export default {
     handlerBrandInput() {
       this.$refs.brandForm.clearValidate()
     },
-    handlerBrandDeleteClick(brand) {
+    async handlerBrandDeleteClick(brand) {
       const data = {
+        opr: 'delete_phone_brand',
         brand_id: brand.brand_id
       }
 
       console.log('删除品牌 req=>', data)
-      /**
-       * 调接口 删除品牌
-       * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-       */
+
+      const resp = await phonebrandSave(data)
+      if (resp.ret !== 0) return
+
       this.getBrandList()
     },
     handlerDelClick(row) {

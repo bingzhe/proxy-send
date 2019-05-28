@@ -47,13 +47,13 @@
           <el-table-column prop="opr" label="操作" width="120" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="openRoleEditDialog(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text">删除</el-button>
+              <el-button class="btn-red" type="text" @click="handlerDelClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
 
         <!-- 分页 start -->
-        <div class="pagination-wrapper clearfix">
+        <!-- <div class="pagination-wrapper clearfix">
           <div class="pagination-total">
             <span>
               共
@@ -71,7 +71,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           />
-        </div>
+        </div> -->
         <!-- 分页 end -->
       </div>
     </div>
@@ -134,8 +134,17 @@ export default {
         permlistSelect: []
       },
       roleEditFormRules: {
-        role_name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
-        permlistSelect: [{ type: 'array', required: true, message: '请至少选择一个功能权限', trigger: 'change' }]
+        role_name: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ],
+        permlistSelect: [
+          {
+            type: 'array',
+            required: true,
+            message: '请至少选择一个功能权限',
+            trigger: 'change'
+          }
+        ]
       },
 
       // 权限(1:商户管理, 2:参数配置, 3:员工管理, 4:角色管理, 5:充值受理, 6:订单审核, 7:订单查询, 8:发货管理)
@@ -279,6 +288,33 @@ export default {
       this.editRoleId = ''
       this.roleEditForm.permlistSelect = []
       this.roleEditForm.role_name = ''
+    },
+    handlerDelClick(row) {
+      const role_id = row.role_id
+      this.$confirm('确认要删除选中角色？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.delOpr(role_id)
+        })
+        .catch(() => {})
+    },
+    async delOpr(id) {
+      const data = {
+        opr: 'delete_role',
+        role_id: id
+      }
+      console.log('删除role', data)
+      const resp = await roleSave(data)
+      if (resp.ret !== 0) return
+      this.getRoleList()
+      this.$notify({
+        title: '成功',
+        message: '删除成功',
+        type: 'success'
+      })
     }
   }
 }
