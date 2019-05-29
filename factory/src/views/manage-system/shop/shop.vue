@@ -31,10 +31,10 @@
         <el-form-item label="商户名称" prop="business_name" label-width="70px">
           <el-input v-model.trim="searchForm.business_name" placeholder="请输入" />
         </el-form-item>
+        <br>
         <el-form-item label="联系电话" prop="telephone" label-width="70px">
           <el-input v-model.trim="searchForm.telephone" placeholder="请输入" />
         </el-form-item>
-        <br>
         <el-form-item label="开户时间" prop="create_time" label-width="70px">
           <el-date-picker
             v-model="searchForm.create_time"

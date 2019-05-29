@@ -31,10 +31,10 @@
         <el-form-item label="姓名" prop="real_name" label-width="70px">
           <el-input v-model.trim="searchForm.real_name" placeholder="请输入" />
         </el-form-item>
+        <br>
         <el-form-item label="联系电话" prop="phone" label-width="70px">
           <el-input v-model.trim="searchForm.phone" placeholder="请输入" />
         </el-form-item>
-        <br>
         <el-form-item label="创建时间" prop="create_time" label-width="70px">
           <el-date-picker
             v-model="searchForm.create_time"
@@ -310,7 +310,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.delOpr(employee_id)
-      }).catch(() => {})
+      }).catch(() => { })
     },
     async delOpr(id) {
       const data = {

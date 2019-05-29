@@ -25,7 +25,12 @@
       </el-form-item>
       <br>
       <el-form-item label="手机号" prop="telephone">
-        <el-input v-model="shopEditForm.telephone" placeholder="请输入" />
+        <el-input
+          v-model="shopEditForm.telephone"
+          v-limit-input-number="shopEditForm.telephone"
+          data-dotrange="{0,0}"
+          placeholder="请输入"
+        />
       </el-form-item>
       <el-form-item label="VIP等级" prop="vip_level">
         <el-select v-model="shopEditForm.vip_level" placeholder="请选择">
@@ -110,6 +115,15 @@ export default {
     }
   },
   data() {
+    const validatePass = (rule, value, callback) => {
+      const reg = /[\u4e00-\u9fa5]/gm
+
+      if (reg.test(value)) {
+        return callback(new Error('密码不能为中文'))
+      } else {
+        callback()
+      }
+    }
     return {
       shopEditForm: {
         username: '',            // 登录用户名(同用户表中的)
@@ -125,8 +139,14 @@ export default {
       },
       shopEditFormRules: {
         username: [{ required: true, message: '请输入账户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入账户密码', trigger: 'blur' }],
-        telephone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+        password: [
+          { required: true, message: '请输入账户密码', trigger: 'blur' },
+          { validator: validatePass, trigger: 'blur' }
+        ],
+        telephone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { min: 11, max: 11, message: '请输入11位手机号', trigger: 'blur' }
+        ],
         vip_level: [{ required: true, message: '请选择VIP等级', trigger: 'change' }],
         business_name: [{ required: true, message: '请输入商户姓名', trigger: 'blur' }],
         salesman: [{ required: true, message: '请选择业务员', trigger: 'change' }],

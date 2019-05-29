@@ -25,7 +25,12 @@
       </el-form-item>
       <br>
       <el-form-item label="手机号" prop="phone">
-        <el-input v-model.trim="staffEditForm.phone" placeholder="请输入" />
+        <el-input
+          v-model.trim="staffEditForm.phone"
+          v-limit-input-number="staffEditForm.phone"
+          data-dotrange="{0,0}"
+          placeholder="请输入"
+        />
       </el-form-item>
       <el-form-item label="角色" prop="role_id">
         <el-select v-model="staffEditForm.role_id" placeholder="请选择">
@@ -84,6 +89,15 @@ export default {
     }
   },
   data() {
+    const validatePass = (rule, value, callback) => {
+      const reg = /[\u4e00-\u9fa5]/gm
+
+      if (reg.test(value)) {
+        return callback(new Error('密码不能为中文'))
+      } else {
+        callback()
+      }
+    }
     return {
       staffEditForm: {
         username: '',              // 用户名(即用户表中的)
@@ -97,9 +111,15 @@ export default {
       },
       staffEditFormRules: {
         username: [{ required: true, message: '请输入账户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入账户密码', trigger: 'blur' }],
+        password: [
+          { required: true, message: '请输入账户密码', trigger: 'blur' },
+          { validator: validatePass, trigger: 'blur' }
+        ],
         real_name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-        phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+        phone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { min: 11, max: 11, message: '请输入11位手机号', trigger: 'blur' }
+        ],
         role_id: [{ required: true, message: '请选择角色', trigger: 'change' }],
         status: [{ required: true, message: '请选择状态', trigger: 'change' }]
       },

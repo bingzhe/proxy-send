@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="product-status-wrapper clearfix">
+    <!-- <div class="product-status-wrapper clearfix">
       <div
         v-for="(item,key) in statusList"
         :key="key"
@@ -13,7 +13,7 @@
         <span class="status-num">{{ item.num }}</span>
         )
       </div>
-    </div>
+    </div> -->
 
     <div class="app-wrapper">
       <!-- search start -->
@@ -50,10 +50,10 @@
           <el-form-item label="订单编号" prop="order_id" label-width="70px">
             <el-input v-model.trim="searchForm.order_id" placeholder="请输入" />
           </el-form-item>
+          <br>
           <el-form-item label="型号" prop="model_name" label-width="70px">
             <el-input v-model.trim="searchForm.model_name" placeholder="请输入" />
           </el-form-item>
-          <br>
           <el-form-item label="下单时间" prop="create_time" label-width="70px">
             <el-date-picker
               v-model="searchForm.create_time"
