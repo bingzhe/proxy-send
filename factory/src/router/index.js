@@ -55,7 +55,6 @@ export const constantRoutes = [
     component: Layout,
     name: 'manage-goods',
     meta: { title: '商品管理', icon: 'shangpinguanli' },
-    access: '1',
     hidden: false,
     alwaysShow: true,
     children: [
@@ -63,6 +62,7 @@ export const constantRoutes = [
         path: 'goods',
         name: 'goods',
         redirect: '/manage-goods/goods/list',
+        access: '1',
         component: () => import('@/views/manage-goods/goods'),
         meta: { title: '商品列表', icon: 'shangpingliebiao' },
         children: [
@@ -85,12 +85,14 @@ export const constantRoutes = [
       {
         path: 'phone',
         name: 'goodsPhone',
+        access: '2',
         component: () => import('@/views/manage-goods/phone'),
         meta: { title: '手机机型管理', icon: 'shoujijixing' }
       },
       {
         path: 'picture',
         name: 'goodsPicture',
+        access: '3',
         component: () => import('@/views/manage-goods/picture'),
         meta: { title: '图库管理', icon: 'tukuguanli' }
       }
@@ -110,14 +112,14 @@ export const constantRoutes = [
         path: 'list',
         name: 'orderList',
         component: () => import('@/views/manage-order/list'),
-        access: '6',
+        access: '4',
         meta: { title: '订单审核', icon: 'dingdanshenhe' }
       },
       {
         path: 'search',
         name: 'orderSearch',
         component: () => import('@/views/manage-order/search'),
-        access: '7',
+        access: '5',
         meta: { title: '订单查询', icon: 'dingdanchaxun' }
       },
       {
@@ -150,13 +152,14 @@ export const constantRoutes = [
         path: 'recharge',
         name: 'financeRecharge',
         component: () => import('@/views/manage-finance/recharge/recharge'),
-        access: '5',
+        access: '6',
         meta: { title: '充值受理', icon: 'chongzhishouli' }
       },
       {
         path: 'bill',
         name: 'financeBill',
         component: () => import('@/views/manage-finance/bill/bill'),
+        access: '7',
         meta: { title: '对账单', icon: 'duizhangdan' }
       }
     ]
@@ -175,19 +178,21 @@ export const constantRoutes = [
         path: 'list',
         name: 'fabricateList',
         component: () => import('@/views/manage-fabricate/product/list'),
+        access: '8',
         meta: { title: '生产单管理', icon: 'shengchanguanli' }
       },
       {
         path: 'logistics',
         name: 'fabricateLogistics',
         component: () => import('@/views/manage-fabricate/logistics/logistics'),
+        access: '9',
         meta: { title: '物流单管理', icon: 'wuliudanguanli' }
       },
       {
         path: 'deliver',
         name: 'fabricateDeliver',
         component: () => import('@/views/manage-fabricate/deliver/deliver'),
-        access: '8',
+        access: '10',
         meta: { title: '发货管理', icon: 'fahuoguanli' }
       }
     ]
@@ -205,27 +210,28 @@ export const constantRoutes = [
       {
         path: 'shop',
         name: 'shop',
+        access: '11',
         component: () => import('@/views/manage-system/shop/shop'),
         meta: { title: '商户管理', icon: 'shagnhuguanli' }
       },
       {
         path: 'param',
         name: 'param',
+        access: '12',
         component: () => import('@/views/manage-system/param/param'),
-        access: '2',
         meta: { title: '参数配置', icon: 'canshupeizhi' }
       },
       {
         path: 'staff',
         name: 'staff',
         component: () => import('@/views/manage-system/staff/staff'),
-        access: '3',
+        access: '13',
         meta: { title: '员工管理', icon: 'yuangongguanli' }
       },
       {
         path: 'role',
         name: 'role',
-        access: '4',
+        access: '14',
         component: () => import('@/views/manage-system/role/role'),
         meta: { title: '角色管理', icon: 'jueseguangli' }
       }

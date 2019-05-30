@@ -61,7 +61,12 @@
         <div v-if="displayStatus === 3 && showGoodsList" class="goods-info-content">
           <div class="base-title clearfix">
             <baseinfo-title class="baseinfo-title" color="#F39448" text="商品" />
-            <el-button class="confirm-deliver btn-h-38" type="primary" @click="deliverGoods">确认发货</el-button>
+            <el-button
+              :disabled="order_status !== ORDER_STATUS.DELIVERY_WAIT"
+              class="confirm-deliver btn-h-38"
+              type="primary"
+              @click="deliverGoods"
+            >确认发货</el-button>
           </div>
           <el-row class="goods-list-wrapper">
             <el-col v-for="(goods,i) in goods_list" :key="i" :span="12" :lg="8" :xl="6">

@@ -71,7 +71,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           />
-        </div> -->
+        </div>-->
         <!-- 分页 end -->
       </div>
     </div>
@@ -147,16 +147,33 @@ export default {
         ]
       },
 
-      // 权限(1:商户管理, 2:参数配置, 3:员工管理, 4:角色管理, 5:充值受理, 6:订单审核, 7:订单查询, 8:发货管理)
+      // 权限
+      // 1: 商品管理 2: 手机机型管理 3: 图库管理 4：订单审核 5: 订单查询 6：充值受理 7：对账单
+      // 8：生产单管理  9：物流单管理 10：发货管理 11: 商户管理 12：参数配置 13：员工管理 14：角色管理
+
       permlist: [
-        { name: '商户管理', type: 1 },
-        { name: '参数配置', type: 2 },
-        { name: '员工管理', type: 3 },
-        { name: '角色管理', type: 4 },
-        { name: '充值受理', type: 5 },
-        { name: '订单审核', type: 6 },
-        { name: '订单查询', type: 7 },
-        { name: '发货管理', type: 8 }
+        { name: '商品管理', type: 1 },
+        { name: '手机机型管理', type: 2 },
+        { name: '图库管理', type: 3 },
+        { name: '订单审核', type: 4 },
+        { name: '订单查询', type: 5 },
+        { name: '充值受理', type: 6 },
+        { name: '对账单', type: 7 },
+        { name: '生产单管理', type: 8 },
+        { name: '物流单管理', type: 9 },
+        { name: '发货管理', type: 10 },
+        { name: '商户管理', type: 11 },
+        { name: '参数配置', type: 12 },
+        { name: '员工管理', type: 13 },
+        { name: '角色管理', type: 14 }
+        // { name: '商户管理', type: 1 },
+        // { name: '参数配置', type: 2 },
+        // { name: '员工管理', type: 3 },
+        // { name: '角色管理', type: 4 },
+        // { name: '充值受理', type: 5 },
+        // { name: '订单审核', type: 6 },
+        // { name: '订单查询', type: 7 },
+        // { name: '发货管理', type: 8 }
       ],
 
       list: [],
@@ -299,7 +316,7 @@ export default {
         .then(() => {
           this.delOpr(role_id)
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     async delOpr(id) {
       const data = {

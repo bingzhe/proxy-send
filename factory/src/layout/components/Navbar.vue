@@ -91,8 +91,12 @@ export default {
 
       /**
        * 清除数据
+       * localstore employee_id
+       * store siteinfo
        */
       delEmployeeId()
+
+      this.$store.commit('user/USER_SET_SITEINFO', {})
 
       this.$router.push('/login')
     },

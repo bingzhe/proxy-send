@@ -74,37 +74,12 @@
         <!-- table-content start -->
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="55" />
-
-          <el-table-column prop="username" label="账户名" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.username }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="real_name" label="姓名" min-width="80">
-            <template slot-scope="scope">
-              <span>{{ scope.row.real_name }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="phone" label="联系电话" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.phone }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="role_id" label="角色" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.role_id }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="status" label="状态" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.status_str }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="create_time" label="创建时间" min-width="80">
-            <template slot-scope="scope">
-              <span>{{ scope.row.create_time_str }}</span>
-            </template>
-          </el-table-column>
+          <el-table-column prop="username" label="账户名" min-width="60" />
+          <el-table-column prop="real_name" label="姓名" min-width="80" />
+          <el-table-column prop="phone" label="联系电话" min-width="60" />
+          <el-table-column prop="role_name" label="角色" min-width="60" />
+          <el-table-column prop="status_str" label="状态" min-width="60" />
+          <el-table-column prop="create_time" label="创建时间" min-width="80" />
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="handlerStaffEditClick(scope.row)">编辑</el-button>

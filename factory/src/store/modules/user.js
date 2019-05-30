@@ -23,7 +23,7 @@ const state = {
   theme_list: [],                        // 图库主题分类
   delivery_order_status_list: [],        // 物流单状态列表
   production_order_status_list: [],      // 生产单状态列
-  delivery_list: []                     // 快递公司
+  delivery_list: []                      // 快递公司
 }
 
 const mutations = {
@@ -40,22 +40,23 @@ const mutations = {
     state.siteInfo = siteInfo
     state.username = siteInfo.username
     state.employee_id = siteInfo.employee_id
-    state.permmap = siteInfo.permmap
-    state.vip_level_list = siteInfo.vip_level_list
-    state.employee_list = siteInfo.employee_list
-    state.role_list = siteInfo.role_list
-    state.phone_brand_list = siteInfo.phone_brand_list
-    state.model_list = siteInfo.model_list
-    state.raw_material_list = siteInfo.raw_material_list
-    state.theme_list = siteInfo.theme_list
-    state.delivery_order_status_list = siteInfo.delivery_order_status_list
-    state.production_order_status_list = siteInfo.production_order_status_list
+    state.permmap = siteInfo.permmap || {}
+    state.vip_level_list = siteInfo.vip_level_list || []
+    state.employee_list = siteInfo.employee_list || []
+    state.role_list = siteInfo.role_list || []
+    state.phone_brand_list = siteInfo.phone_brand_list || []
+    state.model_list = siteInfo.model_list || []
+    state.raw_material_list = siteInfo.raw_material_list || []
+    state.theme_list = siteInfo.theme_list || []
+    state.delivery_order_status_list = siteInfo.delivery_order_status_list || []
+    state.production_order_status_list = siteInfo.production_order_status_list || []
 
-    siteInfo.delivery_list = siteInfo.delivery_list.map(item => {
+    const delivery_list = (siteInfo.delivery_list || []).map(item => {
       item.delivery_str = item.price ? `${item.name}（邮费：${item.price}元）` : `${item.name}（邮费：包邮）`
       return item
     })
-    state.delivery_list = siteInfo.delivery_list
+
+    state.delivery_list = delivery_list
   }
 }
 
@@ -142,15 +143,15 @@ const actions = {
         const permmap = siteInfo.permmap
 
         constantRoutes.forEach(router => {
-          if (router.access) {
-            if (!permmap[router.access]) {
-              router.hidden = true
-            } else {
-              if (!(permmap[router.access].checked)) {
-                router.hidden = true
-              }
-            }
-          }
+          // if (router.access) {
+          //   if (!permmap[router.access]) {
+          //     router.hidden = true
+          //   } else {
+          //     if (!(permmap[router.access].checked)) {
+          //       router.hidden = true
+          //     }
+          //   }
+          // }
 
           if (router.children) {
             router.children.forEach(ch_router => {
@@ -164,6 +165,18 @@ const actions = {
                 }
               }
             })
+
+            const hiddenList = router.children.map(ch_router => {
+              return ch_router.hidden
+            })
+
+            const isAllHidden = hiddenList.every(item => {
+              return item
+            })
+
+            if (isAllHidden) {
+              router.hidden = true
+            }
           }
         })
         resolve()
