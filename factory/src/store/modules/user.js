@@ -161,6 +161,8 @@ const actions = {
                 } else {
                   if (!(permmap[ch_router.access].checked)) {
                     ch_router.hidden = true
+                  } else {
+                    ch_router.hidden = false
                   }
                 }
               }
@@ -176,6 +178,8 @@ const actions = {
 
             if (isAllHidden) {
               router.hidden = true
+            } else {
+              router.hidden = false
             }
           }
         })

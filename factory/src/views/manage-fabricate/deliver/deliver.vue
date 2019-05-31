@@ -3,7 +3,13 @@
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true" :rules="searchFormRules">
         <el-form-item prop="order_id">
-          <el-input v-model="searchForm.order_id" placeholder="请输入物流号或订单号" />
+          <el-input
+            ref="searchInput"
+            v-model="searchForm.order_id"
+            v-focus
+            placeholder="请输入物流号或订单号"
+            @keyup.enter.native="handlerSearchClick"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handlerSearchClick">搜索</el-button>
@@ -162,6 +168,12 @@ export default {
       if (resp.ret === -60340) this.displayStatus = 2
 
       if (resp.ret !== 0) return
+
+      /**
+       * 搜索成功，清空并获得焦点
+       */
+      this.searchForm.order_id = ''
+      this.$refs.searchInput.focus()
 
       this.displayStatus = 3
 

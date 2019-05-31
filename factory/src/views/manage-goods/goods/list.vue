@@ -99,46 +99,14 @@
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="55" />
 
-          <el-table-column prop="goods_id" label="商品编号" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.goods_id }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="goods_name" label="商品名称" min-width="80">
-            <template slot-scope="scope">
-              <span>{{ scope.row.goods_name }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="raw_material" label="材质" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.raw_material_txt }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="brand" label="品牌" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.brand_txt }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="model" label="型号" min-width="80">
-            <template slot-scope="scope">
-              <span>{{ scope.row.model_txt }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="type" label="商品种类" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.type }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="inventory" label="库存" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.inventory }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="status" label="状态" min-width="60">
-            <template slot-scope="scope">
-              <span>{{ scope.row.status_str }}</span>
-            </template>
-          </el-table-column>
+          <el-table-column prop="goods_id" label="商品编号" min-width="60" />
+          <el-table-column prop="goods_name" label="商品名称" min-width="80" />
+          <el-table-column prop="raw_material" label="材质" min-width="60" />
+          <el-table-column prop="brand_txt" label="品牌" min-width="60" />
+          <el-table-column prop="model_txt" label="型号" min-width="80" />
+          <el-table-column prop="type_txt" label="商品种类" min-width="60" />
+          <el-table-column prop="inventory" label="库存" min-width="60" />
+          <el-table-column prop="status_str" label="状态" min-width="60" />
           <el-table-column prop="opr" label="操作" width="160" align="center">
             <template slot-scope="scope">
               <el-button
