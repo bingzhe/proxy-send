@@ -213,11 +213,11 @@ const Http = new function() {
   }// end of EncSubmit : function(...
 
   THIS.DataEncSubmit = function(url, data, resp_callback, opt) {
-    for (const item in data) {
-      if (typeof (data[item]) !== 'string' && typeof (data[item]) !== 'number' && typeof (data[item]) !== 'boolean') {
-        data[item] = JSON.stringify(data[item])
-      }
-    }
+    // for (const item in data) {
+    //   if (typeof (data[item]) !== 'string' && typeof (data[item]) !== 'number' && typeof (data[item]) !== 'boolean') {
+    //     data[item] = JSON.stringify(data[item])
+    //   }
+    // }
 
     return THIS.EncSubmit(
       base_url + '/' + url,

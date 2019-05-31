@@ -90,7 +90,7 @@
           <el-table-column prop="person" label="收货人" min-width="60" />
           <el-table-column prop="phone" label="手机号码" min-width="60" />
           <el-table-column prop="delivery_number" label="物流单号" min-width="60" />
-          <el-table-column prop="create_time" label="下单时间" min-width="60" />
+          <el-table-column prop="create_time_txt" label="下单时间" min-width="60" />
           <el-table-column prop="status_txt" label="物流单状态" min-width="60" />
           <el-table-column prop="opr" label="操作" width="200" align="center">
             <template slot-scope="scope">
@@ -295,6 +295,7 @@ export default {
         file: target.files[0]
       }
 
+      console.log('导入文件 req=>', data)
       const resp = await deliveryOrderGet(data)
       console.log('导入文件 resp=>', resp)
 
