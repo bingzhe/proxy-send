@@ -1,0 +1,102 @@
+@import "./variables.scss";
+@import "./mixin.scss";
+@import "./transition.scss";
+@import "./element-ui.scss";
+@import "./sidebar.scss";
+
+body {
+  height: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, Arial, sans-serif;
+}
+
+label {
+  font-weight: 700;
+}
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#app {
+  height: 100%;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+div:focus {
+  outline: none;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+// main-container global css
+.app-container {
+  margin: 24px 30px 58px;
+}
+
+.table-wrapper-default {
+  border: 1px solid #e6e6e6;
+  .table-title {
+    background: #f9fafc;
+    height: 52px;
+    padding: 7px 21px;
+    .table-title__lable {
+      font-size: 16px;
+      color: #666;
+      float: left;
+      line-height: 38px;
+    }
+    .add-button-group {
+      float: right;
+    }
+  }
+  .pagination-wrapper {
+    height: 72px;
+    padding: 16px 10px 21px;
+    .pagination-total {
+      float: left;
+      color: #888888;
+      font-size: 14px;
+      line-height: 31px;
+      padding: 0 0 0 10px;
+
+      .num-text {
+        color: #e33119;
+      }
+    }
+    .sl-pagination {
+      float: right;
+    }
+  }
+}
