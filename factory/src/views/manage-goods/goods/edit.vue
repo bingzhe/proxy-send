@@ -251,7 +251,7 @@
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
-                  :rules="{required: true, message: '库存不能为空', trigger: 'blur'}"
+                  :rules="{validator: checkInventory,trigger: 'blur'}"
                   :prop="'opt_color_list.' + scope.$index + '.inventory'"
                 >
                   <el-input v-model.trim="scope.row.inventory" placeholder="请输入" />
@@ -314,6 +314,18 @@ export default {
     SlUpload
   },
   data() {
+    const checkInventory = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('库存不能为空'))
+      }
+      const reg = /^\d+$/
+
+      if (!reg.test(value)) {
+        callback(new Error('库存只能为数字'))
+      } else {
+        callback()
+      }
+    }
     return {
       token: window.Store.GetGlobalData('token'),
 
@@ -416,7 +428,9 @@ export default {
             GOODS_PRINT_POSITION.RIGHT_BOTTOM
           )
         }
-      ]
+      ],
+
+      checkInventory
     }
   },
   computed: {

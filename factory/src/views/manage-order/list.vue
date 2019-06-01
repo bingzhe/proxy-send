@@ -23,10 +23,10 @@
         <el-form-item label="收货人姓名" prop="consignee_person" label-width="85px">
           <el-input v-model.trim="searchForm.consignee_person" placeholder="请输入" />
         </el-form-item>
+        <br>
         <el-form-item label="商户名" prop="business_name" label-width="70px">
           <el-input v-model.trim="searchForm.business_name" placeholder="请输入" />
         </el-form-item>
-        <br>
         <el-form-item label="下单时间" prop="order_time" label-width="70px">
           <el-date-picker
             v-model="searchForm.order_time"
@@ -297,21 +297,11 @@ export default {
 .search-wrapper {
   padding-top: 30px;
 
-  .search-item {
-    float: left;
-    margin: 0 20px 20px 0;
-    .search-label {
-      width: 72px;
-      text-align: right;
-      color: #333;
-      float: left;
-      font-size: 14px;
-      line-height: 38px;
-      padding-right: 12px;
-    }
-    .search-value {
-      float: left;
-    }
+  .el-input {
+    width: 180px;
+  }
+  .el-select {
+    width: 180px;
   }
 }
 

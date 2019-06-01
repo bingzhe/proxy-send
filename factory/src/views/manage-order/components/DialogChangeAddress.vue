@@ -183,8 +183,6 @@ export default {
       this.changeAddressForm.city = res[1] || ''
       this.changeAddressForm.area = res[2] || ''
       this.changeAddressForm.street = res[3] || ''
-
-      console.log(res)
     }
   }
 }

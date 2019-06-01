@@ -64,7 +64,15 @@
           <el-table-column prop="opr_time_str" label="操作时间" min-width="60" />
           <el-table-column prop="goods_id" label="操作" min-width="60">
             <template slot-scope="scope">
-              <el-button type="text">查看详情</el-button>
+              <el-button
+                v-if="scope.row.opr_type === OPR_TYPE.ORDER ||
+                  scope.row.opr_type === OPR_TYPE.ADJUST_ORDER_FEE ||
+                  scope.row.opr_type === OPR_TYPE.ORDER_FAIL_REFUND ||
+                  scope.row.opr_type === OPR_TYPE.ADUIT_FAIL_REFUND ||
+                  scope.row.opr_type === OPR_TYPE.REFUND"
+                type="text"
+                @click="goSearchOrderinfo(scope.row.order_id)"
+              >查看详情</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -131,7 +139,8 @@ export default {
         { label: OPR_TYPE.toString(OPR_TYPE.ADJUST_BALANCE), value: OPR_TYPE.ADJUST_BALANCE },
         { label: OPR_TYPE.toString(OPR_TYPE.REFUND), value: OPR_TYPE.REFUND }
       ],
-      pickerOptions
+      pickerOptions,
+      OPR_TYPE
     }
   },
   computed: {
@@ -204,7 +213,16 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val
       this.getList()
+    },
+    goSearchOrderinfo(id) {
+      this.$router.push({
+        path: '/manage-order/searchorderinfo',
+        query: {
+          orderid: id
+        }
+      })
     }
+
   }
 }
 </script>

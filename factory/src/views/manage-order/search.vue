@@ -23,10 +23,10 @@
         <el-form-item label="商户名" prop="business_name" label-width="70px">
           <el-input v-model.trim="searchForm.business_name" placeholder="请输入" />
         </el-form-item>
+        <br>
         <el-form-item label="业务员" prop="salesman" label-width="70px">
           <el-input v-model.trim="searchForm.salesman" placeholder="请输入" />
         </el-form-item>
-        <br>
         <el-form-item label="下单时间" prop="order_time" label-width="70px">
           <el-date-picker
             v-model="searchForm.order_time"
@@ -110,6 +110,7 @@
               <el-button
                 v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_WAIT"
                 type="text"
+                @click="openChangeAddressDialog(scope.row.order_id)"
               >修改收货信息</el-button>
               <el-button
                 v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
@@ -156,17 +157,27 @@
       @close="handlerRefundDialogClose"
       @on-success="handlerRefundDialogSuc"
     />
+
+    <!-- 调整地址 -->
+    <dialog-change-address
+      ref="changeAddress"
+      :order-id="curChangeAddressId"
+      @close="handlerChangeAddressClose"
+      @on-success="handlerChangeAddrerss"
+    />
   </div>
 </template>
 <script>
 import { orderGet } from '@/api/api'
 import moment from 'moment'
 import { ORDER_STATUS, pickerOptions } from '@/config/cfg'
+import DialogChangeAddress from './components/DialogChangeAddress'
 import DialogRefund from './components/DialogRefund'
 
 export default {
   components: {
-    DialogRefund
+    DialogRefund,
+    DialogChangeAddress
   },
   data() {
     return {
@@ -232,7 +243,9 @@ export default {
       refundInfo: {
         order_id: '',
         actual_fee: ''
-      }
+      },
+
+      curChangeAddressId: ''
     }
   },
   computed: {
@@ -338,6 +351,16 @@ export default {
     },
     handlerRefundDialogSuc() {
       this.getList()
+    },
+    openChangeAddressDialog(id) {
+      this.curChangeAddressId = id
+      this.$refs.changeAddress.show()
+    },
+    handlerChangeAddressClose() {
+      this.curChangeAddressId = ''
+    },
+    handlerChangeAddrerss() {
+      this.getList()
     }
   }
 }
@@ -353,22 +376,13 @@ export default {
 .search-wrapper {
   padding-top: 30px;
 
-  .search-item {
-    float: left;
-    margin: 0 20px 20px 0;
-    .search-label {
-      width: 72px;
-      text-align: right;
-      color: #333;
-      float: left;
-      font-size: 14px;
-      line-height: 38px;
-      padding-right: 12px;
-    }
-    .search-value {
-      float: left;
-    }
+  .el-input {
+    width: 180px;
   }
+  .el-select {
+    width: 180px;
+  }
+
 }
 
 .el-table {
