@@ -69,6 +69,20 @@ export const constantRoutes = [
         name: 'shopcart',
         component: () => import('@/views/manage-goods/shopcart'),
         meta: { title: '我的购物车', icon: 'shoujijixing' }
+      },
+      {
+        path: 'norm/:goods_id',
+        name: 'goodsnorm',
+        hidden: true,
+        component: () => import('@/views/manage-goods/SkuNorm'),
+        meta: { title: '标品下单' }
+      },
+      {
+        path: 'diy/:goods_id',
+        name: 'goodsdiy',
+        hidden: true,
+        component: () => import('@/views/manage-goods/SkuDiy'),
+        meta: { title: 'DIY下单' }
       }
     ]
   },

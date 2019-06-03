@@ -80,7 +80,7 @@
           <el-table-column prop="type_txt" label="类型" min-width="60" />
           <el-table-column prop="opr" label="操作" min-width="60" align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="handlerOrderBtnClick(scope.row.goods_id)">下单</el-button>
+              <el-button type="text" @click="handlerOrderBtnClick(scope.row)">下单</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -226,8 +226,15 @@ export default {
       this.listQuery.page = val
       this.getGoodsList()
     },
-    handlerOrderBtnClick(id) {
+    handlerOrderBtnClick(row) {
+      const goodsType = row.type
+      const goodsId = row.goods_id
 
+      if (goodsType === GOODS_TYPE.DIY) {
+        this.$router.push({ path: `/manage-goods/diy/${goodsId}` })
+      } else if (goodsType === GOODS_TYPE.NORM) {
+        this.$router.push({ path: `/manage-goods/norm/${goodsId}` })
+      }
     }
   }
 }

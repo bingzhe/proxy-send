@@ -491,7 +491,7 @@ export default {
       this.baseinfoForm.type = info.type
       this.baseinfoForm.raw_material = info.raw_material || ''
       this.baseinfoForm.brand = info.brand || ''
-      this.baseinfoForm.model = info.model || ''
+      // this.baseinfoForm.model = info.model || ''
       this.baseinfoForm.price = info.price
       this.baseinfoForm.remark = info.remark || ''
       this.baseinfoForm.inventory = info.inventory || ''
@@ -519,6 +519,9 @@ export default {
           }`
         })
       }
+
+      this.handlerBrandChange(this.baseinfoForm.brand)
+      this.baseinfoForm.model = info.model || ''
     },
     async handlerSaveBtnClick() {
       const data = {
