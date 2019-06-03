@@ -32,6 +32,7 @@
 
 <script>
 import SlDialog from '@/components/Dialog/Dialog'
+import { deliveryOrderSave } from '@/api/api'
 
 export default {
   components: {
@@ -70,12 +71,19 @@ export default {
         }
       })
     },
-    changeDeliveryNumber() {
+    async changeDeliveryNumber() {
       const data = {
-        delivery_number: this.deliveryForm.delivery_number
+        opr: 'modify_delivery_number',
+        delivery_number: this.deliveryForm.delivery_number,
+        delivery_id: this.delivery.delivery_id
       }
 
       console.log('修改物流单号 req=>', data)
+      const resp = await deliveryOrderSave(data)
+      console.log('修改物流单号 res=>', resp)
+
+      if (resp.ret !== 0) return
+
       this.$emit('on-success')
       this.handlerChangeDeliveryClose()
       this.$refs.changeDeliveryDialog.hide()

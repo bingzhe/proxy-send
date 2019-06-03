@@ -71,7 +71,7 @@
                   scope.row.opr_type === OPR_TYPE.ADUIT_FAIL_REFUND ||
                   scope.row.opr_type === OPR_TYPE.REFUND"
                 type="text"
-                @click="goSearchOrderinfo(scope.row.order_id)"
+                @click="goSearchOrderinfo(scope.row)"
               >查看详情</el-button>
             </template>
           </el-table-column>
@@ -214,7 +214,8 @@ export default {
       this.listQuery.page = val
       this.getList()
     },
-    goSearchOrderinfo(id) {
+    goSearchOrderinfo(row) {
+      const id = row.opr_number
       this.$router.push({
         path: '/manage-order/searchorderinfo',
         query: {

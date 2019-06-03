@@ -46,7 +46,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/manage-goods/goods'
+    redirect: '/manage-goods/goodslist'
   },
 
   // 商品管理
@@ -59,27 +59,10 @@ export const constantRoutes = [
     alwaysShow: true,
     children: [
       {
-        path: 'goods',
-        name: 'goods',
-        redirect: '/manage-goods/goods/list',
-        component: () => import('@/views/manage-goods/goods'),
-        meta: { title: '商品列表', icon: 'shangpingliebiao' },
-        children: [
-          {
-            path: 'list',
-            name: 'list',
-            hidden: true,
-            component: () => import('@/views/manage-goods/goods/list'),
-            meta: { title: '商品列表', activeMenu: '/manage-goods/goods' }
-          },
-          {
-            path: 'edit',
-            name: 'edit',
-            hidden: true,
-            component: () => import('@/views/manage-goods/goods/edit'),
-            meta: { title: '商品编辑', activeMenu: '/manage-goods/goods' }
-          }
-        ]
+        path: 'goodslist',
+        name: 'goodslist',
+        component: () => import('@/views/manage-goods/goodslist'),
+        meta: { title: '商品列表', icon: 'shangpingliebiao' }
       },
       {
         path: 'shopcart',
@@ -151,14 +134,12 @@ export const constantRoutes = [
       {
         path: 'shop',
         name: 'shop',
-        access: '11',
         component: () => import('@/views/manage-system/shop/shop'),
         meta: { title: '账户信息', icon: 'shagnhuguanli' }
       },
       {
         path: 'param',
         name: 'param',
-        access: '12',
         component: () => import('@/views/manage-system/ChangePassword'),
         meta: { title: '修改密码', icon: 'canshupeizhi' }
       }

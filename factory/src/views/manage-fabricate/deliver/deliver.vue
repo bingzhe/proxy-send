@@ -156,7 +156,7 @@ export default {
     async getOrderinfo() {
       const data = {
         opr: 'get_order_info',
-        order_id: this.searchForm.order_id
+        query_value: this.searchForm.order_id
       }
       this.loading = true
 
@@ -231,6 +231,11 @@ export default {
         duration: 2000
       })
       this.getOrderinfo()
+      /**
+       * 发货成功，清空并获得焦点
+       */
+      this.searchForm.order_id = ''
+      this.$refs.searchInput.focus()
     }
   }
 }

@@ -5,7 +5,7 @@
     </transition>
     <div class="app-footer">
       <div>Copyright © All Rights Reserved.</div>
-      <div>客服信息：QQ:XXXXXXXXX； 交流群：143434343443</div>
+      <!-- <div>客服信息：QQ:XXXXXXXXX； 交流群：143434343443</div> -->
     </div>
   </section>
 </template>

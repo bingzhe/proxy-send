@@ -9,17 +9,6 @@
             <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-form-item label="商品种类" prop="type" label-width="70px">
-          <el-select v-model="searchForm.type" placeholder="请选择">
-            <el-option key="全部" label="全部" value />
-            <el-option
-              v-for="item in goodsTypeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
         <el-form-item label="品牌" prop="brand" label-width="70px">
           <el-select v-model="searchForm.brand" placeholder="请选择">
             <el-option key="全部" label="全部" value />
@@ -31,16 +20,20 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="型号" prop="model" label-width="70px">
-          <el-select v-model="searchForm.model" filterable placeholder="请选择">
+        <el-form-item label="类型" prop="type" label-width="70px">
+          <el-select v-model="searchForm.type" placeholder="请选择">
             <el-option key="全部" label="全部" value />
             <el-option
-              v-for="item in model_list"
-              :key="item.model_id"
-              :label="item.model_name"
-              :value="item.model_id"
+              v-for="item in goodsTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
             />
           </el-select>
+        </el-form-item>
+
+        <el-form-item label="型号" prop="model" label-width="70px">
+          <el-input v-model.trim="searchForm.model" placeholder="请输入" />
         </el-form-item>
         <br>
         <el-form-item label="商品名称" prop="goods_name" label-width="70px">
@@ -48,25 +41,6 @@
         </el-form-item>
         <el-form-item label="商品编号" prop="goods_id" label-width="70px">
           <el-input v-model.trim="searchForm.goods_id" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="库存量" prop="goods_stock_type" label-width="70px">
-          <el-select
-            v-model="searchForm.goods_stock_type"
-            class="goods-stock-type"
-            placeholder="请选择"
-          >
-            <el-option key="全部" label="全部" value />
-            <el-option key="more" label="大于等于" value="more" />
-            <el-option key="less" label="小于等于" value="less" />
-          </el-select>
-        </el-form-item>
-        <el-form-item prop="goods_stock">
-          <el-input
-            v-model.trim="searchForm.goods_stock"
-            v-limit-input-number="searchForm.goods_stock"
-            class="goods-stock"
-            placeholder="请输入"
-          />
         </el-form-item>
         <el-form-item>
           <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
@@ -87,46 +61,26 @@
           </span>
           <span>商品列表</span>
         </div>
-        <div class="add-button-group">
-          <router-link to="/manage-goods/goods/edit">
-            <el-button class="goods-add btn-h-38" type="primary">新增商品</el-button>
-          </router-link>
-        </div>
       </div>
 
       <div class="table-content default-table-change">
         <!-- table-content start -->
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
-          <el-table-column type="selection" align="center" width="55" />
-
+          <!-- <el-table-column type="selection" align="center" width="55" /> -->
+          <el-table-column prop="goods_id" label="序号" min-width="60" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.$index + 1 }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="goods_id" label="商品编号" min-width="60" />
           <el-table-column prop="goods_name" label="商品名称" min-width="80" />
           <el-table-column prop="raw_material" label="材质" min-width="60" />
           <el-table-column prop="brand_txt" label="品牌" min-width="60" />
           <el-table-column prop="model_txt" label="型号" min-width="80" />
-          <el-table-column prop="type_txt" label="商品种类" min-width="60" />
-          <el-table-column prop="inventory" label="库存" min-width="60" />
-          <el-table-column prop="status_str" label="状态" min-width="60" />
-          <el-table-column prop="opr" label="操作" width="160" align="center">
+          <el-table-column prop="type_txt" label="类型" min-width="60" />
+          <el-table-column prop="opr" label="操作" min-width="60" align="center">
             <template slot-scope="scope">
-              <el-button
-                v-if="scope.row.status === GOODS_STATUS.OFF"
-                class="btn-green"
-                type="text"
-                @click="handlerOnOffClick(scope.row.goods_id)"
-              >上架</el-button>
-              <el-button
-                v-if="scope.row.status === GOODS_STATUS.ON"
-                class="btn-green"
-                type="text"
-                @click="handlerOnOffClick(scope.row.goods_id)"
-              >下架</el-button>
-              <el-button type="text" @click="handlerEditBtnClick(scope.row.goods_id)">编辑</el-button>
-              <el-button
-                class="btn-red"
-                type="text"
-                @click="handlerDeleteBtnClick(scope.row.goods_id)"
-              >删除</el-button>
+              <el-button type="text" @click="handlerOrderBtnClick(scope.row.goods_id)">下单</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -159,7 +113,7 @@
 </template>
 <script>
 import { GOODS_TYPE, GOODS_STATUS } from '@/config/cfg'
-import { goodsSave, goodsGet } from '@/api/api'
+import { goodsGet } from '@/api/api'
 import { mapState } from 'vuex'
 
 export default {
@@ -168,13 +122,11 @@ export default {
       // search
       searchForm: {
         goods_material: '',   // 材质
-        type: '',       // 商品种类
+        type: '',       // 类型
         brand: '',      // 品牌
         model: '',      // 型号
         goods_name: '',       // 商品名称
-        goods_id: '',         // 商品编号
-        goods_stock_type: '', // 库存类型   （1.大于等于：more 2.小于等于：less）
-        goods_stock: ''       // 商品库存
+        goods_id: ''         // 商品编号
       },
 
       list: [],
@@ -188,18 +140,9 @@ export default {
       },
 
       goodsTypeOptions: [
-        {
-          value: GOODS_TYPE.DIY,
-          label: GOODS_TYPE.toString(GOODS_TYPE.DIY)
-        },
-        {
-          value: GOODS_TYPE.NORM,
-          label: GOODS_TYPE.toString(GOODS_TYPE.NORM)
-        },
-        {
-          value: GOODS_TYPE.GIFT,
-          label: GOODS_TYPE.toString(GOODS_TYPE.GIFT)
-        }
+        { value: GOODS_TYPE.DIY, label: GOODS_TYPE.toString(GOODS_TYPE.DIY) },
+        { value: GOODS_TYPE.NORM, label: GOODS_TYPE.toString(GOODS_TYPE.NORM) },
+        { value: GOODS_TYPE.GIFT, label: GOODS_TYPE.toString(GOODS_TYPE.GIFT) }
       ],
       GOODS_STATUS
     }
@@ -227,7 +170,7 @@ export default {
       if (this.searchForm.goods_material) {
         data.goods_material = this.searchForm.goods_material
       }
-      // 商品种类
+      // 类型
       if (this.searchForm.type) {
         data.type = this.searchForm.type
       }
@@ -246,12 +189,6 @@ export default {
       // 商品编号
       if (this.searchForm.goods_id) {
         data.goods_id = this.searchForm.goods_id
-      }
-      // 商品库存 查找
-      if (this.searchForm.goods_stock_type === 'more') {
-        data.inventory_gte = this.searchForm.goods_stock
-      } else if (this.searchForm.goods_stock_type === 'less') {
-        data.inventory_lte = this.searchForm.goods_stock
       }
 
       this.tableLoading = true
@@ -289,43 +226,8 @@ export default {
       this.listQuery.page = val
       this.getGoodsList()
     },
-    handlerEditBtnClick(id) {
-      this.$router.push({
-        path: '/manage-goods/goods/edit',
-        query: {
-          goodsid: id
-        }
-      })
-    },
-    handlerDeleteBtnClick(id) {
-      this.$confirm('确认要删除选中商品？', '删除确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.delOpr(id)
-      }).catch(() => { })
-    },
-    async delOpr(id) {
-      const data = {
-        opr: 'delete_goods',
-        goods_id: id
-      }
+    handlerOrderBtnClick(id) {
 
-      const resp = await goodsSave(data)
-      if (resp.ret !== 0) return
-      this.getGoodsList()
-      this.$notify({
-        title: '成功',
-        message: '删除成功',
-        type: 'success'
-      })
-    },
-    handlerOnOffClick(id) {
-      /**
-      * 掉接口  上下架
-      * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      */
     }
   }
 }
