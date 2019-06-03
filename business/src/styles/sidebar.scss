@@ -73,7 +73,7 @@
       border-left: 6px solid $menuBg;
     }
     .is-active.el-menu-item.submenu-title-noDropdown {
-      border-left: 6px solid #2584f9;
+      border-left: 6px solid #4995F4;
     }
     .el-submenu__title i {
       color: #fff;
@@ -88,14 +88,14 @@
 
               &.is-active {
                 .el-submenu__title {
-                  border-left: 6px solid #2584f9;
+                  border-left: 6px solid #4995F4;
                 }
               }
             }
           }
           > .el-submenu.is-active {
             > .el-submenu__title {
-              border-left: 6px solid #2584f9;
+              border-left: 6px solid #4995F4;
             }
           }
         }
@@ -110,7 +110,7 @@
         background-color: $menuHover !important;
 
         //------- add custome------
-        border-left-color: #2584f9 !important;
+        border-left-color: #4995F4 !important;
       }
     }
 
@@ -136,7 +136,7 @@
     }
     //------- add custome------
     .is-active.el-menu-item {
-      background-color: #2584f9 !important;
+      background-color: #4995F4 !important;
     }
   }
 
