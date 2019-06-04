@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
-    <div class="title-wraper">
+    <div class="title-wrapper">
       <baseinfo-title color="#FB7474" text="新增订单" />
     </div>
     <div class="goodsinfo-wrapper">
-      <div class="baseinfo-wrapper">
+      <!-- <div class="baseinfo-wrapper">
         <el-row>
           <el-col :span="7" class="baseinfo">
             <span class="base-label">商品编号：</span>
@@ -39,11 +39,11 @@
             <span class="base-value">{{ goodsInfo.remark }}</span>
           </el-col>
         </el-row>
-      </div>
-
+      </div>-->
+      <sku-baseinfo :goods-info="goodsInfo" />
       <!-- 订购数量： -->
       <div class="opr-item clearfix">
-        <div class="opr-lable">订购数量：</div>
+        <div class="opr-lable">订购数量</div>
         <div class="opr-value">
           <el-input-number v-model="num" controls-position="right" :min="1" />
         </div>
@@ -52,7 +52,7 @@
 
       <!-- 颜色分类： -->
       <div class="opr-item clearfix">
-        <div class="opr-lable">颜色分类：</div>
+        <div class="opr-lable">颜色分类</div>
         <div class="opr-value pic-list-wrapper clearfix">
           <div
             v-for="(item, index) in opt_color_list"
@@ -78,11 +78,13 @@
 
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
+import SkuBaseinfo from './components/SkuBaseinfo'
 import { goodsGet } from '@/api/api'
 
 export default {
   components: {
-    BaseinfoTitle
+    BaseinfoTitle,
+    SkuBaseinfo
   },
 
   data() {
@@ -151,7 +153,7 @@ export default {
   border-radius: 2px;
   min-width: 1080px;
 }
-.title-wraper {
+.title-wrapper {
   height: 54px;
   line-height: 54px;
   padding: 0 90px;
@@ -161,34 +163,35 @@ export default {
   padding: 0 140px;
   min-height: 550px;
 
-  .baseinfo-wrapper {
-    padding: 30px 0 10px;
-    border-bottom: 1px solid #eff4f9;
+  // .baseinfo-wrapper {
+  //   padding: 30px 0 10px;
+  //   border-bottom: 1px solid #eff4f9;
 
-    .baseinfo {
-      margin-bottom: 20px;
-      .base-label {
-        display: inline-block;
-        width: 75px;
-        text-align: right;
-        color: #6d7585;
-        font-size: 14px;
-      }
-      .base-value {
-        color: #49505e;
-        font-size: 14px;
+  //   .baseinfo {
+  //     margin-bottom: 20px;
+  //     .base-label {
+  //       display: inline-block;
+  //       width: 75px;
+  //       text-align: right;
+  //       color: #6d7585;
+  //       font-size: 14px;
+  //     }
+  //     .base-value {
+  //       color: #49505e;
+  //       font-size: 14px;
 
-        &.price {
-          font-size: 16px;
-          color: #fd7474;
-        }
-      }
-    }
-  }
+  //       &.price {
+  //         font-size: 16px;
+  //         color: #fd7474;
+  //       }
+  //     }
+  //   }
+  // }
 
   .opr-item {
     margin-top: 24px;
     .opr-lable {
+      padding-right: 15px;
       float: left;
       color: #6d7585;
       font-size: 14px;
