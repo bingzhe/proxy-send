@@ -198,6 +198,7 @@ export default {
       this.goods_list = info.goods_list || []
       this.goods_list.forEach(goods => {
         goods.type_str = GOODS_TYPE.toString(goods.type)
+        goods.des_str = `${goods.type_str}/${goods.raw_material}/${goods.model_txt}/${goods.color}/${goods.num}`
         goods.goods_img_url = `${
           process.env.VUE_APP_BASEURL
         }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
@@ -214,7 +215,7 @@ export default {
 
       const data = {
         opr: 'goods_sendout',
-        order_id: this.searchForm.order_id, // 订单id(编号)
+        order_id: this.orderInfo.order_id.value, // 订单id(编号)
         delivery_number: this.orderInfo.delivery_number.value // 物流单号（发货的单号）
       }
 
@@ -245,11 +246,11 @@ export default {
 .app-container {
   background: #ffffff;
   border-radius: 2px;
-  padding: 30px 80px 35px;
+  padding: 24px 80px 35px;
 }
 .search-wrapper {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 5px;
   .el-input {
     width: 600px;
     margin-right: 20px;
@@ -275,7 +276,7 @@ export default {
       padding: 25px 50px 0;
 
       .info-item {
-        margin-bottom: 25px;
+        margin-bottom: 18px;
       }
 
       .info-label {
@@ -350,7 +351,7 @@ export default {
     }
 
     .goods-list-wrapper {
-      padding: 30px 50px 0;
+      padding: 20px 50px 0;
     }
   }
 }

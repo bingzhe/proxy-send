@@ -5,10 +5,10 @@
       <span class="card-value">{{ goodsInfo.goods_name }}</span>
     </div>
     <div class="card-item">
-      <span class="card-label">商品类型：</span>
-      <span class="card-value">{{ goodsInfo.type_str }}</span>
+      <span class="card-label">商品信息：</span>
+      <span class="card-value">{{ goodsInfo.des_str }}</span>
     </div>
-    <div class="card-item">
+    <!-- <div class="card-item">
       <span class="card-label">材质：</span>
       <span class="card-value">{{ goodsInfo.raw_material }}</span>
     </div>
@@ -23,7 +23,7 @@
     <div class="card-item">
       <span class="card-label">数量：</span>
       <span class="card-value">{{ goodsInfo.num }}</span>
-    </div>
+    </div> -->
     <div class="card-img">
       <img class="goods-img" :src="goodsInfo.goods_img_url" alt>
     </div>
@@ -61,13 +61,13 @@ export default {
   margin-bottom: 20px;
 }
 .card-item {
-  margin-bottom: 20px;
+  margin-bottom: 17px;
   .card-label {
     font-size: 14px;
     font-weight: bold;
     color: #666;
     display: inline-block;
-    width: 80px;
+    width: 70px;
     text-align: right;
   }
   .card-value {
@@ -79,7 +79,7 @@ export default {
 .goods-img{
   display: inline-block;
     width: 225px;
-    height: 298px;
+    height: 280px;
 }
 </style>
 

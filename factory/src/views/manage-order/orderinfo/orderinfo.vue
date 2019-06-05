@@ -238,10 +238,7 @@ export default {
 
       // 商品信息
       this.goodsList = info.goods_list.map(goods => {
-        // 少边框   <<<<<<<<<<<<<
-        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${
-          goods.model_txt
-        }_${goods.goods_id}`
+        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.color}_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
         goods.goods_img_url = `${
