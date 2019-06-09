@@ -130,3 +130,10 @@ export const rechargeSave = generateRequestFn('recharge_save.php')
 // =================== 对账单 ======================
 // accounttrack_get
 export const accounttrackGet = generateRequestFn('accounttrack_get.php')
+
+// ==============================  business ================================
+// buycart_get
+export const buycartGet = generateRequestFn('buycart_get')
+
+// buycart_save
+export const buycartSave = generateRequestFn('buycart_save')
