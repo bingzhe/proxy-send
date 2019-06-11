@@ -1,104 +1,79 @@
 <template>
   <div class="app-container">
-    <div class="order-info-wrapper">
-      <div class="order-title-wrapper">
-        <div class="order-title-left">
-          <div class="order-status-wrapper">
-            <div class="order-status">订单信息</div>
-          </div>
+    <div class="order-title-wrapper">
+      <div class="order-title-left">
+        <div v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="error-icon">
+          <img src="@/assets/images/error-tip.png">
         </div>
-        <div class="btn-group-wrapper">
-          <el-button class="btn-bd-primary" @click="openChangeAddressDialog">修改收货人信息</el-button>
-          <el-button class="btn-bd-primary" @click="oprAdjustFeeDialog">调整订单金额</el-button>
-          <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
-        </div>
-      </div>
-      <!-- 基本信息 -->
-      <div class="info-wrapper baseinfo-wrapper">
-        <div class="baseinfo-title-wrapper">
-          <baseinfo-title color="#F348A1" text="基本信息" />
-        </div>
-        <div class="info-content-wrapper">
-          <table-baseinfo :baseinfo-list="baseinfoList" />
+        <div class="order-status-wrapper">
+          <div class="order-status">当前订单状态：{{ ORDER_STATUS.toString(order_status) }}</div>
+          <div
+            v-if="order_status === ORDER_STATUS.AUDIT_FAIL"
+            class="order-status-reason"
+          >{{ status_remark }}</div>
         </div>
       </div>
-      <!-- 商品信息 -->
-      <div class="info-wrapper goodsinfo-wrapper">
-        <div class="baseinfo-title-wrapper">
-          <baseinfo-title color="#F37948" text="商品信息" />
-        </div>
-        <div class="info-content-wrapper">
-          <table-goodsinfo :goods-list="goodsList" />
-        </div>
+      <div class="btn-group-wrapper">
+        <el-button class="btn-bd-primary" @click="handlerGoBackClick">撤销订单</el-button>
+        <el-button
+          v-if="order_status === ORDER_STATUS.AUDIT_FAIL"
+          class="btn-bd-primary"
+          @click="handlerGoBackClick"
+        >编辑订单</el-button>
+        <el-button
+          v-if="order_status === ORDER_STATUS.AUDIT_FAIL|| order_status === ORDER_STATUS.REVOCAT"
+          class="btn-bd-primary"
+          @click="handlerGoBackClick"
+        >删除订单</el-button>
+        <el-button v-if="order_status === ORDER_STATUS.DELIVERY_SUC" class="btn-bd-primary">物流追踪</el-button>
+        <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
       </div>
-      <!-- 收货人信息 -->
-      <div class="info-wrapper consigneeinfo-wrapper">
-        <div class="baseinfo-title-wrapper">
-          <baseinfo-title color="#F3C148" text="收货人信息" />
-        </div>
-        <div class="info-content-wrapper">
-          <table-consignee :consigneeinfo="consigneeinfo" />
-        </div>
-      </div>
-      <!-- 费用信息 -->
-      <div class="info-wrapper feeinfo-wrapper">
-        <div class="baseinfo-title-wrapper">
-          <baseinfo-title color="#4880F3" text="费用信息" />
-        </div>
-        <div class="info-content-wrapper">
-          <table-order-feeinfo :order-fee-list="orderFeeList" />
-        </div>
-      </div>
-      <!-- 操作历史信息 -->
-      <!-- <div class="info-wrapper order-track-info-wrapper">
+    </div>
+    <!-- 基本信息 -->
+    <div class="info-wrapper baseinfo-wrapper">
       <div class="baseinfo-title-wrapper">
-        <baseinfo-title color="#333333" text="操作历史信息" />
+        <baseinfo-title color="#FB7474" text="基本信息" />
+      </div>
+      <div class="info-content-wrapper">
+        <table-baseinfo :baseinfo-list="baseinfoList" />
+      </div>
+    </div>
+    <!-- 商品信息 -->
+    <div class="info-wrapper goodsinfo-wrapper">
+      <div class="baseinfo-title-wrapper">
+        <baseinfo-title color="#74CDFB" text="商品信息" />
+      </div>
+      <div class="info-content-wrapper">
+        <table-goodsinfo :goods-list="goodsList" />
+      </div>
+    </div>
+    <!-- 收货人信息 -->
+    <div class="info-wrapper consigneeinfo-wrapper">
+      <div class="baseinfo-title-wrapper">
+        <baseinfo-title color="#747AFB" text="收货人信息" />
+      </div>
+      <div class="info-content-wrapper">
+        <table-consignee :consigneeinfo="consigneeinfo" />
+      </div>
+    </div>
+    <!-- 费用信息 -->
+    <div class="info-wrapper feeinfo-wrapper">
+      <div class="baseinfo-title-wrapper">
+        <baseinfo-title color="#FB74F3" text="费用信息" />
+      </div>
+      <div class="info-content-wrapper">
+        <table-order-feeinfo :order-fee-list="orderFeeList" />
+      </div>
+    </div>
+    <!-- 操作历史信息 -->
+    <div class="info-wrapper order-track-info-wrapper">
+      <div class="baseinfo-title-wrapper">
+        <baseinfo-title color="#74FBDA" text="操作历史信息" />
       </div>
       <div class="info-content-wrapper">
         <table-order-track :order-track="orderTrack" />
       </div>
-      </div>-->
     </div>
-    <div v-loading="tableLoading" class="audit-wrapper" element-loading-text="拼命加载中">
-      <div class="audit-title">审单处理</div>
-      <div class="audit-form-wrapper">
-        <el-form ref="auditForm" :model="auditForm" label-width="107px">
-          <el-form-item label="结论：" prop="pass">
-            <el-radio v-model="auditForm.pass" :label="1">通过</el-radio>
-            <el-radio v-model="auditForm.pass" :label="0">不通过</el-radio>
-          </el-form-item>
-          <el-form-item label="原因：" prop="remark">
-            <el-input
-              v-model="auditForm.remark"
-              :rows="4"
-              type="textarea"
-              placeholder="请输入内容"
-              maxlength="200"
-              show-word-limit
-            />
-          </el-form-item>
-        </el-form>
-      </div>
-      <div class="audit-opr">
-        <el-button class="btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
-        <el-button type="primary" @click="auditOpr">提交</el-button>
-        <el-button class="btn-bd-primary" @click="auditOprAndNext">提交并审核下一单</el-button>
-      </div>
-    </div>
-
-    <!-- 调整订单金额 -->
-    <dialog-adjust-order-fee
-      ref="adjustFeeDialog"
-      :order-id="order_id"
-      @on-success="handlerAdjustFeeSuc"
-    />
-    <!-- @close="handlerAdjustFeeClose" -->
-    <!-- 调整地址 -->
-    <dialog-change-address
-      ref="changeAddress"
-      :order-id="order_id"
-      @on-success="handlerChangeAddrerss"
-    />
   </div>
 </template>
 
@@ -108,12 +83,10 @@ import TableBaseinfo from '../components/TableBaseinfo'
 import TableGoodsinfo from '../components/TableGoodsinfo'
 import TableConsignee from '../components/TableConsigneeinfo'
 import TableOrderFeeinfo from '../components/TableOrderFeeinfo'
-import DialogAdjustOrderFee from '../components/DialogAdjustOrderFee'
-import DialogChangeAddress from '../components/DialogChangeAddress'
-// import TableOrderTrack from '../components/TableOrderTrack'
+import TableOrderTrack from '../components/TableOrderTrack'
 import moment from 'moment'
 import { GOODS_TYPE, ORDER_STATUS } from '@/config/cfg'
-import { orderGet, orderSave } from '@/api/api'
+import { orderGet } from '@/api/api'
 
 export default {
   components: {
@@ -122,9 +95,7 @@ export default {
     TableGoodsinfo,
     TableConsignee,
     TableOrderFeeinfo,
-    DialogAdjustOrderFee,
-    DialogChangeAddress
-    // TableOrderTrack
+    TableOrderTrack
   },
 
   data() {
@@ -134,7 +105,6 @@ export default {
       order_id: '',
       order_status: '',
       status_remark: '', // 订单状态原因，审核不通过等
-
       // 基本信息
       baseinfoList: [
         {
@@ -177,7 +147,7 @@ export default {
         },
         {
           goods_fee: '', // 调整费用 adjust_fee
-          freight_fee: '', // 其他费用  other_fee
+          freight_fee: '', // 其他费用  refund_fee
           discount_fee: '', // 订单总金额 order_fee
           attach_fee: '' // 实付金额 actual_fee
         }
@@ -186,14 +156,7 @@ export default {
       // 操作历史
       orderTrack: [],
 
-      ORDER_STATUS,
-
-      auditForm: {
-        pass: 1, // 结论(1:审核通过, 0:不通过)
-        remark: '' // 原因(不通过时说明原因)
-      },
-
-      tableLoading: false
+      ORDER_STATUS
     }
   },
   created() {
@@ -238,13 +201,12 @@ export default {
 
       // 商品信息
       this.goodsList = info.goods_list.map(goods => {
-        // 少边框   <<<<<<<<<<<<<
         goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${
           goods.model_txt
-        }_${goods.goods_id}`
+        }_${goods.color}_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
-        goods.goods_img_url = `${
+        goods.goods_img_url = goods.goods_img_url = `${
           process.env.VUE_APP_BASEURL
         }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
           goods.goods_img
@@ -270,10 +232,18 @@ export default {
       this.orderFeeList[0].attach_fee = info.attach_fee
         ? `¥ ${info.attach_fee.toFixed(2)}`
         : '¥ 0.00'
-      this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.refund_fee ? `¥ ${info.refund_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.order_fee ? `¥ ${info.order_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].goods_fee = info.adjust_fee
+        ? `¥ ${info.adjust_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.refund_fee
+        ? `¥ ${info.refund_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.order_fee
+        ? `¥ ${info.order_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.actual_fee
+        ? `¥ ${info.actual_fee.toFixed(2)}`
+        : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (this.order_track || []).map(track => {
@@ -286,105 +256,13 @@ export default {
     },
     handlerGoBackClick() {
       this.$router.go(-1)
-    },
-    async auditOpr() {
-      const data = {
-        opr: 'order_audit',
-        order_id: this.order_id,             // 订单id
-        pass: this.auditForm.pass,           // 结论(1:审核通过, 0:不通过)
-        remark: this.auditForm.remark        // 原因(不通过时说明原因)
-      }
-
-      console.log('订单审核 req=>', data)
-      const resp = await orderSave(data)
-      console.log('订单审核 res=>', resp)
-
-      if (resp.ret !== 0) return
-
-      this.$notify({
-        title: '成功',
-        message: '提交成功',
-        type: 'success',
-        duration: 2000
-      })
-      this.$router.go(-1)
-    },
-    async auditOprAndNext() {
-      // 审核订单
-      const dataAudit = {
-        opr: 'order_audit',
-        order_id: this.order_id,             // 订单id
-        pass: this.auditForm.pass,           // 结论(1:审核通过, 0:不通过)
-        remark: this.auditForm.remark        // 原因(不通过时说明原因)
-      }
-
-      this.tableLoading = true
-      const respAudit = await orderSave(dataAudit)
-      console.log('订单审核 res=>', respAudit)
-      if (respAudit.ret !== 0) return
-
-      // 取还没有审核的订单
-      const dataList = {
-        opr: 'get_audit_order_list',
-        page_no: 1,
-        order_status: ORDER_STATUS.AUDIT_WAIT
-      }
-
-      const respList = await orderGet(dataList)
-      console.log('订单列表 res=>', respList)
-      if (respAudit.ret !== 0) return
-
-      const list = respList.data.list || []
-
-      if (list.length === 0) {
-        this.$notify({
-          title: '警告',
-          message: '已经没有需要审核的订单了',
-          type: 'warning'
-        })
-        this.$router.go(-1)
-        this.tableLoading = false
-        return
-      }
-
-      const nextOrderid = list[0].order_id
-
-      this.order_id = nextOrderid
-      this.$router.replace({
-        path: '/manage-order/orderinfo',
-        query: {
-          orderid: nextOrderid
-        }
-      })
-      this.tableLoading = false
-      this.getOrderinfo()
-    },
-
-    oprAdjustFeeDialog() {
-      this.$refs.adjustFeeDialog.show()
-    },
-    openChangeAddressDialog() {
-      this.$refs.changeAddress.show()
-    },
-    // handlerAdjustFeeClose() {},
-    handlerAdjustFeeSuc() {
-      this.getOrderinfo()
-    },
-    handlerChangeAddrerss() {
-      this.getOrderinfo()
     }
   }
-
 }
 </script>
 
 <style  lang="scss" scoped>
-.order-info-wrapper {
-  background: rgba(255, 255, 255, 1);
-  border-radius: 2px;
-  margin-bottom: 14px;
-}
-.audit-wrapper {
+.app-container {
   background: rgba(255, 255, 255, 1);
   border-radius: 2px;
 }
@@ -433,37 +311,16 @@ export default {
     color: #333333;
   }
   /deep/ th {
-    background: #eff0f1;
+    background: #eef2f5;
   }
   /deep/ th.is-leaf,
   /deep/ td {
-    border-bottom: 1px solid #e6e6e6;
+    border-bottom: 1px solid #eef2f5;
   }
 
   /deep/ &.el-table--border th,
   /deep/ &.el-table--border td {
-    border-right: 1px solid #e6e6e6;
-  }
-}
-.audit-wrapper {
-  .audit-title {
-    height: 55px;
-    line-height: 55px;
-    padding: 0 20px;
-    color: #6666;
-    font-size: 16px;
-    border-bottom: 1px solid #e6e6e6;
-  }
-  .el-textarea {
-    width: 65%;
-  }
-  .audit-opr {
-    padding: 24px 0;
-    border-top: 1px solid #e6e6e6;
-    text-align: center;
-    .el-button + .el-button {
-      margin-left: 40px;
-    }
+    border-right: 1px solid #eef2f5;
   }
 }
 </style>

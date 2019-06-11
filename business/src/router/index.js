@@ -101,14 +101,14 @@ export const constantRoutes = [
         name: 'orderList',
         component: () => import('@/views/manage-order/list'),
         meta: { title: '订单列表', icon: 'dingdanshenhe' }
+      },
+      {
+        path: 'orderinfo',
+        name: 'orderinfo',
+        hidden: true,
+        component: () => import('@/views/manage-order/orderinfo/orderinfo'),
+        meta: { title: '订单详情', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
       }
-      // {
-      //   path: 'orderinfo',
-      //   name: 'orderinfo',
-      //   hidden: true,
-      //   component: () => import('@/views/manage-order/orderinfo/orderinfo'),
-      //   meta: { title: '订单详情', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
-      // },
     ]
   },
 

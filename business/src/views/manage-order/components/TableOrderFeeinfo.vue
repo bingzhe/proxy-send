@@ -18,7 +18,7 @@ export default {
   methods: {
     cellCusStyle({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 1) {
-        return 'background:#eff0f1;color:#333333;font-weight:bold;'
+        return 'background:#EEF2F5;color:#333333;font-weight:bold;'
       } else if (rowIndex === 2) {
         if (columnIndex === 2 || columnIndex === 3) {
           return 'color:#E33119 '

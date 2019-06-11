@@ -121,12 +121,12 @@ export default {
     return {
       // search
       searchForm: {
-        goods_material: '',   // 材质
-        type: '',       // 类型
-        brand: '',      // 品牌
-        model: '',      // 型号
-        goods_name: '',       // 商品名称
-        goods_id: ''         // 商品编号
+        goods_material: '', // 材质
+        type: '', // 类型
+        brand: '', // 品牌
+        model: '', // 型号
+        goods_name: '', // 商品名称
+        goods_id: '' // 商品编号
       },
 
       list: [],

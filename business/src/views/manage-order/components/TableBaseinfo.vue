@@ -37,7 +37,7 @@ export default {
     cellCusStyle({ row, column, rowIndex, columnIndex }) {
       if (rowIndex === 1 || rowIndex === 2) {
         if (columnIndex === 0) {
-          return 'background: #eff0f1;color: #333333;font-weight: bold;'
+          return 'background: #EEF2F5;color: #333333;font-weight: bold;'
         } else {
           return 'text-align:left;'
         }

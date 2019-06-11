@@ -39,36 +39,77 @@
         <div class="baseinfo-title-wrapper">
           <baseinfo-title color="#FBBD74" text="配送信息" />
         </div>
+        <div class="consignee-form-wrapper">
+          <el-form :model="consigneeFrom" :inline="true" label-width="140px">
+            <el-form-item label="物流选择" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.company_name" />
+            </el-form-item>
+            <br>
+            <el-form-item label="收件人" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.person" />
+            </el-form-item>
+            <el-form-item label="联系电话" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.phone" />
+            </el-form-item>
+            <br>
+            <el-form-item label="收货人详细地址" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.address" type="textarea" />
+            </el-form-item>
+            <br>
+            <el-form-item label="省份" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.province" />
+            </el-form-item>
+            <el-form-item label="市区" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.city" />
+            </el-form-item>
+            <br>
+            <el-form-item label="区县" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.area" />
+            </el-form-item>
+            <el-form-item label="街道/镇" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.street" />
+            </el-form-item>
+            <br>
+            <el-form-item label="留言" prop="type" label-width="140px">
+              <el-input v-model="consigneeFrom.person" type="textarea" />
+            </el-form-item>
+          </el-form>
+        </div>
       </div>
     </div>
-    <div v-if="false" class="empty-shopcart">
-      <div class="empty-pic">
-        <img src="@/assets/images/empty-shopcart.png">
-      </div>
-      <div class="empty-tip">
-        <span>你的购物车还是空的～～</span>
-      </div>
-      <div>
-        <el-button type="primary" plain>前往选购</el-button>
-      </div>
-    </div>
+
+    <shopcart-empty v-if="false" />
   </div>
 </template>
 
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
+import ShopcartEmpty from './ShopcartEmpty'
 import { buycartGet } from '@/api/api'
 import { mapState } from 'vuex'
 
 export default {
   components: {
-    BaseinfoTitle
+    BaseinfoTitle,
+    ShopcartEmpty
   },
   data() {
     return {
       goodsList: [{ num: 1 }, { num: 2 }, { num: 1 }],
       gifsForm: {
         num: 0
+      },
+
+      // 收货人信息
+      consigneeFrom: {
+        person: '李六', // 收货人名
+        phone: '13922223333', // 手机号码
+        address: '广东省深圳市宝安区西乡街道101号', // 收货地址
+        province: '广东省', // 省
+        city: '深圳市', // 市
+        area: '宝安区', // 区县
+        street: '西乡街道101号', // 街道
+        company_name: '顺丰'
       }
     }
   },
@@ -164,24 +205,17 @@ export default {
   }
 }
 
-.empty-shopcart {
-  text-align: center;
-  .empty-pic {
-    padding-top: 120px;
-    img {
-      width: 280px;
-      height: 252px;
-    }
-  }
-  .empty-tip {
-    margin: 24px 0 31px;
-    font-size: 14px;
-    color: #8e9cac;
-  }
+.consignee-form-wrapper {
+  max-width: 930px;
 
-  .el-button {
-    font-size: 18px;
-    width: 120px;
+  .el-input {
+    width: 300px;
+  }
+  .el-select {
+    width: 300px;
+  }
+  .el-textarea {
+    width: 100%;
   }
 }
 </style>
