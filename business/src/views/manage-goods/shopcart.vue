@@ -37,6 +37,14 @@ import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 export default {
   components: {
     BaseinfoTitle
+  },
+
+  data() {
+    return {
+      goodsList: [
+
+      ]
+    }
   }
 }
 </script>

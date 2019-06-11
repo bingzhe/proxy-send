@@ -42,6 +42,9 @@
 </template>
 
 <script>
+/**
+ * 下单素材 list
+ */
 import MaterialCard from './MaterialCard'
 
 export default {

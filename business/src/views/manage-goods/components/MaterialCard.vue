@@ -9,6 +9,9 @@
 </template>
 
 <script>
+/**
+ * 下单素材 card
+ */
 export default {
   props: {
     material: {
