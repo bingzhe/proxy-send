@@ -67,7 +67,7 @@ export const constantRoutes = [
       {
         path: 'shopcart',
         name: 'shopcart',
-        component: () => import('@/views/manage-goods/shopcart'),
+        component: () => import('@/views/manage-goods/shopcart/shopcart'),
         meta: { title: '我的购物车', icon: 'shoujijixing' }
       },
       {
