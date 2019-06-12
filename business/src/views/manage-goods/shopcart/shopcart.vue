@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="shopcart-wrapper">
+    <div v-if="buycart_id" class="shopcart-wrapper">
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
@@ -9,17 +9,21 @@
         <div class="select-goods-table-wrapper">
           <el-table class="select-goods-table" border :data="goodsList">
             <el-table-column type="selection" align="center" width="55" />
-            <el-table-column prop="goods_id" label="图片" min-width="50" />
-            <el-table-column prop="goods_id" label="商品类型" min-width="50" />
-            <el-table-column prop="goods_id" label="材质_品牌_型号_边框_商品编号" width="250" />
-            <el-table-column prop="goods_id" label="数量" width="150">
+            <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
+              <template slot-scope="scope">
+                <img class="table-img" :src="scope.row.goods_img_url">
+              </template>
+            </el-table-column>
+            <el-table-column prop="type_str" label="商品类型" min-width="50" />
+            <el-table-column prop="goods_info_str" label="材质_品牌_型号_边框_商品编号" width="300" />
+            <el-table-column prop="num" label="数量" width="150">
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.num" :min="1" size="small" label="描述文字" />
               </template>
             </el-table-column>
-            <el-table-column prop="goods_id" label="单价" min-width="50" />
+            <el-table-column prop="price" label="单价" min-width="50" />
             <el-table-column prop="goods_id" label="小计" min-width="50" />
-            <el-table-column prop="goods_id" label="操作" min-width="50" />
+            <el-table-column prop="opr" label="操作" min-width="50" />
           </el-table>
         </div>
       </div>
@@ -40,45 +44,62 @@
           <baseinfo-title color="#FBBD74" text="配送信息" />
         </div>
         <div class="consignee-form-wrapper">
-          <el-form :model="consigneeFrom" :inline="true" label-width="140px">
-            <el-form-item label="物流选择" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.company_name" />
+          <el-form :model="consigneeFrom" :inline="true" label-width="70px">
+            <el-form-item label="物流选择" prop="type" label-width="70px">
+              <el-select v-model="consigneeFrom.company_name" placeholder="请选择">
+                <el-option
+                  v-for="(item,index) in delivery_list"
+                  :key="index"
+                  :label="item.delivery_str"
+                  :value="item.name"
+                />
+              </el-select>
             </el-form-item>
             <br>
-            <el-form-item label="收件人" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.person" />
+            <el-form-item label="收件人" prop="type" label-width="70px">
+              <el-input v-model="consigneeFrom.person" placeholder="请输入" />
             </el-form-item>
-            <el-form-item label="联系电话" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.phone" />
-            </el-form-item>
-            <br>
-            <el-form-item label="收货人详细地址" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.address" type="textarea" />
+            <el-form-item label="联系电话" prop="type" label-width="135px">
+              <el-input v-model="consigneeFrom.phone" placeholder="请输入" />
             </el-form-item>
             <br>
-            <el-form-item label="省份" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.province" />
-            </el-form-item>
-            <el-form-item label="市区" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.city" />
-            </el-form-item>
-            <br>
-            <el-form-item label="区县" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.area" />
-            </el-form-item>
-            <el-form-item label="街道/镇" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.street" />
+            <el-form-item class="address" label="收货人详细地址" prop="type" label-width="70px">
+              <el-input v-model="consigneeFrom.address" type="textarea" placeholder="请输入" />
+              <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
+              <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br>
-            <el-form-item label="留言" prop="type" label-width="140px">
-              <el-input v-model="consigneeFrom.person" type="textarea" />
+            <el-form-item label="省份" prop="type" label-width="70px">
+              <el-input v-model="consigneeFrom.province" placeholder="请输入" />
+            </el-form-item>
+            <el-form-item label="市区" prop="type" label-width="135px">
+              <el-input v-model="consigneeFrom.city" placeholder="请输入" />
+            </el-form-item>
+            <br>
+            <el-form-item label="区县" prop="type" label-width="70px">
+              <el-input v-model="consigneeFrom.area" placeholder="请输入" />
+            </el-form-item>
+            <el-form-item label="街道/镇" prop="type" label-width="135px">
+              <el-input v-model="consigneeFrom.street" placeholder="请输入" />
+            </el-form-item>
+            <br>
+            <el-form-item label="留言" prop="type" label-width="70px">
+              <el-input v-model="consigneeFrom.person" type="textarea" placeholder="请输入" />
             </el-form-item>
           </el-form>
         </div>
       </div>
+
+      <div class="order-price-calc">
+        <span>已选择</span>
+        <span class="goods-total">{{ total }}</span>
+        <span>件商品，总计：¥{{ goods_fee }} 元，优惠：¥{{ iscount_fee }} 元，实付：</span>
+        <span class="actual-fee">¥{{ actual_fee }}</span>
+        <el-button type="primary">下单</el-button>
+      </div>
     </div>
 
-    <shopcart-empty v-if="false" />
+    <shopcart-empty v-if="!buycart_id" />
   </div>
 </template>
 
@@ -87,6 +108,7 @@ import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import ShopcartEmpty from './ShopcartEmpty'
 import { buycartGet } from '@/api/api'
 import { mapState } from 'vuex'
+import { GOODS_TYPE } from '@/config/cfg'
 
 export default {
   components: {
@@ -95,31 +117,41 @@ export default {
   },
   data() {
     return {
-      goodsList: [{ num: 1 }, { num: 2 }, { num: 1 }],
+      goodsList: [],
+      attachList: [],
+
       gifsForm: {
         num: 0
       },
 
       // 收货人信息
       consigneeFrom: {
-        person: '李六', // 收货人名
-        phone: '13922223333', // 手机号码
-        address: '广东省深圳市宝安区西乡街道101号', // 收货地址
-        province: '广东省', // 省
-        city: '深圳市', // 市
-        area: '宝安区', // 区县
-        street: '西乡街道101号', // 街道
-        company_name: '顺丰'
-      }
+        person: '',      // 收货人名
+        phone: '',       // 手机号码
+        address: '',     // 收货地址
+        province: '',    // 省
+        city: '',        // 市
+        area: '',        // 区县
+        street: '',      // 街道
+        company_name: ''
+      },
+
+      total: '',              // 商品总计
+      goods_fee: 0.00,        // 商品合计费用
+      iscount_fee: 0.00,      // 折扣金额
+      actual_fee: 0.00        // 实付金额
     }
   },
   computed: {
     ...mapState({
-      buycart_id: state => state.user.buycart_id
+      buycart_id: state => state.user.buycart_id,
+      delivery_list: state => state.user.delivery_list
     })
   },
   mounted() {
-    this.getBuycart()
+    if (this.buycart_id) {
+      this.getBuycart()
+    }
   },
   methods: {
     async getBuycart() {
@@ -131,6 +163,43 @@ export default {
       console.log('购物车 req=>', data)
       const resp = await buycartGet(data)
       console.log('购物车 res=>', resp)
+
+      if (resp.ret !== 0) return
+
+      const info = resp.data
+
+      this.goodsList = info.goods_list.map(item => {
+        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&type=7&img_name=${item.goods_img}`
+
+        item.type_str = GOODS_TYPE.toString(item.type)
+        item.goods_info_str = `${item.raw_material}_${item.brand_name}_${item.model_name}_${item.color}_${item.goods_id}`
+
+        return item
+      })
+
+      this.attachList = info.attachList || []
+
+      const consignee_info = info.consignee_info || {}
+
+      this.consigneeFrom.person = consignee_info.person
+      this.consigneeFrom.phone = consignee_info.phone
+      this.consigneeFrom.address = consignee_info.address || ''
+      this.consigneeFrom.province = consignee_info.province
+      this.consigneeFrom.city = consignee_info.city
+      this.consigneeFrom.area = consignee_info.area
+      this.consigneeFrom.street = consignee_info.street
+      this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
+    },
+    autoSplit() {
+      const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
+      const res = this.consigneeFrom.address.match(reg) || []
+
+      this.consigneeFrom.province = res[0] || ''
+      this.consigneeFrom.city = res[1] || ''
+      this.consigneeFrom.area = res[2] || ''
+      this.consigneeFrom.street = res[3] || ''
     }
   }
 }
@@ -141,6 +210,8 @@ export default {
   background: rgba(255, 255, 255, 1);
   border-radius: 2px;
   min-height: 700px;
+  // min-width: 1090px;
+  overflow: auto;
 }
 .baseinfo-title-wrapper {
   padding: 24px 140px 24px 90px;
@@ -157,6 +228,10 @@ export default {
 
 .select-goods-table-wrapper {
   margin: 0 140px;
+  .table-img {
+    height: 70px;
+    width: 35px;
+  }
 }
 .gifs-form-wrapper {
   margin: 0 140px;
@@ -206,7 +281,8 @@ export default {
 }
 
 .consignee-form-wrapper {
-  max-width: 930px;
+  width: 970px;
+  padding-left: 140px;
 
   .el-input {
     width: 300px;
@@ -215,7 +291,49 @@ export default {
     width: 300px;
   }
   .el-textarea {
-    width: 100%;
+    width: 750px;
+  }
+  .el-form-item.address {
+    position: relative;
+    margin-bottom: 40px;
+    /deep/ .el-form-item__label {
+      line-height: 24px;
+    }
+    .split-btn {
+      position: absolute;
+      right: -108px;
+      bottom: 0;
+      font-weight: bold;
+      background: #70aefa;
+      padding: 11px 20px;
+      border-color: #70aefa;
+    }
+    .gray-tip {
+      position: absolute;
+      font-size: 12px;
+      bottom: -35px;
+      color: #999999;
+    }
+  }
+}
+.order-price-calc {
+  height: 68px;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0px -1px 6px 0px rgba(37, 132, 249, 0.08);
+  text-align: right;
+  line-height: 68px;
+  color: #49505e;
+  font-size: 16px;
+  .goods-total {
+    font-size: 18px;
+    color: #fd7474;
+  }
+  .actual-fee {
+    font-size: 20px;
+    color: #fd7474;
+  }
+  .el-button {
+    margin-left: 125px;
   }
 }
 </style>

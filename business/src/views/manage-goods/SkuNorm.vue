@@ -4,48 +4,12 @@
       <baseinfo-title color="#FB7474" text="新增订单" />
     </div>
     <div class="goodsinfo-wrapper">
-      <!-- <div class="baseinfo-wrapper">
-        <el-row>
-          <el-col :span="7" class="baseinfo">
-            <span class="base-label">商品编号：</span>
-            <span class="base-value">{{ goodsInfo.goods_id }}</span>
-          </el-col>
-          <el-col :span="7" class="baseinfo">
-            <span class="base-label">商品名称：</span>
-            <span class="base-value">{{ goodsInfo.goods_name }}</span>
-          </el-col>
-          <el-col :span="7" class="baseinfo">
-            <span class="base-label">材质：</span>
-            <span class="base-value">{{ goodsInfo.raw_material }}</span>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="7" class="baseinfo">
-            <span class="base-label">品牌：</span>
-            <span class="base-value">{{ goodsInfo.brand }}</span>
-          </el-col>
-          <el-col :span="7" class="baseinfo">
-            <span class="base-label">型号：</span>
-            <span class="base-value">{{ goodsInfo.model }}</span>
-          </el-col>
-          <el-col :span="7" class="baseinfo">
-            <span class="base-label">单价：</span>
-            <span class="base-value price">￥{{ goodsInfo.price }}</span>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col class="baseinfo">
-            <span class="base-label">商品备注：</span>
-            <span class="base-value">{{ goodsInfo.remark }}</span>
-          </el-col>
-        </el-row>
-      </div>-->
       <sku-baseinfo :goods-info="goodsInfo" />
       <!-- 订购数量： -->
       <div class="opr-item clearfix">
         <div class="opr-lable">订购数量</div>
         <div class="opr-value">
-          <el-input-number v-model="num" controls-position="right" :min="1" />
+          <el-input-number v-model="num" controls-position="right" :min="1" :max="maxInventory" />
         </div>
         <div class="opr-suffix">件</div>
       </div>
@@ -60,7 +24,7 @@
             class="pic-item"
             :class="{'active': curPic === index}"
           >
-            <div class="pic-wrapper" @click="handlerPicItemClick(index)">
+            <div class="pic-wrapper" @click="handlerPicItemClick(item, index)">
               <img :src="item.color_img_url">
             </div>
             <div class="color_name">{{ item.color_name }}</div>
@@ -70,8 +34,8 @@
     </div>
 
     <div class="button-group-wrapper">
-      <el-button>取消</el-button>
-      <el-button type="primary">下一步:提交订单</el-button>
+      <el-button @click="handlerCancelClick">取消</el-button>
+      <el-button type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
     </div>
   </div>
 </template>
@@ -79,7 +43,8 @@
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import SkuBaseinfo from './components/SkuBaseinfo'
-import { goodsGet } from '@/api/api'
+import { goodsGet, buycartSave } from '@/api/api'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -100,11 +65,25 @@ export default {
         model: '',           // 型号
         remark: ''           // 备注
       },
+
       num: 1,                 // 商品数量
+      maxInventory: 9999,     // 计数器最大数量
       curPic: 0,              // 底图颜色index
       // 底图颜色
-      opt_color_list: []
+      opt_color_list: [
+        // {
+        //   color_img: '',
+        //   color_img_url: '',
+        //   color_name: '',
+        //   inventory: 10       // 库存
+        // }
+      ]
     }
+  },
+  computed: {
+    ...mapState({
+      buycart_id: state => state.user.buycart_id
+    })
   },
   mounted() {
     this.goodsInfo.goods_id = this.$route.params.goods_id
@@ -139,9 +118,39 @@ export default {
         }`
         return item
       })
+
+      this.maxInventory = ((this.opt_color_list || [])[this.curPic] || {}).inventory
     },
-    handlerPicItemClick(i) {
+    handlerPicItemClick(item, i) {
+      this.maxInventory = item.inventory
       this.curPic = i
+    },
+    handlerCancelClick() {
+      this.$router.go(-1)
+    },
+    async handlerAddCartClick() {
+      const data = {
+        opr: 'put_to_buycart_standard',
+        goods_id: this.goodsInfo.goods_id,                          // 商品编号(ID)
+        num: this.num,                                              // 订购数量
+        color: this.opt_color_list[this.curPic].color_name          // 颜色分类("红色"、"绿色"...)
+      }
+
+      if (this.buycart_id) {
+        data.buycart_id = this.buycart_id
+      }
+
+      console.log('标品加入购物车', data)
+      const resp = await buycartSave(data)
+      console.log('标品加入购物车', resp)
+
+      if (resp.ret !== 0) return
+
+      /**
+       * 更新页面全局数据
+       */
+      this.$store.dispatch('user/getUserInfo')
+      this.$router.push('/manage-goods/shopcart')
     }
   }
 }

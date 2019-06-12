@@ -133,7 +133,7 @@ export const accounttrackGet = generateRequestFn('accounttrack_get.php')
 
 // ==============================  business ================================
 // buycart_get
-export const buycartGet = generateRequestFn('buycart_get')
+export const buycartGet = generateRequestFn('buycart_get.php')
 
 // buycart_save
-export const buycartSave = generateRequestFn('buycart_save')
+export const buycartSave = generateRequestFn('buycart_save.php')

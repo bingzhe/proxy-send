@@ -7,7 +7,9 @@
       <span>你的购物车还是空的～～</span>
     </div>
     <div>
-      <el-button type="primary" plain>前往选购</el-button>
+      <router-link to="/manage-goods/goodslist">
+        <el-button type="primary" plain>前往选购</el-button>
+      </router-link>
     </div>
   </div>
 </template>

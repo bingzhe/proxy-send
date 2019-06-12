@@ -86,8 +86,7 @@
             <el-table-column type="selection" align="center" width="55" />
 
             <el-table-column prop="order_id" label="订单编号" min-width="60" />
-            <!-- <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< -->
-            <el-table-column prop="business_name" label="商品名称" min-width="60" />
+            <el-table-column prop="goods_name" label="商品名称" min-width="60" />
             <el-table-column prop="consignee_person" label="收货人" min-width="60" />
             <el-table-column prop="consignee_phone" label="手机号码" min-width="60" />
             <el-table-column prop="order_fee" label="订单金额" min-width="60" />
