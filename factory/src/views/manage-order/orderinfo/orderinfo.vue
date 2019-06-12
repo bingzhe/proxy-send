@@ -62,9 +62,9 @@
     <div v-loading="tableLoading" class="audit-wrapper" element-loading-text="拼命加载中">
       <div class="audit-title">审单处理</div>
       <div class="audit-form-wrapper">
-        <el-form ref="auditForm" :model="auditForm" label-width="107px">
+        <el-form ref="auditForm" :model="auditForm" label-width="107px" :rules="auditFormRules">
           <el-form-item label="结论：" prop="pass">
-            <el-radio v-model="auditForm.pass" :label="1">通过</el-radio>
+            <el-radio v-model="auditForm.pass" :disabled="order_status === ORDER_STATUS.DELIVERY_WAIT" :label="1">通过</el-radio>
             <el-radio v-model="auditForm.pass" :label="0">不通过</el-radio>
           </el-form-item>
           <el-form-item label="原因：" prop="remark">
@@ -81,8 +81,8 @@
       </div>
       <div class="audit-opr">
         <el-button class="btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
-        <el-button type="primary" @click="auditOpr">提交</el-button>
-        <el-button class="btn-bd-primary" @click="auditOprAndNext">提交并审核下一单</el-button>
+        <el-button type="primary" @click="handlerAuditOprClick">提交</el-button>
+        <el-button class="btn-bd-primary" @click="handlerAuditOprAndNextClick">提交并审核下一单</el-button>
       </div>
     </div>
 
@@ -189,8 +189,11 @@ export default {
       ORDER_STATUS,
 
       auditForm: {
-        pass: 1, // 结论(1:审核通过, 0:不通过)
+        pass: '', // 结论(1:审核通过, 0:不通过)
         remark: '' // 原因(不通过时说明原因)
+      },
+      auditFormRules: {
+        pass: { required: true, message: '请选择审单处理', trigger: 'change' }
       },
 
       tableLoading: false
@@ -232,13 +235,18 @@ export default {
       this.baseinfoList[0].order_time = moment(info.order_time * 1000).format(
         'YYYY-MM-DD HH:mm:ss'
       )
-      // <<<<<<<<<<<<<<<<<<<
-      this.baseinfoList[1].company_name = '配送礼品'
+
+      this.baseinfoList[1].company_name = (info.attach_list || []).map(attach => {
+        const attach_str = `${attach.goods_name}${attach.num}`
+        return attach_str
+      }).join('，')
       this.baseinfoList[2].company_name = info.remark
 
       // 商品信息
       this.goodsList = info.goods_list.map(goods => {
-        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.color}_${goods.goods_id}`
+        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${
+          goods.model_txt
+        }_${goods.color}_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
         goods.goods_img_url = `${
@@ -267,10 +275,18 @@ export default {
       this.orderFeeList[0].attach_fee = info.attach_fee
         ? `¥ ${info.attach_fee.toFixed(2)}`
         : '¥ 0.00'
-      this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.refund_fee ? `¥ ${info.refund_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.order_fee ? `¥ ${info.order_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].goods_fee = info.adjust_fee
+        ? `¥ ${info.adjust_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.refund_fee
+        ? `¥ ${info.refund_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.order_fee
+        ? `¥ ${info.order_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.actual_fee
+        ? `¥ ${info.actual_fee.toFixed(2)}`
+        : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (this.order_track || []).map(track => {
@@ -284,12 +300,19 @@ export default {
     handlerGoBackClick() {
       this.$router.go(-1)
     },
+    handlerAuditOprClick() {
+      this.$refs.auditForm.validate(valid => {
+        if (valid) {
+          this.auditOpr()
+        }
+      })
+    },
     async auditOpr() {
       const data = {
         opr: 'order_audit',
-        order_id: this.order_id,             // 订单id
-        pass: this.auditForm.pass,           // 结论(1:审核通过, 0:不通过)
-        remark: this.auditForm.remark        // 原因(不通过时说明原因)
+        order_id: this.order_id, // 订单id
+        pass: this.auditForm.pass, // 结论(1:审核通过, 0:不通过)
+        remark: this.auditForm.remark // 原因(不通过时说明原因)
       }
 
       console.log('订单审核 req=>', data)
@@ -306,13 +329,20 @@ export default {
       })
       this.$router.go(-1)
     },
+    handlerAuditOprAndNextClick() {
+      this.$refs.auditForm.validate(valid => {
+        if (valid) {
+          this.auditOprAndNext()
+        }
+      })
+    },
     async auditOprAndNext() {
       // 审核订单
       const dataAudit = {
         opr: 'order_audit',
-        order_id: this.order_id,             // 订单id
-        pass: this.auditForm.pass,           // 结论(1:审核通过, 0:不通过)
-        remark: this.auditForm.remark        // 原因(不通过时说明原因)
+        order_id: this.order_id, // 订单id
+        pass: this.auditForm.pass, // 结论(1:审核通过, 0:不通过)
+        remark: this.auditForm.remark // 原因(不通过时说明原因)
       }
 
       this.tableLoading = true
@@ -371,7 +401,6 @@ export default {
       this.getOrderinfo()
     }
   }
-
 }
 </script>
 

@@ -13,9 +13,15 @@
 import Http from '@/config/encsubmit'
 
 export default {
+  props: {
+    type: {
+      type: Number,
+      default: 1
+    }
+  },
   data() {
     return {
-    //   base_url: ,
+      //   base_url: ,
       url: process.env.VUE_APP_BASEURL + '/img_save.php'
     }
   },
@@ -36,7 +42,7 @@ export default {
     imgUpload({ file }) {
       const data = {
         opr: 'save_img_file',
-        type: 1,
+        type: this.type,
         imgfile: file
       }
 

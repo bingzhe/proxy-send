@@ -173,8 +173,11 @@ export default {
       this.baseinfoList[0].order_time = moment(info.order_time * 1000).format(
         'YYYY-MM-DD HH:mm:ss'
       )
-      // <<<<<<<<<<<<<<<<<<<
-      this.baseinfoList[1].company_name = '配送礼品'
+
+      this.baseinfoList[1].company_name = (info.attach_list || []).map(attach => {
+        const attach_str = `${attach.goods_name}${attach.num}`
+        return attach_str
+      }).join(',')
       this.baseinfoList[2].company_name = info.remark
 
       // 商品信息
@@ -206,7 +209,7 @@ export default {
       this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
 
       // 操作历史信息
-      this.orderTrack = (this.order_track || []).map(track => {
+      this.orderTrack = (info.order_track || []).map(track => {
         track.order_status_str = ORDER_STATUS.toString(track.order_status)
         track.opr_time_str = moment(track.opr_time * 1000).format(
           'YYYY-MM-DD HH:mm:ss'

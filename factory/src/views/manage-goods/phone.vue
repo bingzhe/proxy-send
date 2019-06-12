@@ -142,7 +142,7 @@
           </el-input>
         </el-form-item>-->
         <el-form-item label="轮廓图" prop="outline_img">
-          <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
+          <sl-upload class="outline-uploader" type="3" @on-success="handlerOutlineImgSuccess">
             <img
               v-if="modelForm.outline_img"
               :src="modelForm.outline_img_url"
@@ -322,7 +322,7 @@ export default {
 
         item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
           this.token
-        }&opr=get_img&type=1&img_name=${item.outline_img}`
+        }&opr=get_img&type=3&img_name=${item.outline_img}`
 
         return item
       })
@@ -374,7 +374,7 @@ export default {
       this.modelForm.outline_img = img_name
       this.modelForm.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
-      }&opr=get_img&type=1&img_name=${img_name}`
+      }&opr=get_img&type=3&img_name=${img_name}`
     },
     handlerModelEditDialogClose() {
       this.$refs.modelForm.resetFields()
