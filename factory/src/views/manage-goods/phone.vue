@@ -142,7 +142,7 @@
           </el-input>
         </el-form-item>-->
         <el-form-item label="轮廓图" prop="outline_img">
-          <sl-upload class="outline-uploader" type="3" @on-success="handlerOutlineImgSuccess">
+          <sl-upload class="outline-uploader" :type="3" @on-success="handlerOutlineImgSuccess">
             <img
               v-if="modelForm.outline_img"
               :src="modelForm.outline_img_url"
