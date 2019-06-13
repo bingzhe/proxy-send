@@ -148,7 +148,7 @@ export const constantRoutes = [
       {
         path: 'shop',
         name: 'shop',
-        component: () => import('@/views/manage-system/shop/shop'),
+        component: () => import('@/views/manage-system/ShopInfo'),
         meta: { title: '账户信息', icon: 'shagnhuguanli' }
       },
       {

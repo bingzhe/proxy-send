@@ -48,7 +48,7 @@ import { mapGetters } from 'vuex'
 // import Breadcrumb from '@/components/Breadcrumb'
 // import Hamburger from '@/components/Hamburger'
 import { loginSave } from '@/api/api'
-import { delEmployeeId } from '@/config/global-store'
+import { delBusinessId } from '@/config/global-store'
 
 export default {
   components: {
@@ -94,7 +94,7 @@ export default {
        * localstore employee_id
        * store siteinfo
        */
-      delEmployeeId()
+      delBusinessId()
 
       this.$store.commit('user/USER_SET_SITEINFO', {})
 

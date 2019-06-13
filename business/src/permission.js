@@ -6,7 +6,7 @@ import 'nprogress/nprogress.css' // progress bar style
 // import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
-import { getEmployeeId, delEmployeeId } from '@/config/global-store'
+import { getBusinessId, delBusinessId } from '@/config/global-store'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -21,9 +21,9 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   // const hasToken = getToken()
-  const employeeid = getEmployeeId()
+  const businessid = getBusinessId()
 
-  if (employeeid) {
+  if (businessid) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
@@ -43,7 +43,7 @@ router.beforeEach(async(to, from, next) => {
           // remove token and go to login page to re-login
           // await store.dispatch('user/resetToken')
           // Message.error(error || 'Has Error')
-          delEmployeeId()
+          delBusinessId()
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         }

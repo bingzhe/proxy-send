@@ -25,6 +25,8 @@ const state = {
   production_order_status_list: [],      // 生产单状态列
   delivery_list: [],                     // 快递公司,
 
+  business_id: '',                       // 商户id
+  business_info: {},                     // 商户信息
   buycart_id: ''                         // 购物车id
 }
 
@@ -40,7 +42,7 @@ const mutations = {
   },
   USER_SET_SITEINFO: (state, siteInfo) => {
     state.siteInfo = siteInfo
-    state.username = siteInfo.username
+    // state.username = siteInfo.username
     state.employee_id = siteInfo.employee_id
     state.permmap = siteInfo.permmap || {}
     state.vip_level_list = siteInfo.vip_level_list || []
@@ -51,7 +53,11 @@ const mutations = {
     state.raw_material_list = siteInfo.raw_material_list || []
     state.theme_list = siteInfo.theme_list || []
     state.delivery_order_status_list = siteInfo.delivery_order_status_list || []
-    state.production_order_status_list = siteInfo.production_order_status_list || [],
+    state.production_order_status_list = siteInfo.production_order_status_list || []
+
+    state.business_info = siteInfo.business_info || {}
+    state.username = state.business_info.username
+    state.business_id = state.business_info.business_info
     state.buycart_id = siteInfo.buycart_id
 
     const delivery_list = (siteInfo.delivery_list || []).map(item => {

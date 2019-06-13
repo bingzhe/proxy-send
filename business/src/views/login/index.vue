@@ -88,7 +88,7 @@
 import Util from '@/utils/util'
 import { loginSave } from '@/api/api'
 import { errcode } from '@/config/cfg'
-import { setEmployeeId } from '@/config/global-store'
+import { setBusinessId } from '@/config/global-store'
 
 export default {
   name: 'Login',
@@ -172,8 +172,8 @@ export default {
       /**
        * 存一些登录的信息
        */
-      const employeeid = resp.data.employee_id
-      setEmployeeId(employeeid)
+      const employeeid = resp.data.business_id
+      setBusinessId(employeeid)
 
       this.checkRemeberPassword()
 

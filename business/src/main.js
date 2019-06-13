@@ -15,6 +15,10 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+// 引入提示弹窗
+import SlNotification from './components/notification/index.js'
+Vue.component(SlNotification.name, SlNotification)
+Vue.prototype.$slnotify = SlNotification
 /**
  * If you don't want to use mock-server
  * you want to use mockjs for request interception
