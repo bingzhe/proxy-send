@@ -3,7 +3,7 @@
     <!-- search start -->
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
-        <el-form-item label="类型" prop="opr_type" label-width="70px">
+        <el-form-item label="操作类型" prop="opr_type" label-width="70px">
           <el-select v-model="searchForm.opr_type" placeholder="请选择">
             <el-option key="全部" label="全部" value />
             <el-option
@@ -16,9 +16,6 @@
         </el-form-item>
         <el-form-item label="操作编号" prop="opr_number" label-width="70px">
           <el-input v-model.trim="searchForm.opr_number" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="商户名称" prop="business_name" label-width="70px">
-          <el-input v-model.trim="searchForm.business_name" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="操作时间" prop="opr_time" label-width="70px">
           <el-date-picker
@@ -58,7 +55,6 @@
           <el-table-column type="selection" align="center" width="55" />
 
           <el-table-column prop="opr_number" label="操作编号" min-width="60" />
-          <el-table-column prop="business_name" label="商户名称" min-width="60" />
           <el-table-column prop="opr_type_txt" label="操作类型" min-width="60" />
           <el-table-column prop="cost_amount" label="消费金额" min-width="60" />
           <el-table-column prop="opr_time_str" label="操作时间" min-width="60" />
@@ -71,7 +67,7 @@
                   scope.row.opr_type === OPR_TYPE.ADUIT_FAIL_REFUND ||
                   scope.row.opr_type === OPR_TYPE.REFUND"
                 type="text"
-                @click="goSearchOrderinfo(scope.row.order_id)"
+                @click="goSearchOrderinfo(scope.row)"
               >查看详情</el-button>
             </template>
           </el-table-column>
@@ -114,7 +110,7 @@ export default {
       searchForm: {
         opr_type: '',             // 操作类型（1:充值,2:下单,3:调整订单金额,4:撤销订单退款,5:审核不通过退款,6:调整账户余额,7:退款）
         opr_number: '',           // 操作编号/单号（订单id、充值单号等）
-        business_name: '',        // 商户名称
+        // business_name: '',        // 商户名称
         opr_time: '',             // 操作时间
         opr_time_begin: 0,        // 操作时间（开始）（时间戳，秒）
         opr_time_end: 0           // 操作时间（终止）（时间戳，秒）
@@ -166,10 +162,6 @@ export default {
       if (this.searchForm.opr_number) {
         data.opr_number = this.searchForm.opr_number
       }
-      // business_name
-      if (this.searchForm.business_name) {
-        data.business_name = this.searchForm.business_name
-      }
       // 操作时间
       if (this.searchForm.opr_time) {
         data.opr_time_begin = parseInt(moment(this.searchForm.opr_time[0]).format('X'))
@@ -214,7 +206,8 @@ export default {
       this.listQuery.page = val
       this.getList()
     },
-    goSearchOrderinfo(id) {
+    goSearchOrderinfo(row) {
+      const id = row.opr_number
       this.$router.push({
         path: '/manage-order/searchorderinfo',
         query: {
@@ -241,6 +234,16 @@ export default {
   }
   .el-select {
     width: 180px;
+  }
+  /deep/ .el-date-editor {
+    width: 360px;
+    .el-range-input {
+      width: 43%;
+    }
+    .el-range-separator {
+      width: 20px;
+      padding: 0;
+    }
   }
 }
 

@@ -27,7 +27,8 @@ const state = {
 
   business_id: '',                       // 商户id
   business_info: {},                     // 商户信息
-  buycart_id: ''                         // 购物车id
+  buycart_id: '',                        // 购物车id
+  input_account_list: []               // 收款账户
 }
 
 const mutations = {
@@ -59,6 +60,7 @@ const mutations = {
     state.username = state.business_info.username
     state.business_id = state.business_info.business_info
     state.buycart_id = siteInfo.buycart_id
+    state.input_account_list = siteInfo.input_account_list || []
 
     const delivery_list = (siteInfo.delivery_list || []).map(item => {
       item.delivery_str = item.price ? `${item.name}（邮费：${item.price}元）` : `${item.name}（邮费：包邮）`
