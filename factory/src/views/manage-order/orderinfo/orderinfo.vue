@@ -289,7 +289,7 @@ export default {
         : '¥ 0.00'
 
       // 操作历史信息
-      this.orderTrack = (this.order_track || []).map(track => {
+      this.orderTrack = (info.order_track || []).map(track => {
         track.order_status_str = ORDER_STATUS.toString(track.order_status)
         track.opr_time_str = moment(track.opr_time * 1000).format(
           'YYYY-MM-DD HH:mm:ss'

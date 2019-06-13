@@ -70,7 +70,12 @@
             <el-table-column prop="account_balance" label="账户余额" min-width="60" />
             <el-table-column prop="status_str" label="状态" min-width="60" />
             <el-table-column prop="deposit_time_str" label="充值时间" min-width="60" />
-            <el-table-column prop="opr" label="失败原因" width="80" align="center" />
+            <el-table-column prop="opr" label="失败原因" min-width="80">
+              <template slot-scope="scope">
+                <span style="display:inline-block;height:30px;">¥+{{ scope.row.amount }}</span>
+                <div class="placeholder-height" />
+              </template>
+            </el-table-column>
           </el-table>
           <!-- table-content end -->
 
@@ -264,6 +269,11 @@ export default {
 
   /deep/ td {
     padding: 4px 0;
+  }
+  .placeholder-height {
+    display: inline-block;
+    height: 30px;
+    width: 1px;
   }
 }
 .cur-balance-wrapper {

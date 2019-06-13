@@ -69,6 +69,7 @@
                 type="text"
                 @click="goSearchOrderinfo(scope.row)"
               >查看详情</el-button>
+              <div class="placeholder-height" />
             </template>
           </el-table-column>
         </el-table>
@@ -209,7 +210,7 @@ export default {
     goSearchOrderinfo(row) {
       const id = row.opr_number
       this.$router.push({
-        path: '/manage-order/searchorderinfo',
+        path: '/manage-order/orderinfo',
         query: {
           orderid: id
         }
@@ -250,7 +251,12 @@ export default {
 .el-table {
   min-height: 400px;
   /deep/ td {
-    padding: 4px 0;
+    padding:5px 0;
+  }
+  .placeholder-height{
+    display: inline-block;
+    height: 30px;
+    width: 1px;
   }
 }
 </style>

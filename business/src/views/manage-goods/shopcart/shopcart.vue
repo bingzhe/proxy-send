@@ -31,12 +31,11 @@
         <div class="baseinfo-title-wrapper">
           <baseinfo-title color="#74BAFB" text="配送礼品" />
         </div>
-        <div class="gifs-form-wrapper">
-          <el-form :model="gifsForm" :inline="true">
-            <el-form-item label="商品种类" prop="type" label-width="70px">
-              <el-input-number v-model="gifsForm.num" controls-position="right" :min="0" />
-            </el-form-item>
-          </el-form>
+        <div class="gifs-form-wrapper clearfix">
+          <div v-for="item in attachList" :key="item.goods_id" class="gifs-item">
+            <span class="gifs-label">{{ item.goods_name }}</span>
+            <el-input-number v-model="item.num" controls-position="right" :min="0" />
+          </div>
         </div>
       </div>
       <div class="consignee-wrapper">
@@ -59,7 +58,7 @@
             <el-form-item label="收件人" prop="type" label-width="70px">
               <el-input v-model="consigneeFrom.person" placeholder="请输入" />
             </el-form-item>
-            <el-form-item label="联系电话" prop="type" label-width="135px">
+            <el-form-item label="联系电话" prop="type" label-width="110px">
               <el-input v-model="consigneeFrom.phone" placeholder="请输入" />
             </el-form-item>
             <br>
@@ -72,14 +71,14 @@
             <el-form-item label="省份" prop="type" label-width="70px">
               <el-input v-model="consigneeFrom.province" placeholder="请输入" />
             </el-form-item>
-            <el-form-item label="市区" prop="type" label-width="135px">
+            <el-form-item label="市区" prop="type" label-width="110px">
               <el-input v-model="consigneeFrom.city" placeholder="请输入" />
             </el-form-item>
             <br>
             <el-form-item label="区县" prop="type" label-width="70px">
               <el-input v-model="consigneeFrom.area" placeholder="请输入" />
             </el-form-item>
-            <el-form-item label="街道/镇" prop="type" label-width="135px">
+            <el-form-item label="街道/镇" prop="type" label-width="110px">
               <el-input v-model="consigneeFrom.street" placeholder="请输入" />
             </el-form-item>
             <br>
@@ -179,7 +178,7 @@ export default {
         return item
       })
 
-      this.attachList = info.attachList || []
+      this.attachList = info.attach_list || []
 
       const consignee_info = info.consignee_info || {}
 
@@ -235,7 +234,23 @@ export default {
 }
 .gifs-form-wrapper {
   margin: 0 140px;
+  .gifs-item {
+    float: left;
+    margin-bottom: 20px;
 
+    .gifs-label {
+      display: inline-block;
+      min-width: 100px;
+      text-align: right;
+      vertical-align: middle;
+      font-size: 14px;
+      color: #606266;
+      line-height: 38px;
+      padding: 0 8px 0 0;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+  }
   .el-input-number {
     width: 130px;
   }
@@ -281,7 +296,7 @@ export default {
 }
 
 .consignee-form-wrapper {
-  width: 970px;
+  max-width: 970px;
   padding-left: 140px;
 
   .el-input {
@@ -291,7 +306,7 @@ export default {
     width: 300px;
   }
   .el-textarea {
-    width: 750px;
+    width: 725px;
   }
   .el-form-item.address {
     position: relative;

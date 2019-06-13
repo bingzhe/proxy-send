@@ -6,7 +6,7 @@
     :span-method="arraySpanMethod"
     :cell-style="cellCusStyle"
   >
-    <el-table-column prop="order_id" label="商品编号" min-width="100" align="center" />
+    <el-table-column prop="order_id" label="订单编号" min-width="100" align="center" />
     <el-table-column prop="company_name" label="物流公司" min-width="100" align="center" />
     <el-table-column prop="business_name" label="商户名称" min-width="100" align="center" />
     <el-table-column prop="business_phone" label="商户电话" min-width="100" align="center" />
