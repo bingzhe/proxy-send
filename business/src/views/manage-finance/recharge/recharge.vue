@@ -2,14 +2,14 @@
   <div class="app-container">
     <div class="cur-balance-wrapper">
       <span class="label">当前账户余额：</span>
-      <span class="balance">￥1000.50</span>
+      <span class="balance">￥{{ account_balance }}</span>
       <el-button type="primary" @click="openRechargeDialog">现在充值</el-button>
     </div>
     <div class="app-wrapper">
       <!-- search start -->
       <div class="search-wrapper">
         <el-form ref="searchForm" :model="searchForm" :inline="true">
-          <el-form-item label="状态" prop="status" label-width="70px">
+          <el-form-item label="状态" prop="status" label-width="45px">
             <el-select v-model="searchForm.status" placeholder="请选择">
               <el-option key="全部" label="全部" value />
               <el-option
@@ -70,9 +70,9 @@
             <el-table-column prop="account_balance" label="账户余额" min-width="60" />
             <el-table-column prop="status_str" label="状态" min-width="60" />
             <el-table-column prop="deposit_time_str" label="充值时间" min-width="60" />
-            <el-table-column prop="opr" label="失败原因" min-width="80">
+            <el-table-column prop="opr_remark" label="失败原因" min-width="80">
               <template slot-scope="scope">
-                <span style="display:inline-block;height:30px;">¥+{{ scope.row.amount }}</span>
+                <span style="display:inline-block;height:30px;">{{ scope.row.opr_remark }}</span>
                 <div class="placeholder-height" />
               </template>
             </el-table-column>
@@ -113,6 +113,7 @@ import { RECHARGE_STATUS, pickerOptions } from '@/config/cfg'
 import moment from 'moment'
 import { rechargeGet } from '@/api/api'
 import DialogRecharge from './DialogRecharge'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -167,6 +168,12 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      business_info: state => state.user.business_info
+    }),
+    account_balance() {
+      return this.business_info.account_balance
+    },
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
     }

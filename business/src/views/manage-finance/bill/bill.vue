@@ -56,7 +56,8 @@
 
           <el-table-column prop="opr_number" label="操作编号" min-width="60" />
           <el-table-column prop="opr_type_txt" label="操作类型" min-width="60" />
-          <el-table-column prop="cost_amount" label="消费金额" min-width="60" />
+          <el-table-column prop="cost_amount_str" label="消费金额" min-width="60" />
+          <el-table-column prop="balance_amount_str" label="账户余额" min-width="60" />
           <el-table-column prop="opr_time_str" label="操作时间" min-width="60" />
           <el-table-column prop="goods_id" label="操作" min-width="60">
             <template slot-scope="scope">
@@ -187,6 +188,14 @@ export default {
             'YYYY-MM-DD HH:mm:ss'
           )
         }
+
+        item.balance_amount_str = `￥${item.balance_amount}`
+
+        if (item.opr_type === OPR_TYPE.ORDER) {
+          item.cost_amount_str = `￥-${item.cost_amount}`
+        } else {
+          item.cost_amount_str = `￥+${item.cost_amount}`
+        }
         return item
       })
     },
@@ -251,9 +260,9 @@ export default {
 .el-table {
   min-height: 400px;
   /deep/ td {
-    padding:5px 0;
+    padding: 5px 0;
   }
-  .placeholder-height{
+  .placeholder-height {
     display: inline-block;
     height: 30px;
     width: 1px;

@@ -22,7 +22,7 @@ function generateRequestFn(interfaceFile, options = {}) {
         resp => {
           if (resp.ret !== 0) {
             if (showErrTip) {
-              Vue.prototype.$message.error(resp.msg)
+              Vue.prototype.$message.error(resp.msg || '')
             }
           }
           resolve(resp)

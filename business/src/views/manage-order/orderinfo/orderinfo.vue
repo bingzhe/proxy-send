@@ -14,16 +14,20 @@
         </div>
       </div>
       <div class="btn-group-wrapper">
-        <el-button class="btn-bd-primary" @click="handlerGoBackClick">撤销订单</el-button>
+        <el-button
+          v-if="order_status === ORDER_STATUS.AUDIT_WAIT"
+          class="btn-bd-primary"
+          @click="openUndoDialogTip"
+        >撤销订单</el-button>
         <el-button
           v-if="order_status === ORDER_STATUS.AUDIT_FAIL"
           class="btn-bd-primary"
-          @click="handlerGoBackClick"
+          @click="handlerEditBtnClick"
         >编辑订单</el-button>
         <el-button
           v-if="order_status === ORDER_STATUS.AUDIT_FAIL|| order_status === ORDER_STATUS.REVOCAT"
           class="btn-bd-primary"
-          @click="handlerGoBackClick"
+          @click="openDeleteDialogTip"
         >删除订单</el-button>
         <el-button v-if="order_status === ORDER_STATUS.DELIVERY_SUC" class="btn-bd-primary">物流追踪</el-button>
         <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
@@ -74,6 +78,28 @@
         <table-order-track :order-track="orderTrack" />
       </div>
     </div>
+
+    <!-- 撤销提示弹窗 -->
+    <dialog-tip
+      ref="undoDialogTip"
+      type="undo"
+      cancel-text="不撤销"
+      confirm-text="撤销"
+      title="撤销订单"
+      tip-text="订单撤销不能还原，确定要撤销？"
+      @confirm="undoOrderOpr"
+    />
+
+    <!-- 删除提示弹窗 -->
+    <dialog-tip
+      ref="deleteDialogTip"
+      type="delete"
+      cancel-text="不删除"
+      confirm-text="删除"
+      title="删除订单"
+      tip-text="确定要删除订单吗？"
+      @confirm="deleteOrderOpr"
+    />
   </div>
 </template>
 
@@ -84,9 +110,10 @@ import TableGoodsinfo from '../components/TableGoodsinfo'
 import TableConsignee from '../components/TableConsigneeinfo'
 import TableOrderFeeinfo from '../components/TableOrderFeeinfo'
 import TableOrderTrack from '../components/TableOrderTrack'
+import DialogTip from '@/components/Dialog/DialogTip'
 import moment from 'moment'
 import { GOODS_TYPE, ORDER_STATUS } from '@/config/cfg'
-import { orderGet } from '@/api/api'
+import { orderGet, orderSave } from '@/api/api'
 
 export default {
   components: {
@@ -95,7 +122,8 @@ export default {
     TableGoodsinfo,
     TableConsignee,
     TableOrderFeeinfo,
-    TableOrderTrack
+    TableOrderTrack,
+    DialogTip
   },
 
   data() {
@@ -195,8 +223,10 @@ export default {
       this.baseinfoList[0].order_time = moment(info.order_time * 1000).format(
         'YYYY-MM-DD HH:mm:ss'
       )
-      // <<<<<<<<<<<<<<<<<<<
-      this.baseinfoList[1].company_name = '配送礼品'
+      this.baseinfoList[1].company_name = (info.attach_list || []).map(attach => {
+        const attach_str = `${attach.goods_name}${attach.num}`
+        return attach_str
+      }).join('，')
       this.baseinfoList[2].company_name = info.remark
 
       // 商品信息
@@ -256,6 +286,42 @@ export default {
     },
     handlerGoBackClick() {
       this.$router.go(-1)
+    },
+    // 撤销弹窗
+    openUndoDialogTip() {
+      this.$refs.undoDialogTip.show()
+    },
+    async undoOrderOpr() {
+      const data = {
+        opr: 'cancel_order',
+        order_id: this.order_id
+      }
+
+      const resp = await orderSave(data)
+      if (resp.ret !== 0) return
+      this.$refs.undoDialogTip.hide()
+      this.$slnotify({ message: '撤销成功' })
+      this.getOrderinfo()
+    },
+
+    // 删除订单
+    openDeleteDialogTip(id) {
+      this.$refs.deleteDialogTip.show()
+    },
+    async deleteOrderOpr() {
+      const data = {
+        opr: 'delete_order',
+        order_id: this.order_id
+      }
+
+      const resp = await orderSave(data)
+      if (resp.ret !== 0) return
+      this.$refs.deleteDialogTip.hide()
+      this.$slnotify({ message: '删除成功' })
+      this.$router.go(-1)
+    },
+    handlerEditBtnClick() {
+      this.$router.push({ path: `/manage-order/orderedit/${this.order_id}` })
     }
   }
 }

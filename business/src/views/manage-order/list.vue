@@ -101,10 +101,12 @@
                   <el-button
                     v-if="scope.row.order_status === ORDER_STATUS.AUDIT_WAIT"
                     type="text"
+                    @click="openUndoDialogTip(scope.row.order_id)"
                   >撤销订单</el-button>
                   <el-button
                     v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL"
                     type="text"
+                    @click="handlerEditBtnClick(scope.row.order_id)"
                   >编辑订单</el-button>
                   <el-button
                     v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
@@ -115,6 +117,7 @@
                       || scope.row.order_status === ORDER_STATUS.REVOCAT "
                     type="text"
                     class="red-btn"
+                    @click="openDeleteDialogTip(scope.row.order_id)"
                   >删除订单</el-button>
                 </div>
               </template>
@@ -146,14 +149,43 @@
         </div>
       </div>
     </div>
+
+    <!-- 撤销提示弹窗 -->
+    <dialog-tip
+      ref="undoDialogTip"
+      type="undo"
+      cancel-text="不撤销"
+      confirm-text="撤销"
+      title="撤销订单"
+      tip-text="订单撤销不能还原，确定要撤销？"
+      @confirm="undoOrderOpr"
+      @close="handlerUndoDialogClose"
+    />
+
+    <!-- 删除提示弹窗 -->
+    <dialog-tip
+      ref="deleteDialogTip"
+      type="delete"
+      cancel-text="不删除"
+      confirm-text="删除"
+      title="删除订单"
+      tip-text="确定要删除订单吗？"
+      @confirm="deleteOrderOpr"
+      @close="handlerDeleteDialogClose"
+    />
   </div>
 </template>
 <script>
-import { orderGet } from '@/api/api'
-import moment from 'moment'
+import { orderGet, orderSave } from '@/api/api'
 import { ORDER_STATUS, pickerOptions } from '@/config/cfg'
+import DialogTip from '@/components/Dialog/DialogTip'
+import moment from 'moment'
 
 export default {
+  components: {
+    DialogTip
+  },
+
   data() {
     return {
       // search
@@ -216,7 +248,9 @@ export default {
         },
         revocat: { label: '已撤销', value: ORDER_STATUS.REVOCAT, num: 0 },
         refund: { label: '已退款', value: ORDER_STATUS.REFUND, num: 0 }
-      }
+      },
+
+      oprOrderId: ''
     }
   },
   computed: {
@@ -286,6 +320,15 @@ export default {
 
         return item
       })
+
+      const statusStat = resp.data.status_stat || {}
+
+      this.statusList.all.num = statusStat.all
+      this.statusList.audit_faile.num = statusStat[ORDER_STATUS.AUDIT_FAIL]
+      this.statusList.delivery_wait.num = statusStat[ORDER_STATUS.DELIVERY_WAIT]
+      this.statusList.delivery_suc.num = statusStat[ORDER_STATUS.DELIVERY_SUC]
+      this.statusList.revocat.num = statusStat[ORDER_STATUS.REVOCAT]
+      this.statusList.refund.num = statusStat[ORDER_STATUS.REFUND]
     },
     // 多选
     handleSelectionChange(val) {
@@ -315,6 +358,52 @@ export default {
           orderid: id
         }
       })
+    },
+    // 撤销弹窗
+    openUndoDialogTip(id) {
+      this.oprOrderId = id
+      this.$refs.undoDialogTip.show()
+    },
+    handlerUndoDialogClose() {
+      this.oprOrderId = ''
+    },
+    async undoOrderOpr() {
+      const data = {
+        opr: 'cancel_order',
+        order_id: this.oprOrderId
+      }
+
+      const resp = await orderSave(data)
+      if (resp.ret !== 0) return
+      this.$refs.undoDialogTip.hide()
+      this.$slnotify({ message: '撤销成功' })
+      this.getList()
+      this.handlerUndoDialogClose()
+    },
+
+    // 删除订单
+    openDeleteDialogTip(id) {
+      this.oprOrderId = id
+      this.$refs.deleteDialogTip.show()
+    },
+    handlerDeleteDialogClose() {
+      this.oprOrderId = ''
+    },
+    async deleteOrderOpr() {
+      const data = {
+        opr: 'delete_order',
+        order_id: this.oprOrderId
+      }
+
+      const resp = await orderSave(data)
+      if (resp.ret !== 0) return
+      this.$refs.deleteDialogTip.hide()
+      this.$slnotify({ message: '删除成功' })
+      this.getList()
+      this.handlerDeleteDialogClose()
+    },
+    handlerEditBtnClick(id) {
+      this.$router.push({ path: `/manage-order/orderedit/${id}` })
     }
   }
 }

@@ -108,6 +108,13 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/manage-order/orderinfo/orderinfo'),
         meta: { title: '订单详情', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
+      },
+      {
+        path: 'orderedit/:order_id',
+        name: 'orderedit',
+        hidden: true,
+        component: () => import('@/views/manage-order/edit/shopcart'),
+        meta: { title: '订单编辑', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
       }
     ]
   },

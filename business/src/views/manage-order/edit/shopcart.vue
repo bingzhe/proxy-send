@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div v-if="buycart_id" class="shopcart-wrapper">
+    <div class="shopcart-wrapper">
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
@@ -24,13 +24,7 @@
             <el-table-column prop="goods_info_str" label="材质_品牌_型号_边框_商品编号" width="300" />
             <el-table-column prop="num" label="数量" width="150">
               <template slot-scope="scope">
-                <el-input-number
-                  v-model="scope.row.num"
-                  :min="1"
-                  size="small"
-                  label="描述文字"
-                  @change=" getPriceSave"
-                />
+                <el-input-number v-model="scope.row.num" :min="1" size="small" @change="getPrice" />
               </template>
             </el-table-column>
             <el-table-column prop="price" label="单价" min-width="50" />
@@ -54,7 +48,7 @@
               v-model="item.num"
               controls-position="right"
               :min="0"
-              @change=" getPriceSave"
+              @change="getPrice"
             />
           </div>
         </div>
@@ -72,11 +66,7 @@
             label-width="80px"
           >
             <el-form-item label="物流选择" prop="company_name" label-width="80px">
-              <el-select
-                v-model="consigneeFrom.company_name"
-                placeholder="请选择"
-                @change=" getPriceSave"
-              >
+              <el-select v-model="consigneeFrom.company_name" placeholder="请选择" @change="getPrice">
                 <el-option
                   v-for="(item,index) in delivery_list"
                   :key="index"
@@ -134,15 +124,12 @@
         <el-button type="primary" @click="handlerSaveOrderClick">下单</el-button>
       </div>
     </div>
-
-    <shopcart-empty v-if="!buycart_id" />
   </div>
 </template>
 
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
-import ShopcartEmpty from './ShopcartEmpty'
-import { orderGet, orderSave, buycartGet, buycartSave } from '@/api/api'
+import { orderGet, orderSave } from '@/api/api'
 import { mapState } from 'vuex'
 // import { GOODS_TYPE } from '@/config/cfg'
 
@@ -165,12 +152,13 @@ export const GOODS_TYPE = {
 
 export default {
   components: {
-    BaseinfoTitle,
-    ShopcartEmpty
+    BaseinfoTitle
   },
   data() {
     return {
       token: window.Store.GetGlobalData('token'),
+
+      order_id: '',
 
       goodsList: [],
       attachList: [],
@@ -206,7 +194,6 @@ export default {
   },
   computed: {
     ...mapState({
-      buycart_id: state => state.user.buycart_id,
       delivery_list: state => state.user.delivery_list
     }),
     total() {
@@ -218,8 +205,9 @@ export default {
     }
   },
   mounted() {
-    if (this.buycart_id) {
-      this.getBuycart()
+    this.order_id = this.$route.params.order_id
+    if (this.order_id) {
+      this.getOrderinfo()
 
       // 选中所有商品
       setTimeout(() => {
@@ -233,19 +221,19 @@ export default {
       this.multipleSelection = val
       this.getPrice()
     },
-    async getBuycart() {
+    async getOrderinfo() {
       const data = {
-        opr: 'get_buycart_info', // 标品加入购物车
-        buycart_id: this.buycart_id // 购物车id
+        opr: 'get_order_info',
+        order_id: this.order_id
       }
 
-      console.log('购物车 req=>', data)
-      const resp = await buycartGet(data)
-      console.log('购物车 res=>', resp)
+      console.log('订单详情 req=>', data)
+      const resp = await orderGet(data)
+      console.log('订单详情 res=>', resp)
 
       if (resp.ret !== 0) return
 
-      const info = resp.data
+      const info = resp.data.info
       const consignee_info = info.consignee_info || {}
       this.attachList = info.attach_list || []
 
@@ -255,7 +243,7 @@ export default {
         }&opr=get_img&type=1&img_name=${item.goods_img}`
 
         item.type_str = GOODS_TYPE.toString(item.type)
-        item.goods_info_str = `${item.raw_material}_${item.brand_name}_${item.model_name}_${item.color}_${item.goods_id}`
+        item.goods_info_str = `${item.raw_material}_${item.brand_txt}_${item.model_txt}_${item.color}_${item.goods_id}`
 
         return item
       })
@@ -268,6 +256,7 @@ export default {
       this.consigneeFrom.area = consignee_info.area
       this.consigneeFrom.street = consignee_info.street
       this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
+      this.consigneeFrom.remark = info.remark
 
       this.goods_fee = info.goods_fee
       this.discount_fee = info.discount_fee
@@ -281,41 +270,6 @@ export default {
       this.consigneeFrom.city = res[1] || ''
       this.consigneeFrom.area = res[2] || ''
       this.consigneeFrom.street = res[3] || ''
-    },
-    async getPriceSave() {
-      // 只计算选中的 multipleSelection
-      const goods_list = this.multipleSelection.map(goods => {
-        return {
-          goods_id: goods.goods_id,
-          color: goods.color,
-          num: goods.num
-        }
-      })
-
-      const attach_list = this.attachList.map(attach => {
-        return {
-          goods_id: attach.goods_id,
-          num: attach.num
-        }
-      })
-
-      const data = {
-        opr: 'save_buycart_change',
-        goods_list: goods_list,
-        attach_list: attach_list,
-        delivery_company_name: this.consigneeFrom.company_name
-      }
-
-      console.log('计算订单费用 req=>', data)
-      const resp = await buycartSave(data)
-      console.log('计算订单费用 res=>', resp)
-
-      if (resp.ret !== 0) return
-
-      const feeInfo = resp.data || {}
-      this.goods_fee = feeInfo.goods_fee
-      this.discount_fee = feeInfo.discount_fee
-      this.actual_fee = feeInfo.actual_fee
     },
     async getPrice() {
       // 只计算选中的 multipleSelection
@@ -357,7 +311,6 @@ export default {
       /**
        * 目前删除只是前段页面删除，
        */
-
       const row = this.goodsList[index]
       if (this.multipleSelection.indexOf(row) >= 0) {
         this.$refs.selectGoodsTable.toggleRowSelection(row)
@@ -404,7 +357,7 @@ export default {
 
       const data = {
         opr: 'save_order',             // 由后把购物车中商品转为订单
-        buycart_id: this.buycart_id,
+        order_id: this.order_id,
         goods_list,
         attach_list,
         consignee_info,
@@ -423,7 +376,8 @@ export default {
       //  更新页面全局数据
       this.$store.dispatch('user/getUserInfo')
       setTimeout(() => {
-        this.goGoodsList()
+        // this.goGoodsList()
+        this.$router.go(-1)
       }, 2000)
     },
     goGoodsList() {
