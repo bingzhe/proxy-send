@@ -21,8 +21,8 @@
           <div class="opr-item clearfix pic-source">
             <div class="opr-lable">图片来源</div>
             <div class="opr-value">
-              <el-radio v-model="picSource" label="1">备选项</el-radio>
-              <el-radio v-model="picSource" label="2">备选项</el-radio>
+              <el-radio v-model="picSource" label="1">本地图片</el-radio>
+              <el-radio v-model="picSource" label="2">图库来源</el-radio>
             </div>
           </div>
         </el-col>
@@ -42,6 +42,8 @@
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import SkuBaseinfo from './components/SkuBaseinfo'
 import MaterialList from './components/MaterialList'
+import { goodsGet, buycartSave } from '@/api/api'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -66,6 +68,37 @@ export default {
 
       num: 1,                // 商品数量
       picSource: 1            // 1.本地 2.图库
+    }
+  },
+  computed: {
+    ...mapState({
+      buycart_id: state => state.user.buycart_id
+    })
+  },
+  mounted() {
+    this.goodsInfo.goods_id = this.$route.params.goods_id
+    this.getGoodsInfo()
+  },
+  methods: {
+    async getGoodsInfo() {
+      const data = {
+        opr: 'get_goods_info',
+        goods_id: this.goodsInfo.goods_id
+      }
+
+      const resp = await goodsGet(data)
+      console.log('商品信息 res=>', resp)
+
+      if (resp.ret !== 0) return
+
+      const info = resp.data.info
+
+      this.goodsInfo.goods_name = info.goods_name
+      this.goodsInfo.raw_material = info.raw_material
+      this.goodsInfo.brand = info.brand_name
+      this.goodsInfo.model = info.model_name
+      this.goodsInfo.price = info.price
+      this.goodsInfo.remark = info.remark
     }
   }
 }

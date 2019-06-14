@@ -28,8 +28,7 @@
                   v-model="scope.row.num"
                   :min="1"
                   size="small"
-                  label="描述文字"
-                  @change=" getPriceSave"
+                  @change="getPriceSave"
                 />
               </template>
             </el-table-column>
@@ -54,7 +53,7 @@
               v-model="item.num"
               controls-position="right"
               :min="0"
-              @change=" getPriceSave"
+              @change="getPriceSave"
             />
           </div>
         </div>
@@ -75,7 +74,7 @@
               <el-select
                 v-model="consigneeFrom.company_name"
                 placeholder="请选择"
-                @change=" getPriceSave"
+                @change="getPriceSave"
               >
                 <el-option
                   v-for="(item,index) in delivery_list"
@@ -231,7 +230,7 @@ export default {
     // 多选
     handleSelectionChange(val) {
       this.multipleSelection = val
-      this.getPrice()
+      this.getPriceSave()
     },
     async getBuycart() {
       const data = {
@@ -283,12 +282,19 @@ export default {
       this.consigneeFrom.street = res[3] || ''
     },
     async getPriceSave() {
-      // 只计算选中的 multipleSelection
-      const goods_list = this.multipleSelection.map(goods => {
+      const goods_list = this.goodsList.map(goods => {
+        let checked = 0
+        if (this.multipleSelection.indexOf(goods) >= 0) {
+          checked = 1
+        } else {
+          checked = 0
+        }
+
         return {
           goods_id: goods.goods_id,
           color: goods.color,
-          num: goods.num
+          num: goods.num,
+          checked: checked
         }
       })
 
@@ -317,52 +323,12 @@ export default {
       this.discount_fee = feeInfo.discount_fee
       this.actual_fee = feeInfo.actual_fee
     },
-    async getPrice() {
-      // 只计算选中的 multipleSelection
-      const goods_list = this.multipleSelection.map(goods => {
-        return {
-          goods_id: goods.goods_id,
-          color: goods.color,
-          num: goods.num
-        }
-      })
-
-      const attach_list = this.attachList.map(attach => {
-        return {
-          goods_id: attach.goods_id,
-          num: attach.num
-        }
-      })
-
-      const data = {
-        opr: 'cal_order_fee',
-        goods_list: goods_list,
-        attach_list: attach_list,
-        delivery_company_name: this.consigneeFrom.company_name
-      }
-
-      console.log('计算订单费用 req=>', data)
-      const resp = await orderGet(data)
-      console.log('计算订单费用 res=>', resp)
-
-      // <<<<<<<<<<<<<<<<<<<<<<<<<<
-      // if (resp.ret !== 0) return
-
-      const feeInfo = resp.data || {}
-      this.goods_fee = feeInfo.goods_fee
-      this.discount_fee = feeInfo.discount_fee
-      this.actual_fee = feeInfo.actual_fee
-    },
     delShopcart(index) {
       /**
        * 目前删除只是前段页面删除，
        */
-
-      const row = this.goodsList[index]
-      if (this.multipleSelection.indexOf(row) >= 0) {
-        this.$refs.selectGoodsTable.toggleRowSelection(row)
-      }
       this.goodsList.splice(index, 1)
+      this.getPriceSave()
     },
     handlerSaveOrderClick() {
       if (this.multipleSelection.length === 0) {

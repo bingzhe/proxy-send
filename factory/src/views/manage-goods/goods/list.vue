@@ -274,6 +274,7 @@ export default {
       this.tableLoading = false
     },
     handlerSearchClick() {
+      this.listQuery.page = 1
       this.getGoodsList()
     },
     // 多选

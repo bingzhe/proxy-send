@@ -267,10 +267,10 @@ export default {
       console.log('图库列表 res=>', resp)
 
       if (resp.ret !== 0) return
-      this.list = resp.data.list
+      this.list = resp.data.list || []
       this.total = resp.data.total
 
-      this.list.map(item => {
+      this.list = this.list.map(item => {
         if (item.lastmodtime) {
           item.lastmodtime_str = moment(item.lastmodtime * 1000).format(
             'YYYY-MM-DD HH:mm:ss'
@@ -290,6 +290,7 @@ export default {
       this.tableLoading = false
     },
     handlerSearchClick() {
+      this.listQuery.page = 1
       this.getPictureList()
     },
     // 多选

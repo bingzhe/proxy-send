@@ -2,7 +2,10 @@
   <div>
     <el-form ref="searchForm" :model="searchForm" :inline="true">
       <el-form-item label="主题分类" prop="theme" label-width="70px">
-        <el-input v-model.trim="searchForm.theme" placeholder="请输入" />
+        <el-select v-model="searchForm.theme" placeholder="请选择">
+          <el-option key="全部" label="全部" value />
+          <el-option v-for="item in theme_list" :key="item" :label="item" :value="item" />
+        </el-select>
       </el-form-item>
       <el-form-item label="素材名称" prop="material_name" label-width="70px">
         <el-input v-model.trim="searchForm.material_name" placeholder="请输入" />
@@ -46,6 +49,8 @@
  * 下单素材 list
  */
 import MaterialCard from './MaterialCard'
+import { materialGet } from '@/api/api'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -53,6 +58,8 @@ export default {
   },
   data() {
     return {
+      token: window.Store.GetGlobalData('token'),
+
       searchForm: {
         theme: '',
         material_name: ''
@@ -62,118 +69,68 @@ export default {
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 20
+        limit: 15
       },
 
-      list: [
-        {
-          material_id: '1',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '2',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '2',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '2',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        }, {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '3',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        },
-        {
-          material_id: '2',
-          material_name: '123123',
-          material_img: '',
-          material_img_url: 'http://f.pso.rockyshi.cn/php/img_get.php?token=T19QNDetEUVtCvfJ&opr=get_img&type=1&img_name=0e709824a0a9c3c023d94237ad11ee29.png'
-        }
-      ]
+      list: []
 
     }
   },
   computed: {
+    ...mapState({
+      theme_list: state => state.user.theme_list
+    }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
     }
   },
+  mounted() {
+    this.getPictureList()
+  },
   methods: {
-    handlerSearchClick() { },
+    async getPictureList() {
+      const data = {
+        opr: 'get_material_list',
+        page_no: this.listQuery.page,
+        page_size: this.listQuery.limit
+      }
+      // 图片分类
+      if (this.searchForm.theme) {
+        data.theme = this.searchForm.theme
+      }
+      // 素材名
+      if (this.searchForm.material_name) {
+        data.material_name = this.searchForm.material_name
+      }
+
+      console.log('图库列表 req=>', data)
+      const resp = await materialGet(data)
+      console.log('图库列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.list = resp.data.list || []
+      this.total = resp.data.total
+
+      this.list = this.list.map(item => {
+        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&type=1&img_name=${item.material_img}`
+
+        return item
+      })
+    },
+    handlerSearchClick() {
+      this.listQuery.page = 1
+      this.getPictureList()
+    },
     handleSizeChange(val) {
       this.listQuery.page = 1
       this.listQuery.limit = val
-      //   this.getGoodsList()
+      this.getPictureList()
     },
     handleCurrentChange(val) {
       this.listQuery.page = val
-      //   this.getGoodsList()
+      this.getPictureList()
     }
   }
 }
