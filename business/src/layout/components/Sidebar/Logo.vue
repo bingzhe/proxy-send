@@ -37,25 +37,25 @@ export default {
 
 .sidebar-logo-wrapper {
   width: 100%;
-  height: 66px;
-  line-height: 66px;
+  height: 150px;
+  // line-height: 66px;
   background: #f7f7f7;
 }
 .sidebar-logo-container {
   position: relative;
   width: 100%;
-  height: 66px;
-  line-height: 66px;
+  height: 150px;
+  // line-height: 66px;
   // background: #075ec0;
   background: #2584f9;
   text-align: center;
   overflow: hidden;
-  border-radius: 0px 33px 0px 0px;
+  // border-radius: 0px 33px 0px 0px;
 
   .sidebar-logo {
-    margin-top: 14px;
-    width: 147px;
-    height: 38px;
+    margin-top: 40px;
+    width: 75px;
+    height: 80px;
   }
 }
 </style>

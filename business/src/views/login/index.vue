@@ -267,8 +267,8 @@ $cursor: #fff;
       text-align: center;
       margin-bottom: 18px;
       .login-logo {
-        width: 234px;
-        height: 110px;
+        width: 202px;
+        height: 102px;
       }
     }
 
