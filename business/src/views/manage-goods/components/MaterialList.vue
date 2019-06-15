@@ -17,7 +17,7 @@
 
     <div class="material-list-wrapper">
       <div class="material-list clearfix">
-        <material-card v-for="item in list" :key="item.material_id" :material="item" />
+        <material-card v-for="item in list" :key="item.material_id" :material="item" @on-select="handlerImageSelect(item)" />
       </div>
       <!-- 分页 start -->
       <div class="pagination-wrapper clearfix">
@@ -131,6 +131,9 @@ export default {
     handleCurrentChange(val) {
       this.listQuery.page = val
       this.getPictureList()
+    },
+    handlerImageSelect(itme) {
+      this.$emit('on-select', itme)
     }
   }
 }

@@ -86,10 +86,10 @@
             </el-form-item>
             <br>
             <el-form-item label="收件人" prop="person" label-width="80px">
-              <el-input v-model="consigneeFrom.person" placeholder="请输入" />
+              <el-input v-model="consigneeFrom.person" placeholder="请输入" @change="getPriceSave" />
             </el-form-item>
             <el-form-item label="联系电话" prop="phone" label-width="110px">
-              <el-input v-model="consigneeFrom.phone" placeholder="请输入" />
+              <el-input v-model="consigneeFrom.phone" placeholder="请输入" @change="getPriceSave" />
             </el-form-item>
             <br>
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="80px">
@@ -99,17 +99,17 @@
             </el-form-item>
             <br>
             <el-form-item label="省份" prop="province" label-width="80px">
-              <el-input v-model="consigneeFrom.province" placeholder="请输入" />
+              <el-input v-model="consigneeFrom.province" placeholder="请输入" @change="getPriceSave" />
             </el-form-item>
             <el-form-item label="市区" prop="city" label-width="110px">
-              <el-input v-model="consigneeFrom.city" placeholder="请输入" />
+              <el-input v-model="consigneeFrom.city" placeholder="请输入" @change="getPriceSave" />
             </el-form-item>
             <br>
             <el-form-item label="区县" prop="area" label-width="80px">
-              <el-input v-model="consigneeFrom.area" placeholder="请输入" />
+              <el-input v-model="consigneeFrom.area" placeholder="请输入" @change="getPriceSave" />
             </el-form-item>
             <el-form-item label="街道/镇" prop="street" label-width="110px">
-              <el-input v-model="consigneeFrom.street" placeholder="请输入" />
+              <el-input v-model="consigneeFrom.street" placeholder="请输入" @change="getPriceSave" />
             </el-form-item>
             <br>
             <el-form-item label="留言" prop="remark" label-width="80px">
@@ -305,10 +305,21 @@ export default {
         }
       })
 
+      const consignee_info = {
+        person: this.consigneeFrom.person,                // 收货人名
+        phone: this.consigneeFrom.phone,                 // 手机号码
+        province: this.consigneeFrom.province,            // 省
+        city: this.consigneeFrom.city,                    // 市
+        area: this.consigneeFrom.area,                    // 区县
+        street: this.consigneeFrom.street
+      }
+      // consignee_info.address = `${consignee_info.province}${consignee_info.city}${consignee_info.area}${consignee_info.street}`
+
       const data = {
         opr: 'save_buycart_change',
         goods_list: goods_list,
         attach_list: attach_list,
+        consignee_info,
         delivery_company_name: this.consigneeFrom.company_name
       }
 
@@ -360,7 +371,7 @@ export default {
 
       const consignee_info = {
         person: this.consigneeFrom.person,                // 收货人名
-        phone: this.consigneeFrom.person,                 // 手机号码
+        phone: this.consigneeFrom.phone,                 // 手机号码
         province: this.consigneeFrom.province,            // 省
         city: this.consigneeFrom.city,                    // 市
         area: this.consigneeFrom.area,                    // 区县

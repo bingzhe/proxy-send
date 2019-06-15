@@ -113,13 +113,13 @@
                 v-if="scope.row.status === GOODS_STATUS.OFF"
                 class="btn-green"
                 type="text"
-                @click="handlerOnOffClick(scope.row.goods_id)"
+                @click="handlerOnOffClick(scope.row.goods_id, 'on')"
               >上架</el-button>
               <el-button
                 v-if="scope.row.status === GOODS_STATUS.ON"
                 class="btn-green"
                 type="text"
-                @click="handlerOnOffClick(scope.row.goods_id)"
+                @click="handlerOnOffClick(scope.row.goods_id, 'off')"
               >下架</el-button>
               <el-button type="text" @click="handlerEditBtnClick(scope.row.goods_id)">编辑</el-button>
               <el-button
@@ -322,11 +322,25 @@ export default {
         type: 'success'
       })
     },
-    handlerOnOffClick(id) {
-      /**
-      * 掉接口  上下架
-      * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      */
+    async handlerOnOffClick(id, type) {
+      const data = {
+        opr: 'save_goods_status',
+        goods_id: id        // 商品编号(ID)
+        // status          : 2,            // 状态(1:未上架, 2:已上架)
+      }
+      if (type === 'on') {
+        data.status = 2
+      } else if (type === 'off') {
+        data.status = 1
+      }
+      const resp = await goodsSave(data)
+      if (resp.ret !== 0) return
+      this.getGoodsList()
+      this.$notify({
+        title: '成功',
+        message: type === 'on' ? '上架成功' : '下架成功',
+        type: 'success'
+      })
     }
   }
 }

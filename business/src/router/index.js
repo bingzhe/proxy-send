@@ -75,14 +75,14 @@ export const constantRoutes = [
         name: 'goodsnorm',
         hidden: true,
         component: () => import('@/views/manage-goods/SkuNorm'),
-        meta: { title: '标品下单' }
+        meta: { title: '标品下单', activeMenu: '/manage-goods/goodslist' }
       },
       {
         path: 'diy/:goods_id',
         name: 'goodsdiy',
         hidden: true,
         component: () => import('@/views/manage-goods/SkuDiy'),
-        meta: { title: 'DIY下单' }
+        meta: { title: 'DIY下单', activeMenu: '/manage-goods/goodslist' }
       }
     ]
   },

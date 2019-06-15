@@ -323,12 +323,12 @@ export default {
 
       const statusStat = resp.data.status_stat || {}
 
-      this.statusList.all.num = statusStat.all
-      this.statusList.audit_faile.num = statusStat[ORDER_STATUS.AUDIT_FAIL]
-      this.statusList.delivery_wait.num = statusStat[ORDER_STATUS.DELIVERY_WAIT]
-      this.statusList.delivery_suc.num = statusStat[ORDER_STATUS.DELIVERY_SUC]
-      this.statusList.revocat.num = statusStat[ORDER_STATUS.REVOCAT]
-      this.statusList.refund.num = statusStat[ORDER_STATUS.REFUND]
+      this.statusList.all.num = statusStat.all || 0
+      this.statusList.audit_faile.num = statusStat[ORDER_STATUS.AUDIT_FAIL] || 0
+      this.statusList.delivery_wait.num = statusStat[ORDER_STATUS.DELIVERY_WAIT] || 0
+      this.statusList.delivery_suc.num = statusStat[ORDER_STATUS.DELIVERY_SUC] || 0
+      this.statusList.revocat.num = statusStat[ORDER_STATUS.REVOCAT] || 0
+      this.statusList.refund.num = statusStat[ORDER_STATUS.REFUND] || 0
     },
     // 多选
     handleSelectionChange(val) {

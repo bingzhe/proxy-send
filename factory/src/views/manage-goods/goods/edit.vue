@@ -292,7 +292,7 @@
     <div class="gray-border-bottom" />
 
     <div class="button-group-wrapper">
-      <el-button class="btn-h-44-w-100 btn-bd-primary">取消</el-button>
+      <el-button class="btn-h-44-w-100 btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
       <el-button
         class="btn-h-44-w-100"
         type="primary"
@@ -509,7 +509,7 @@ export default {
         this.goodsType === GOODS_TYPE.DIY ||
         this.goodsType === GOODS_TYPE.NORM
       ) {
-        this.basePicForm.opt_color_list = info.opt_color_list
+        this.basePicForm.opt_color_list = info.opt_color_list || []
 
         this.basePicForm.opt_color_list.forEach(item => {
           item.color_img_url = `${
