@@ -4,7 +4,7 @@
       <el-col
         v-for="(item,key) in statusList"
         :key="key"
-        :span="4"
+        :span="3"
         class="status-item"
         :class="{'status-item--active': searchForm.order_status === item.value}"
       >
@@ -231,6 +231,11 @@ export default {
 
       statusList: {
         all: { label: '全部', value: '', num: 0 },
+        audit_wait: {
+          label: '待审核',
+          value: ORDER_STATUS.AUDIT_WAIT,
+          num: 0
+        },
         audit_faile: {
           label: '审核未通过',
           value: ORDER_STATUS.AUDIT_FAIL,
@@ -264,7 +269,7 @@ export default {
   methods: {
     async getList() {
       const data = {
-        opr: 'get_audit_order_list',
+        opr: 'get_order_list',
         page_no: this.listQuery.page
       }
 
@@ -324,6 +329,7 @@ export default {
       const statusStat = resp.data.status_stat || {}
 
       this.statusList.all.num = statusStat.all || 0
+      this.statusList.audit_wait.num = statusStat[ORDER_STATUS.AUDIT_WAIT] || 0
       this.statusList.audit_faile.num = statusStat[ORDER_STATUS.AUDIT_FAIL] || 0
       this.statusList.delivery_wait.num = statusStat[ORDER_STATUS.DELIVERY_WAIT] || 0
       this.statusList.delivery_suc.num = statusStat[ORDER_STATUS.DELIVERY_SUC] || 0
@@ -422,7 +428,7 @@ export default {
   .status-item {
     .status-text {
       height: 64px;
-      min-width: 135px;
+      min-width: 120px;
       font-size: 16px;
       color: #333;
       text-align: center;

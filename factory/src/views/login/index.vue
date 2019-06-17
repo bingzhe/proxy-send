@@ -62,7 +62,7 @@
               @input.native="clearValidate"
               @keyup.enter.native="handleLogin"
             />
-            <div class="check-img">
+            <div class="check-img" @click="getVerifyCodeImg">
               <img :src="codeimgurl" alt="验证图片">
             </div>
             <el-checkbox v-model="loginForm.checked" class="remeber-box">记住密码</el-checkbox>
@@ -87,7 +87,7 @@
 <script>
 import Util from '@/utils/util'
 import { loginSave } from '@/api/api'
-import { errcode } from '@/config/cfg'
+// import { errcode } from '@/config/cfg'
 import { setEmployeeId } from '@/config/global-store'
 
 export default {
@@ -165,7 +165,7 @@ export default {
       this.loading = false
 
       if (resp.ret !== 0) {
-        this.errTipMsg = errcode.toString(resp.ret)
+        this.errTipMsg = resp.msg
         return
       }
 

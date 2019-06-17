@@ -237,7 +237,7 @@ export default {
       )
 
       this.baseinfoList[1].company_name = (info.attach_list || []).map(attach => {
-        const attach_str = `${attach.goods_name}${attach.num}`
+        const attach_str = `${attach.goods_name}（${attach.num}）`
         return attach_str
       }).join('，')
       this.baseinfoList[2].company_name = info.remark

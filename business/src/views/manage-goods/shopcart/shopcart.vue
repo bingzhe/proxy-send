@@ -93,7 +93,7 @@
             </el-form-item>
             <br>
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="80px">
-              <el-input v-model="consigneeFrom.address" type="textarea" placeholder="请输入" />
+              <el-input v-model="consigneeFrom.address" type="textarea" placeholder="请输入" @change="getPriceSave" />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
               <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
@@ -119,6 +119,7 @@
                 placeholder="请输入"
                 maxlength="150"
                 show-word-limit
+                @change="getPriceSave"
               />
             </el-form-item>
           </el-form>
@@ -141,8 +142,9 @@
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import ShopcartEmpty from './ShopcartEmpty'
-import { orderGet, orderSave, buycartGet, buycartSave } from '@/api/api'
+import { orderSave, buycartGet, buycartSave } from '@/api/api'
 import { mapState } from 'vuex'
+import { setTimeout } from 'timers'
 // import { GOODS_TYPE } from '@/config/cfg'
 
 export const GOODS_TYPE = {
@@ -220,10 +222,10 @@ export default {
     if (this.buycart_id) {
       this.getBuycart()
 
-      // 选中所有商品
-      setTimeout(() => {
-        this.$refs.selectGoodsTable.toggleAllSelection()
-      }, 500)
+      // // 选中所有商品
+      // setTimeout(() => {
+      //   this.$refs.selectGoodsTable.toggleAllSelection()
+      // }, 500)
     }
   },
   methods: {
@@ -267,10 +269,19 @@ export default {
       this.consigneeFrom.area = consignee_info.area
       this.consigneeFrom.street = consignee_info.street
       this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
+      this.consigneeFrom.remark = info.remark || ''
 
       this.goods_fee = info.goods_fee
       this.discount_fee = info.discount_fee
       this.actual_fee = info.actual_fee
+
+      setTimeout(() => {
+        this.goodsList.forEach(goods => {
+          if (goods.checked) {
+            this.$refs.selectGoodsTable.toggleRowSelection(goods, true)
+          }
+        })
+      }, 500)
     },
     autoSplit() {
       const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
@@ -311,7 +322,8 @@ export default {
         province: this.consigneeFrom.province,            // 省
         city: this.consigneeFrom.city,                    // 市
         area: this.consigneeFrom.area,                    // 区县
-        street: this.consigneeFrom.street
+        street: this.consigneeFrom.street,
+        address: this.consigneeFrom.address
       }
       // consignee_info.address = `${consignee_info.province}${consignee_info.city}${consignee_info.area}${consignee_info.street}`
 
@@ -320,7 +332,8 @@ export default {
         goods_list: goods_list,
         attach_list: attach_list,
         consignee_info,
-        delivery_company_name: this.consigneeFrom.company_name
+        delivery_company_name: this.consigneeFrom.company_name,
+        remark: this.consigneeFrom.remark
       }
 
       console.log('计算订单费用 req=>', data)
@@ -394,14 +407,20 @@ export default {
       console.log('购物车下单 req=>', resp)
 
       if (resp.ret !== 0) return
-
+      const orderid = resp.data.order_id
       this.$slnotify({ message: '下单成功' })
-
       //  更新页面全局数据
       this.$store.dispatch('user/getUserInfo')
-      setTimeout(() => {
-        this.goGoodsList()
-      }, 2000)
+      this.$router.push({
+        path: '/manage-order/orderinfo',
+        query: {
+          orderid: orderid
+        }
+      })
+
+      // setTimeout(() => {
+      //   this.goGoodsList()
+      // }, 2000)
     },
     goGoodsList() {
       this.$router.push('/manage-goods/goodslist')
