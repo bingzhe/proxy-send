@@ -270,6 +270,12 @@ export default {
             'YYYY-MM-DD HH:mm:ss'
           )
         }
+
+        if (item.download_time) {
+          item.download_time_str = moment(item.download_time * 1000).format(
+            'YYYY-MM-DD HH:mm:ss'
+          )
+        }
         item.preview_img_url = `${
           process.env.VUE_APP_BASEURL
         }/img_get.php?token=${this.token}&opr=get_img&width=300&height=390&type=1&img_name=${

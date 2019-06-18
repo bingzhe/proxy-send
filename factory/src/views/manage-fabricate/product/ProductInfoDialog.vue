@@ -43,7 +43,7 @@
         </div>
         <div class="info-item">
           <span class="item-label">下载时间：</span>
-          <span class="item-value">{{ productInfo.create_time_str }}</span>
+          <span class="item-value">{{ productInfo.download_time_str }}</span>
         </div>
       </div>
       <div class="pic-wrapper">
