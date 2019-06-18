@@ -21,8 +21,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="dialogImageUrl" alt>
+    <el-dialog class="preview-dialog" :visible.sync="dialogVisible">
+      <img :src="dialogImageUrl" alt>
     </el-dialog>
   </div>
 </template>

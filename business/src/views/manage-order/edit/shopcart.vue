@@ -288,7 +288,8 @@ export default {
         return {
           goods_id: goods.goods_id,
           color: goods.color,
-          num: goods.num
+          num: goods.num,
+          index_id: goods.index_id
         }
       })
 
@@ -339,11 +340,10 @@ export default {
       })
     },
     async saveOrderOpr() {
-      console.log('save')
-
       const goods_list = this.multipleSelection.map(goods => {
         return {
           goods_id: goods.goods_id,
+          index_id: goods.index_id,
           color: goods.color,
           num: goods.num
         }

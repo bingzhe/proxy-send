@@ -26,7 +26,7 @@
           <div class="opr-item clearfix pic-source">
             <div class="opr-lable">图片来源</div>
             <div class="opr-value">
-              <el-radio-group v-model="picSource">
+              <el-radio-group v-model="picSource" @change="handlerPicSourceChange">
                 <el-radio :label="1">本地图片</el-radio>
                 <el-radio :label="2">图库来源</el-radio>
               </el-radio-group>
@@ -35,7 +35,7 @@
         </el-col>
       </el-row>
 
-      <div v-if="picSource === 1" class="upload-img-wrapper opr-item clearfix">
+      <div v-show="picSource === 1" class="upload-img-wrapper opr-item clearfix">
         <div class="opr-lable">选择图片</div>
         <div class="opr-value">
           <el-input v-model="ori_user_img" placeholder="请选择DIY图片" />
@@ -44,7 +44,8 @@
           <el-button type="primary">选择</el-button>
         </sl-upload>
       </div>
-      <div v-if="picSource === 1" class="color-diy-wrapper clearfix">
+
+      <div v-show="picSource === 1 || !showPicList" class="color-diy-wrapper clearfix">
         <div class="pic-list-wrapper">
           <div class="pic-list-title">选择边框颜色</div>
           <div
@@ -58,20 +59,33 @@
           </div>
         </div>
         <div class="diy-content-wrapper">
-          <!-- 操作的图片 -->
-          <img :src="ori_user_img_url" alt>
-          <!-- 底图 -->
-          <img :src="color_img_url" alt>
-          <img src alt>
+          <div class="diy-designer-wrapper">
+            <diy-designer
+              ref="diyDesigner"
+              :height="picHeight"
+              :width="picWidth"
+              :radius="picRadius"
+              @on-success="handelrDiySuc"
+            />
+          </div>
+          <div class="button-group">
+            <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
+            <br>
+            <el-button type="text" @click="handlerPreviewClick">预览</el-button>
+          </div>
         </div>
       </div>
 
-      <material-list v-if="picSource === 2" @on-select="selectMaterialPic" />
+      <material-list v-show="picSource === 2 && showPicList" @on-select="selectMaterialPic" />
     </div>
     <div class="button-group-wrapper">
       <el-button @click="handlerCancelClick">取消</el-button>
       <el-button type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
     </div>
+
+    <el-dialog class="preview-dialog" :visible.sync="dialogVisible">
+      <img :src="dialogImageUrl" alt>
+    </el-dialog>
   </div>
 </template>
 
@@ -82,13 +96,15 @@ import MaterialList from './components/MaterialList'
 import { goodsGet, buycartSave } from '@/api/api'
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
+import DiyDesigner from './DiyDesigner'
 
 export default {
   components: {
     BaseinfoTitle,
     SkuBaseinfo,
     MaterialList,
-    SlUpload
+    SlUpload,
+    DiyDesigner
   },
 
   data() {
@@ -109,12 +125,18 @@ export default {
       maxInventory: 9999,     // 计数器最大数量
 
       ori_user_img: '',      // 用户上传的未经处理的原图
-      ori_user_img_url: '',
-      color_img_url: '',      // 底图
-      picSource: 1,           // 1.本地 2.图库
+      prune_img: '',         // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+      preview_img: '',       // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
 
+      ori_user_img_url: '',
+      outline_img_url: '',     // 轮廓
+      color_img_url: '',      // 底图
+      preview_img_url: '',
+
+      picSource: 1,           // 1.本地 2.图库
+      showPicList: false,     // 是否显示图库
       // 底图颜色
-      curPic: 0,              // 底图颜色index
+      curPic: '',              // 底图颜色index
       opt_color_list: [
         // {
         //   color_img: '',
@@ -122,7 +144,16 @@ export default {
         //   color_name: '',
         //   inventory: 10       // 库存
         // }
-      ]
+      ],
+
+      // diy裁剪尺寸
+      picHeight: 0,
+      picWidth: 0,
+      picRadius: 0,
+
+      // 图片预览
+      dialogImageUrl: '',
+      dialogVisible: false
     }
   },
   computed: {
@@ -155,6 +186,14 @@ export default {
       this.goodsInfo.price = info.price
       this.goodsInfo.remark = info.remark
 
+      this.picHeight = (info.img_print_param || {}).height
+      this.picWidth = (info.img_print_param || {}).width
+      this.picRadius = (info.img_print_param || {}).radius
+
+      this.$nextTick(() => {
+        this.$refs.diyDesigner.init()
+      })
+
       this.opt_color_list = (info.opt_color_list || []).map(item => {
         item.color_img_url = `${
           process.env.VUE_APP_BASEURL
@@ -164,6 +203,12 @@ export default {
         return item
       })
 
+      this.outline_img_url = `${
+        process.env.VUE_APP_BASEURL
+      }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+        info.outline_img
+      }`
+
       this.maxInventory = ((this.opt_color_list || [])[this.curPic] || {}).inventory
     },
     handlerUploadSuc({ img_name }) {
@@ -171,14 +216,20 @@ export default {
       this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
       }&opr=get_img&type=4&img_name=${this.ori_user_img}`
+      // <<<<<<<<<<<<<<<<<<
+      this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
+      // this.$refs.diyDesigner.addOriginImg(require('@/assets/images/1.jpg'))
     },
     handlerPicItemClick(item, i) {
       this.maxInventory = item.inventory
       this.color_img_url = item.color_img_url
       this.curPic = i
+      // <<<<<<<<<<<<<<<<<<
+      this.$refs.diyDesigner.addColorImg(this.color_img_url)
+      // this.$refs.diyDesigner.addColorImg(require('@/assets/images/2.png'))
     },
     async handlerAddCartClick() {
-      if (!this.ori_user_img) {
+      if (!this.preview_img) {
         this.$message.error('DIY照片不能为空，请先上传')
         return
       }
@@ -188,8 +239,8 @@ export default {
         goods_id: this.goodsInfo.goods_id,                          // 商品编号(ID)
         num: this.num,                                              // 订购数量
         color: this.opt_color_list[this.curPic].color_name,         // 颜色分类("红色"、"绿色"...)
-        preview_img: '123',                                          // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
-        prune_img: '123',                                             // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+        preview_img: this.preview_img,                                          // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+        prune_img: this.prune_img,                                             // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
         ori_user_img: this.ori_user_img                                // 用户上传的未经处理的原图
       }
 
@@ -212,10 +263,36 @@ export default {
     handlerCancelClick() {
       this.$router.go(-1)
     },
+    handlerPicSourceChange() {
+      if (this.picSource === 2) {
+        this.showPicList = true
+      }
+      this.$refs.diyDesigner.removeOriginImg()
+      this.ori_user_img = ''
+      this.outline_img_url = ''
+    },
     selectMaterialPic(img) {
       this.ori_user_img = img.material_img
       this.ori_user_img_url = img.material_img_url
-      this.picSource = 1
+      // this.picSource = 1
+      this.showPicList = false
+      this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
+    },
+    handlerPreviewClick() {
+      // <<<<<<<<<<<<<<<<<<
+      this.$refs.diyDesigner.preview(this.outline_img_url)
+      // this.$refs.diyDesigner.preview(require('@/assets/images/2.png'))
+    },
+    handelrDiySuc({ prune_img, preview_img }) {
+      this.prune_img = prune_img
+      this.preview_img = preview_img
+
+      this.preview_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+        this.token
+      }&opr=get_img&type=5&img_name=${this.preview_img}`
+
+      this.dialogImageUrl = this.preview_img_url
+      this.dialogVisible = true
     }
   }
 }
@@ -292,6 +369,7 @@ export default {
 }
 
 .color-diy-wrapper {
+  min-width: 950px;
   min-height: 465px;
   box-shadow: 0px 0px 6px 0px rgba(37, 132, 249, 0.15);
   border-radius: 2px;
@@ -329,6 +407,27 @@ export default {
   }
 }
 .diy-content-wrapper {
-  width: 765px;
+  position: relative;
+  .diy-designer-wrapper {
+    margin: 20px 30px 20px 0;
+  }
+  .button-group {
+    position: absolute;
+    width: 60px;
+    top: 0;
+    right: 0;
+  }
+}
+/deep/ .preview-dialog {
+  .el-dialog__body {
+    text-align: center;
+    max-height: 80vh;
+  }
+}
+
+@media only screen and (max-width: 1450px) {
+  .goodsinfo-wrapper {
+    padding: 0 50px;
+  }
 }
 </style>

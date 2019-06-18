@@ -1,129 +1,266 @@
 <template>
   <div>
     <canvas id="diy-designer-wrapper" />
-    <!-- style="visibility: hidden;" -->
-    <canvas id="canvas_crop" />
-    <img width="200" height="200" src="@/assets/images/login_bg.png" alt>
 
-    <button @click="test">测试</button>
-    <button @click="addImg">addImg</button>
-    <img :src="imgSrc">
+    <!-- 截图 canvas -->
+    <canvas id="canvas_crop" style="visibility:hidden;display: none;" />
+
+    <!-- <button @click="preview">合成</button>
+    <button @click="addOriginImg(ori_user_img_url)">addOriginImg</button>
+    <button @click="addOutline(outline_url)">addOutline</button>
+    <button @click="addColorImg(color_img_url)">addColorImg</button>
+    <button @click="removeOutlineImg">removeOutlineImg</button>
+
+    <img :src="prune_img_data">
+    <img :src="preview_img_data">-->
   </div>
 </template>
 
 <script>
 import { fabric } from 'fabric'
+import Http from '@/config/encsubmit'
 
 export default {
-  data() {
-    return {
-      height: 400,
-      width: 200,
-      radius: 30,
-
-      canvas: null,
-      rect: null,
-      img: null,
-      clipPath: null,
-
-      imgSrc: ''
+  props: {
+    // eslint-disable-next-line vue/require-default-prop
+    height: {
+      type: Number,
+      default: 620
+    },
+    // eslint-disable-next-line vue/require-default-prop
+    width: {
+      type: Number,
+      default: 300
+    },
+    // eslint-disable-next-line vue/require-default-prop
+    radius: {
+      type: Number,
+      default: 45
     }
   },
+  data() {
+    return {
+      url: process.env.VUE_APP_BASEURL + '/img_save.php',
+
+      // height: 620,
+      // width: 300,
+      // radius: 45,
+
+      canvas: null,
+      clipPath: null,
+      originImg: null,   // 原图实例
+      outlineImg: null,   // 轮廓图实例
+      colorImg: null,    // 地图实例
+
+      prune_img_data: '',
+      preview_img_data: '',
+
+      prune_img: '',         // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+      preview_img: '',       // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+
+      // http://b.pso.rockyshi.cn/php/img_get.php?token=T1YL6Do4dje6MDIp&opr=get_img&type=1&img_name=2c8e46b57fe880442d15c24c9c83bb32.png
+      outline_url: require('@/assets/images/2.png'),  // 轮廓图
+      ori_user_img_url: require('@/assets/images/1.jpg'), // 用户原图
+      color_img_url: require('@/assets/images/2.png')   // 底图
+    }
+  },
+  watch: {
+    // width: {
+    //   handler() {
+    //     this.init()
+    //   }
+    // }
+  },
   mounted() {
-    const _this = this
-    this.canvas = new fabric.Canvas('diy-designer-wrapper', {
-      width: 600,
-      height: 600
-    })
-
-    //   var canvas = this.__canvas = new fabric.Canvas('c');
-    fabric.Object.prototype.transparentCorners = false
-    this.canvas.controlsAboveOverlay = true
-    var radius = 300
-
-    // this.rect = new fabric.Rect({
-    //   left: 100,
-    //   top: 100,
-    //   width: _this.width,
-    //   height: _this.height,
-    //   rx: _this.radius,
-    //   ry: _this.radius,
-    //   //   selectable: false,
-    //   fill: 'green',
-    // });
-
-    // this.canvas.add(this.rect)
-
-    this.clipPath = new fabric.Rect({
-      left: 100,
-      top: 100,
-      width: _this.width,
-      height: _this.height,
-      rx: _this.radius,
-      ry: _this.radius,
-      //   selectable: false,
-      //   absolutePositioned: true,
-      fill: 'transparent'
-    })
-    this.canvas.clipPath = this.clipPath
+    // this.init()
   },
   methods: {
-    addImg() {
-      const _this = this
-      fabric.Image.fromURL(require('@/assets/images/1.jpg'), function(oImg) {
-        // oImg.set('width', 200);
-        // oImg.set('height', 200);
-        // oImg.clipPath = _this.clipPath
-        // scale image down, and flip it, before adding it onto canvas
-        _this.img = oImg
-        _this.canvas.add(oImg)
+    init() {
+      this.canvas = new fabric.Canvas('diy-designer-wrapper', {
+        width: 700,
+        height: 800
+      })
+
+      fabric.Object.prototype.transparentCorners = false
+
+      // 隐藏的边框控件在遮罩上面
+      this.canvas.controlsAboveOverlay = true
+
+      this.clipPath = new fabric.Rect({
+        left: 100,
+        top: 100,
+        width: this.width,
+        height: this.height,
+        rx: this.radius,
+        ry: this.radius,
+        absolutePositioned: true,
+        fill: 'transparent'
+      })
+
+      // 给 canvas添加路径
+      // this.canvas.clipPath = this.clipPath
+    },
+    addOutline(url) {
+      return new Promise(resolve => {
+        if (this.outlineImg) {
+          this.canvas.remove(this.outlineImg)
+        }
+
+        fabric.Image.fromURL(url, (img) => {
+          /**
+           * 轮廓位置调整
+           */
+          img.set('top', 95)
+          img.set('left', 90)
+          img.selectable = false
+
+          this.outlineImg = img
+          this.canvas.add(img)
+
+          // 设为active,准备截图
+          this.canvas.setActiveObject(img)
+          resolve()
+        })
       })
     },
-    test() {
-      //   var group = new fabric.Group([this.rect, this.img])
+    removeOutlineImg() {
+      if (this.outlineImg) {
+        this.canvas.remove(this.outlineImg)
+      }
+    },
+    removeOriginImg() {
+      if (this.originImg) {
+        this.canvas.remove(this.originImg)
+      }
+    },
+    addOriginImg(url) {
+      if (this.originImg) {
+        this.canvas.remove(this.originImg)
+      }
+      if (this.outlineImg) {
+        this.canvas.remove(this.outlineImg)
+      }
 
-      //   this.canvas.add(group)
+      fabric.Image.fromURL(url, (img) => {
+        img.clipPath = this.clipPath
 
-      //   this.imgSrc = this.canvas.clipPath.toDataURL('png')
-      //   //   this.imgSrc = this.img.toDataURL('png')
-      //   const ctx = this.canvas.getContext();
-      //   console.log(this.canvas.drawClipPathOnCanvas(ctx))
+        this.originImg = img
+        this.canvas.add(img)
+      })
+    },
 
-      //   var rect = new fabric.Rect({
-      //     left: 100,
-      //     top: 100,
-      //     width: this.width,
-      //     height: this.height,
-      //     rx: this.radius,
-      //     ry: this.radius,
-      //     //   selectable: false,
-      //     //   absolutePositioned: true,
-      //     fill: 'transparent',
-      //   });
+    addColorImg(url) {
+      if (this.colorImg) {
+        this.canvas.remove(this.colorImg)
+      }
+      if (this.outlineImg) {
+        this.canvas.remove(this.outlineImg)
+      }
 
-      var canvas_crop = new fabric.Canvas('canvas_crop')
-      const _this = this
-      console.log(_this.canvas.toDataURL('png'))
-      this.imgSrc = _this.canvas.toDataURL('png')
+      fabric.Image.fromURL(url, (img) => {
+        /**
+         * 轮廓位置调整
+         */
+        img.set('top', 95)
+        img.set('left', 90)
+        img.selectable = false
 
-      fabric.Image.fromURL(_this.canvas.toDataURL('png'), function(img) {
+        this.colorImg = img
+        this.canvas.add(img)
+      })
+    },
+
+    preview() {
+      const canvas_crop = new fabric.Canvas('canvas_crop')
+
+      // 去掉底色
+      this.canvas.remove(this.colorImg)
+
+      fabric.Image.fromURL(this.canvas.toDataURL('png'), async(img) => {
         canvas_crop.add(img)
-        canvas_crop.setHeight(_this.height)
-        canvas_crop.setWidth(_this.width)
+        canvas_crop.setHeight(this.height + 2)
+        canvas_crop.setWidth(this.width + 2)
 
         img.set('top', -100)
         img.set('left', -100)
-        // canvas_crop.setTop(-100)
-        // canvas_crop.setWidth(-100);
         canvas_crop.renderAll()
-        console.log(canvas_crop.toDataURL('png'))
-        _this.canvas.clear()
-        _this.imgSrc = canvas_crop.toDataURL('png')
-        // fabric.Image.fromURL(canvas_crop.toDataURL('png'), function (croppedImg) {
-        //   const a = _this.canvas.getContext().drawImage(croppedImg._element, 100, 100, _this.width, _this.height, 100, 100, _this.width, _this.height);
-        //   console.log(a)
-        //   //   _this.imgSrc = a.toDataURL('png')
-        // });
+
+        /**
+         * 生成第一张图片已缩放、旋转，但不包含轮廓
+         */
+        this.prune_img_data = canvas_crop.toDataURL('png')
+
+        canvas_crop.clear()
+        // _this.canvas.clear()
+        await this.addOutline(this.outline_url)
+
+        fabric.Image.fromURL(this.canvas.toDataURL('png'), async(img) => {
+          canvas_crop.add(img)
+          canvas_crop.setHeight(this.height + 12)
+          canvas_crop.setWidth(this.width + 22)
+
+          img.set('top', -95)
+          img.set('left', -90)
+          canvas_crop.renderAll()
+
+          /**
+           * 生成第二张图片 和轮廓图合并后的图
+           */
+          this.preview_img_data = canvas_crop.toDataURL('png')
+
+          setTimeout(() => {
+            this.canvas.remove(this.outlineImg)
+          }, 50)
+          setTimeout(() => {
+            this.canvas.add(this.colorImg)
+          }, 50)
+
+          this.preview_img = await this.imgUpload(this.preview_img_data, 5)
+          this.prune_img = await this.imgUpload(this.prune_img_data, 6)
+
+          this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
+        })
+      })
+    },
+
+    imgUpload(fileData, type) {
+      return new Promise((resolve, reject) => {
+        const file = this.base64ToFile(fileData)
+        const data = {
+          opr: 'save_img_file',
+          type: type,
+          imgfile: file
+        }
+
+        Http.EncSubmit(this.url, data, resp => {
+          if (resp.ret !== 0) {
+            reject(resp)
+            return this.$message.error(resp.msg)
+          }
+          resolve(resp.data.img_name)
+        })
+      })
+    },
+
+    base64ToFile(urlData) {
+      var arr = urlData.split(',')
+      var mime = arr[0].match(/:(.*?);/)[1] || 'image/png'
+      // 去掉url的头，并转化为byte
+      var bytes = window.atob(arr[1])
+      // 处理异常,将ascii码小于0的转换为大于0
+      var ab = new ArrayBuffer(bytes.length)
+      // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
+      var ia = new Uint8Array(ab)
+
+      for (var i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i)
+      }
+
+      // return new Blob([ab], {
+      //   type: mime
+      // })
+      return new File([ab], 'preview.png', {
+        type: mime
       })
     }
   }
@@ -131,8 +268,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#diy-designer-wrapper {
-  border: 1px solid #ccc;
-}
+// #diy-designer-wrapper {
+//   border: 1px solid #ccc;
+// }
 </style>
 

@@ -387,6 +387,7 @@ export default {
         return {
           goods_id: goods.goods_id,
           color: goods.color,
+          index_id: goods.index_id,
           num: goods.num
         }
       })
