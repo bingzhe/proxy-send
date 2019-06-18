@@ -275,10 +275,12 @@ export default {
           item.download_time_str = moment(item.download_time * 1000).format(
             'YYYY-MM-DD HH:mm:ss'
           )
+        } else {
+          item.download_time_str = '未下载'
         }
         item.preview_img_url = `${
           process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&width=300&height=390&type=1&img_name=${
+        }/img_get.php?token=${this.token}&opr=get_img&width=300&height=390&type=5&img_name=${
           item.preview_img
         }`
         return item
