@@ -102,8 +102,8 @@
   </div>
 </template>
 <script>
-import { accounttrackGet, pickerOptions } from '@/api/api'
-import { OPR_TYPE } from '@/config/cfg'
+import { accounttrackGet } from '@/api/api'
+import { OPR_TYPE, pickerOptions } from '@/config/cfg'
 import moment from 'moment'
 
 export default {
