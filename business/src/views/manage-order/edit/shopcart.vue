@@ -28,7 +28,7 @@
               </template>
             </el-table-column>
             <el-table-column prop="price" label="单价" min-width="50" />
-            <el-table-column prop="goods_id" label="小计" min-width="50" />
+            <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
             <el-table-column prop="opr" label="操作" min-width="50">
               <template slot-scope="scope">
                 <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
@@ -204,6 +204,16 @@ export default {
       return total
     }
   },
+  watch: {
+    goodsList: {
+      handler: function() {
+        this.goodsList.forEach(item => {
+          item.goodsSumPrice = item.num * item.price
+        })
+      },
+      deep: true
+    }
+  },
   mounted() {
     this.order_id = this.$route.params.order_id
     if (this.order_id) {
@@ -240,10 +250,11 @@ export default {
       this.goodsList = (info.goods_list || []).map(item => {
         item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
           this.token
-        }&opr=get_img&type=1&img_name=${item.goods_img}`
+        }&opr=get_img&width=35&height=70&type=1&img_name=${item.goods_img}`
 
         item.type_str = GOODS_TYPE.toString(item.type)
         item.goods_info_str = `${item.raw_material}_${item.brand_txt}_${item.model_txt}_${item.color}_${item.goods_id}`
+        item.goodsSumPrice = item.num * item.price
 
         return item
       })

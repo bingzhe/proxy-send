@@ -113,7 +113,7 @@ export default {
       this.opt_color_list = (info.opt_color_list || []).map(item => {
         item.color_img_url = `${
           process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+        }/img_get.php?token=${this.token}&opr=get_img&width=120&height=180&type=1&img_name=${
           item.color_img
         }`
         return item

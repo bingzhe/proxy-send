@@ -283,7 +283,7 @@ export default {
 
         item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
           this.token
-        }&opr=get_img&type=1&img_name=${item.material_img}`
+        }&opr=get_img&type=1&width=44&height=64&img_name=${item.material_img}`
 
         return item
       })
@@ -316,7 +316,7 @@ export default {
       // http://f.pso.rockyshi.cn/php/img_get.php?token=TestToken&opr=get_img&type=1&img_name=d508bf88200289028d152ace532dbc6a.jpg
       this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
-      }&opr=get_img&type=1&img_name=${img_name}`
+      }&opr=get_img&type=1&width=117&height=140&img_name=${img_name}`
     },
     handlerPicEditDialogConfirm() {
       this.$refs.pictureForm.validate(valid => {

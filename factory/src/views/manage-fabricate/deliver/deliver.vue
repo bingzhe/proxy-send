@@ -201,7 +201,7 @@ export default {
         goods.des_str = `${goods.type_str}/${goods.raw_material}/${goods.model_txt}/${goods.color}/${goods.num}`
         goods.goods_img_url = `${
           process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+        }/img_get.php?token=${this.token}&opr=get_img&width=225&height=280&type=1&img_name=${
           goods.goods_img
         }`
       })

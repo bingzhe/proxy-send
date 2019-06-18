@@ -322,7 +322,7 @@ export default {
 
         item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
           this.token
-        }&opr=get_img&type=3&img_name=${item.outline_img}`
+        }&opr=get_img&type=3&width=44&height=64&img_name=${item.outline_img}`
 
         return item
       })
@@ -374,7 +374,7 @@ export default {
       this.modelForm.outline_img = img_name
       this.modelForm.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
-      }&opr=get_img&type=3&img_name=${img_name}`
+      }&opr=get_img&type=3&width=117&height=140&img_name=${img_name}`
     },
     handlerModelEditDialogClose() {
       this.$refs.modelForm.resetFields()

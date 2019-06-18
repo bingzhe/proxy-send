@@ -114,7 +114,7 @@ export default {
       this.list = this.list.map(item => {
         item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
           this.token
-        }&opr=get_img&type=1&img_name=${item.material_img}`
+        }&opr=get_img&type=1&width=168&height=120&img_name=${item.material_img}`
 
         return item
       })

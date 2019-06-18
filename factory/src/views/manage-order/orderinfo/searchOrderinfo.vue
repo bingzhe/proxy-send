@@ -169,7 +169,7 @@ export default {
       this.baseinfoList[0].company_name = (info.delivery_info || {}).company_name || '-'
       this.baseinfoList[0].business_name = info.business_name || '-'
       this.baseinfoList[0].business_phone = info.business_phone || '-'
-      this.baseinfoList[0].delivery_number = info.delivery_number || '-'
+      this.baseinfoList[0].delivery_number = (info.delivery_info || {}).delivery_number || '-'
       this.baseinfoList[0].order_time = moment(info.order_time * 1000).format(
         'YYYY-MM-DD HH:mm:ss'
       )
@@ -186,6 +186,11 @@ export default {
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
         goods.goods_img_url = goods.goods_img_url = `${
+          process.env.VUE_APP_BASEURL
+        }/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=1&img_name=${
+          goods.goods_img
+        }`
+        goods.goods_img_url_preview = `${
           process.env.VUE_APP_BASEURL
         }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
           goods.goods_img

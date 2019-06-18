@@ -159,8 +159,8 @@ export const constantRoutes = [
         meta: { title: '账户信息', icon: 'shagnhuguanli' }
       },
       {
-        path: 'param',
-        name: 'param',
+        path: 'changepassword',
+        name: 'changepassword',
         component: () => import('@/views/manage-system/ChangePassword'),
         meta: { title: '修改密码', icon: 'canshupeizhi' }
       }

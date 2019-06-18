@@ -9,7 +9,7 @@
     <!-- <breadcrumb class="breadcrumb-container"/> -->
 
     <div class="right-menu">
-      <div class="right-menu-item admin-wrapper">
+      <div class="right-menu-item admin-wrapper" @click="goChangePassword">
         <img class="user-icon" src="@/assets/images/user_icon.png">
         <span>{{ username }}</span>
       </div>
@@ -102,6 +102,9 @@ export default {
     },
     goHome() {
       this.$router.push('/')
+    },
+    goChangePassword() {
+      this.$router.push('/manage-system/changepassword')
     }
 
   }

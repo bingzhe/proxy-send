@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div v-if="buycart_id" class="shopcart-wrapper">
+    <div v-if="buycart_id && goodsList.length !== 0" class="shopcart-wrapper">
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
@@ -33,7 +33,7 @@
               </template>
             </el-table-column>
             <el-table-column prop="price" label="单价" min-width="50" />
-            <el-table-column prop="goods_id" label="小计" min-width="50" />
+            <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
             <el-table-column prop="opr" label="操作" min-width="50">
               <template slot-scope="scope">
                 <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
@@ -93,7 +93,12 @@
             </el-form-item>
             <br>
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="80px">
-              <el-input v-model="consigneeFrom.address" type="textarea" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model="consigneeFrom.address"
+                type="textarea"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
               <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
@@ -135,7 +140,7 @@
       </div>
     </div>
 
-    <shopcart-empty v-if="!buycart_id" />
+    <shopcart-empty v-if="!buycart_id || goodsList.length === 0" />
   </div>
 </template>
 
@@ -218,6 +223,16 @@ export default {
       return total
     }
   },
+  watch: {
+    goodsList: {
+      handler: function() {
+        this.goodsList.forEach(item => {
+          item.goodsSumPrice = item.num * item.price
+        })
+      },
+      deep: true
+    }
+  },
   mounted() {
     if (this.buycart_id) {
       this.getBuycart()
@@ -253,11 +268,11 @@ export default {
       this.goodsList = (info.goods_list || []).map(item => {
         item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
           this.token
-        }&opr=get_img&type=1&img_name=${item.goods_img}`
+        }&opr=get_img&width=35&height=70&type=1&img_name=${item.goods_img}`
 
         item.type_str = GOODS_TYPE.toString(item.type)
         item.goods_info_str = `${item.raw_material}_${item.brand_name}_${item.model_name}_${item.color}_${item.goods_id}`
-
+        item.goodsSumPrice = item.num * item.price
         return item
       })
 
@@ -305,6 +320,7 @@ export default {
           goods_id: goods.goods_id,
           color: goods.color,
           num: goods.num,
+          index_id: goods.index_id,
           checked: checked
         }
       })

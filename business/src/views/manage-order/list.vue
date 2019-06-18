@@ -93,7 +93,7 @@
             <el-table-column prop="order_status_str" label="订单状态" min-width="60" />
             <el-table-column prop="order_time_str" label="下单时间" min-width="60" />
 
-            <el-table-column prop="opr" label="操作" width="230">
+            <el-table-column prop="opr" label="操作" width="240">
               <template slot-scope="scope">
                 <div class="button-group">
                   <el-button type="text" @click="goOrderinfo(scope.row.order_id)">订单详情</el-button>
@@ -108,10 +108,12 @@
                     type="text"
                     @click="handlerEditBtnClick(scope.row.order_id)"
                   >编辑订单</el-button>
-                  <el-button
-                    v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
-                    type="text"
-                  >物流跟踪</el-button>
+                  <a href="https://www.kuaidi100.com/" target="_black">
+                    <el-button
+                      v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
+                      type="text"
+                    >物流跟踪</el-button>
+                  </a>
                   <el-button
                     v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL
                       || scope.row.order_status === ORDER_STATUS.REVOCAT "
@@ -277,7 +279,9 @@ export default {
       if (this.searchForm.order_status) {
         data.order_status = this.searchForm.order_status
       }
-
+      if (this.searchForm.consignee_person) {
+        data.consignee_person = this.searchForm.consignee_person
+      }
       // 收货人手机号码
       if (this.searchForm.consignee_phone) {
         data.consignee_phone = this.searchForm.consignee_phone
@@ -471,6 +475,12 @@ export default {
   min-height: 400px;
   /deep/ td {
     padding: 4px 0;
+  }
+  .el-button + .el-button {
+    margin-left: 0;
+  }
+  .el-button {
+    margin-right: 10px;
   }
 }
 </style>

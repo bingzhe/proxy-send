@@ -79,7 +79,7 @@
           <el-table-column prop="phone" label="联系电话" min-width="60" />
           <el-table-column prop="role_name" label="角色" min-width="60" />
           <el-table-column prop="status_str" label="状态" min-width="60" />
-          <el-table-column prop="create_time" label="创建时间" min-width="80" />
+          <el-table-column prop="create_time_str" label="创建时间" min-width="80" />
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="handlerStaffEditClick(scope.row)">编辑</el-button>

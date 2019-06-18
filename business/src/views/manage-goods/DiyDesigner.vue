@@ -1,8 +1,8 @@
 <template>
   <div>
-    <canvas id="diy-designer-wrapper"></canvas>
+    <canvas id="diy-designer-wrapper" />
     <!-- style="visibility: hidden;" -->
-    <canvas id="canvas_crop"></canvas>
+    <canvas id="canvas_crop" />
     <img width="200" height="200" src="@/assets/images/login_bg.png" alt>
 
     <button @click="test">测试</button>
@@ -26,20 +26,20 @@ export default {
       img: null,
       clipPath: null,
 
-      imgSrc: '',
+      imgSrc: ''
     }
   },
   mounted() {
-    const _this = this;
+    const _this = this
     this.canvas = new fabric.Canvas('diy-designer-wrapper', {
       width: 600,
-      height: 600,
-    });
+      height: 600
+    })
 
     //   var canvas = this.__canvas = new fabric.Canvas('c');
-    fabric.Object.prototype.transparentCorners = false;
-    this.canvas.controlsAboveOverlay = true;
-    var radius = 300;
+    fabric.Object.prototype.transparentCorners = false
+    this.canvas.controlsAboveOverlay = true
+    var radius = 300
 
     // this.rect = new fabric.Rect({
     //   left: 100,
@@ -52,7 +52,6 @@ export default {
     //   fill: 'green',
     // });
 
-
     // this.canvas.add(this.rect)
 
     this.clipPath = new fabric.Rect({
@@ -64,22 +63,21 @@ export default {
       ry: _this.radius,
       //   selectable: false,
       //   absolutePositioned: true,
-      fill: 'transparent',
-    });
-    this.canvas.clipPath = this.clipPath;
+      fill: 'transparent'
+    })
+    this.canvas.clipPath = this.clipPath
   },
   methods: {
     addImg() {
-      const _this = this;
-      fabric.Image.fromURL(require('@/assets/images/1.jpg'), function (oImg) {
+      const _this = this
+      fabric.Image.fromURL(require('@/assets/images/1.jpg'), function(oImg) {
         // oImg.set('width', 200);
         // oImg.set('height', 200);
         // oImg.clipPath = _this.clipPath
         // scale image down, and flip it, before adding it onto canvas
         _this.img = oImg
-        _this.canvas.add(oImg);
-      });
-
+        _this.canvas.add(oImg)
+      })
     },
     test() {
       //   var group = new fabric.Group([this.rect, this.img])
@@ -103,22 +101,21 @@ export default {
       //     fill: 'transparent',
       //   });
 
-
-      var canvas_crop = new fabric.Canvas("canvas_crop");
-      const _this = this;
+      var canvas_crop = new fabric.Canvas('canvas_crop')
+      const _this = this
       console.log(_this.canvas.toDataURL('png'))
       this.imgSrc = _this.canvas.toDataURL('png')
 
-      fabric.Image.fromURL(_this.canvas.toDataURL('png'), function (img) {
+      fabric.Image.fromURL(_this.canvas.toDataURL('png'), function(img) {
         canvas_crop.add(img)
-        canvas_crop.setHeight(_this.height);
-        canvas_crop.setWidth(_this.width);
+        canvas_crop.setHeight(_this.height)
+        canvas_crop.setWidth(_this.width)
 
-        img.set('top', -100);
-        img.set('left', -100);
+        img.set('top', -100)
+        img.set('left', -100)
         // canvas_crop.setTop(-100)
         // canvas_crop.setWidth(-100);
-        canvas_crop.renderAll();
+        canvas_crop.renderAll()
         console.log(canvas_crop.toDataURL('png'))
         _this.canvas.clear()
         _this.imgSrc = canvas_crop.toDataURL('png')
@@ -127,8 +124,7 @@ export default {
         //   console.log(a)
         //   //   _this.imgSrc = a.toDataURL('png')
         // });
-      });
-
+      })
     }
   }
 }

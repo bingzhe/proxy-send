@@ -94,6 +94,7 @@
               <span>{{ scope.row.salesman_name }}</span>
             </template>
           </el-table-column>
+          <el-table-column prop="delivery_number" label="物流单号" min-width="60" />
           <el-table-column prop="order_time" label="下单时间" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.order_time_str }}</span>
@@ -104,7 +105,7 @@
               <span>{{ scope.row.order_status_str }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="opr" label="操作" width="200">
+          <el-table-column prop="opr" label="操作" width="210">
             <template slot-scope="scope">
               <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)">订单详情</el-button>
               <el-button
@@ -112,10 +113,12 @@
                 type="text"
                 @click="openChangeAddressDialog(scope.row.order_id)"
               >修改收货信息</el-button>
-              <el-button
-                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
-                type="text"
-              >物流跟踪</el-button>
+              <a href="https://www.kuaidi100.com/" target="_black">
+                <el-button
+                  v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
+                  type="text"
+                >物流跟踪</el-button>
+              </a>
               <el-button
                 v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
                 type="text"
@@ -312,6 +315,8 @@ export default {
           item.order_status_str = ORDER_STATUS.toString(item.order_status)
         }
 
+        item.delivery_number = (item.delivery_info || {}).delivery_number || '-'
+
         return item
       })
     },
@@ -382,13 +387,18 @@ export default {
   .el-select {
     width: 180px;
   }
-
 }
 
 .el-table {
   min-height: 400px;
   /deep/ td {
     padding: 4px 0;
+  }
+  .el-button + .el-button{
+    margin-left: 0;
+  }
+  .el-button{
+    margin-right: 10px;
   }
 }
 </style>

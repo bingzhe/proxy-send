@@ -514,7 +514,7 @@ export default {
         this.basePicForm.opt_color_list.forEach(item => {
           item.color_img_url = `${
             process.env.VUE_APP_BASEURL
-          }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+          }/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=1&img_name=${
             item.color_img
           }`
         })
@@ -597,7 +597,7 @@ export default {
       row.color_img = img_name
       row.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
-      }&opr=get_img&type=1&img_name=${img_name}`
+      }&opr=get_img&width=44&height=64&type=1&img_name=${img_name}`
     },
     handlerBrandChange(brand_id) {
       this.baseinfoForm.model = ''

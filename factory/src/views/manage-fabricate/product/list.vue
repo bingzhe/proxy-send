@@ -13,7 +13,7 @@
         <span class="status-num">{{ item.num }}</span>
         )
       </div>
-    </div> -->
+    </div>-->
 
     <div class="app-wrapper">
       <!-- search start -->
@@ -170,6 +170,7 @@ export default {
 
   data() {
     return {
+      token: window.Store.GetGlobalData('token'),
       // search
       searchForm: {
         brand_id: '',              // 品牌id
@@ -269,6 +270,11 @@ export default {
             'YYYY-MM-DD HH:mm:ss'
           )
         }
+        item.preview_img_url = `${
+          process.env.VUE_APP_BASEURL
+        }/img_get.php?token=${this.token}&opr=get_img&width=300&height=390&type=1&img_name=${
+          item.preview_img
+        }`
         return item
       })
     },

@@ -59,7 +59,6 @@
 <script>
 import SlDialog from '@/components/Dialog/Dialog'
 import { rechargeGet, rechargeSave } from '@/api/api'
-import { RECHARGE_CHANNEL } from '@/config/cfg'
 import moment from 'moment'
 
 export default {
@@ -154,7 +153,7 @@ export default {
 
       const info = resp.data
 
-      this.recharegeInfo.channel.value = RECHARGE_CHANNEL.toString(info.channel)
+      this.recharegeInfo.channel.value = info.channel
       this.recharegeInfo.deposit_number.value = info.deposit_number
       this.recharegeInfo.business_name.value = info.business_name
       this.recharegeInfo.business_telephone.value = info.business_telephone
@@ -165,7 +164,7 @@ export default {
       this.recharegeInfo.input_remark.value = info.input_remark
       this.rechargeForm.amount = info.amount
 
-      this.screenshot_img_url = `${this.base_url}/img_get.php?token=${this.token}&opr=get_img&type=2&img_name=${info.screenshot_img}`
+      this.screenshot_img_url = `${this.base_url}/img_get.php?token=${this.token}&opr=get_img&width200&height=260&type=2&img_name=${info.screenshot_img}`
     }
   }
 

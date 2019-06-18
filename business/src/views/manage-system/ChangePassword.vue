@@ -172,7 +172,7 @@ export default {
   .passwd-tip{
     position: absolute;
     top: 0;
-    right: -100px;
+    right: -114px;
     line-height:40px;
     color: #6D7585;
     font-size: 12px;

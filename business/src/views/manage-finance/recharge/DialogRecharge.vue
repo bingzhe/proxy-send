@@ -154,7 +154,7 @@ export default {
       this.rechargeForm.screenshot_img = img_name
       this.rechargeForm.screenshot_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
-      }&opr=get_img&type=2&img_name=${img_name}`
+      }&opr=get_img&type=2&width=117&height=140&img_name=${img_name}`
     },
     handlerChannelChange(val) {
       const select = this.input_account_list.filter(item => {
