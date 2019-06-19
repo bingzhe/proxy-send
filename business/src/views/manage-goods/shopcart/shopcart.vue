@@ -405,9 +405,10 @@ export default {
         province: this.consigneeFrom.province,            // 省
         city: this.consigneeFrom.city,                    // 市
         area: this.consigneeFrom.area,                    // 区县
-        street: this.consigneeFrom.street
+        street: this.consigneeFrom.street,
+        address: this.consigneeFrom.address
       }
-      consignee_info.address = `${consignee_info.province}${consignee_info.city}${consignee_info.area}${consignee_info.street}`
+      // consignee_info.address = `${consignee_info.province}${consignee_info.city}${consignee_info.area}${consignee_info.street}`
 
       const data = {
         opr: 'save_order',             // 由后把购物车中商品转为订单

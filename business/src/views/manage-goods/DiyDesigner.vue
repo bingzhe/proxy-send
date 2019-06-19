@@ -9,10 +9,10 @@
     <button @click="addOriginImg(ori_user_img_url)">addOriginImg</button>
     <button @click="addOutline(outline_url)">addOutline</button>
     <button @click="addColorImg(color_img_url)">addColorImg</button>
-    <button @click="removeOutlineImg">removeOutlineImg</button>
+    <button @click="removeOutlineImg">removeOutlineImg</button> -->
 
-    <img :src="prune_img_data">
-    <img :src="preview_img_data">-->
+    <!-- <img :src="prune_img_data">
+    <img :src="preview_img_data"> -->
   </div>
 </template>
 
@@ -59,6 +59,11 @@ export default {
       prune_img: '',         // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
       preview_img: '',       // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
 
+      outlineWidth: '',
+      outlineHeight: '',
+
+      isMoving: false,
+
       // http://b.pso.rockyshi.cn/php/img_get.php?token=T1YL6Do4dje6MDIp&opr=get_img&type=1&img_name=2c8e46b57fe880442d15c24c9c83bb32.png
       outline_url: require('@/assets/images/2.png'),  // 轮廓图
       ori_user_img_url: require('@/assets/images/1.jpg'), // 用户原图
@@ -77,11 +82,12 @@ export default {
   },
   methods: {
     init() {
-      console.log(this.$refs.canvasBgWrapper.offsetWidth)
+      // console.log(this.$refs.canvasBgWrapper.offsetWidth)
+      const heightWrapper = this.$refs.canvasBgWrapper.offsetWidth
 
       this.canvas = new fabric.Canvas('diy-designer-wrapper', {
-        // width: 700,
-        // height: 80
+        width: heightWrapper,
+        height: 800
       })
 
       fabric.Object.prototype.transparentCorners = false
@@ -108,33 +114,47 @@ export default {
         rx: this.radius,
         ry: this.radius,
         selectable: false,
-        borderColor: 'rgba(102, 153, 255, 0.75)',
-        fill: 'rgba(157, 163, 160, 0.8)'
+        // borderColor: 'rgba(102, 153, 255, 0.75)',
+        fill: 'rgba(184, 184, 184, 0.5)'
       })
 
       this.canvas.add(this.rect)
+
+      if (this.height >= 1000 && this.height < 1500) {
+        this.canvas.setZoom(0.5)
+      }
+      if (this.height >= 1500) {
+        this.canvas.setZoom(0.35)
+      }
       // 给 canvas添加路径
       // this.canvas.clipPath = this.clipPath
     },
-    addOutline(url) {
+    addOutline() {
       return new Promise(resolve => {
         if (this.outlineImg) {
           this.canvas.remove(this.outlineImg)
         }
 
         fabric.Image.fromURL(url, (img) => {
+          this.outlineWidth = img.width
+          this.outlineHeight = img.height
+
+          const left = 100 - (img.width - this.width) / 2
+          const top = 100 - (img.height - this.height) / 2
           /**
-           * 轮廓位置调整
-           */
-          img.set('top', 95)
-          img.set('left', 90)
+         * 轮廓位置调整
+         */
+          img.set('top', top || 100)
+          img.set('left', left || 100)
           img.selectable = false
+          img.hasControls = false
+          img.hasBorders = false
 
           this.outlineImg = img
           this.canvas.add(img)
 
           // 设为active,准备截图
-          this.canvas.setActiveObject(img)
+          // this.canvas.setActiveObject(img)
           resolve()
         })
       })
@@ -153,14 +173,41 @@ export default {
       if (this.originImg) {
         this.canvas.remove(this.originImg)
       }
-      if (this.outlineImg) {
-        this.canvas.remove(this.outlineImg)
-      }
+      // if (this.outlineImg) {
+      //   this.canvas.remove(this.outlineImg)
+      // }
 
       fabric.Image.fromURL(url, (img) => {
         img.clipPath = this.clipPath
+        img.scaleToWidth(this.width, false)  // 缩放图片的高度到400
+
+        // img.width = this.width
+        // img.height = this.height
+        img.top = 100
+        img.left = 100
 
         this.originImg = img
+
+        const setOutlineTop = () => {
+          this.isMoving = true
+          if (this.isMoving) {
+            this.canvas.setActiveObject(this.outlineImg)
+          }
+        }
+        const setOutlineBottom = () => {
+          this.isMoving = false
+          this.canvas.setActiveObject(img)
+        }
+
+        img.on('moving', () => { setOutlineTop() })
+        img.on('scaling', () => { setOutlineTop() })
+        img.on('rotating', () => { setOutlineTop() })
+        img.on('skewing', () => { setOutlineTop() })
+        img.on('moved', () => { setOutlineBottom() })
+        img.on('scaled', () => { setOutlineBottom() })
+        img.on('rotated', () => { setOutlineBottom() })
+        img.on('skewed', () => { setOutlineBottom() })
+
         this.canvas.add(img)
       })
     },
@@ -169,16 +216,18 @@ export default {
       if (this.colorImg) {
         this.canvas.remove(this.colorImg)
       }
-      if (this.outlineImg) {
-        this.canvas.remove(this.outlineImg)
-      }
+      // if (this.outlineImg) {
+      //   this.canvas.remove(this.outlineImg)
+      // }
 
       fabric.Image.fromURL(url, (img) => {
+        const left = 100 - (img.width - this.width) / 2
+        const top = 100 - (img.height - this.height) / 2
         /**
          * 轮廓位置调整
          */
-        img.set('top', 95)
-        img.set('left', 90)
+        img.set('top', top || 100)
+        img.set('left', left || 100)
         img.selectable = false
 
         this.colorImg = img
@@ -186,11 +235,14 @@ export default {
       })
     },
 
-    preview() {
+    preview(url) {
       const canvas_crop = new fabric.Canvas('canvas_crop')
 
       // 去掉底色
       this.canvas.remove(this.colorImg)
+      this.canvas.remove(this.rect)
+      this.canvas.remove(this.outlineImg)
+      this.canvas.renderAll()
 
       fabric.Image.fromURL(this.canvas.toDataURL('png'), async(img) => {
         canvas_crop.add(img)
@@ -208,15 +260,23 @@ export default {
 
         canvas_crop.clear()
         // _this.canvas.clear()
-        await this.addOutline(this.outline_url)
+        // await this.addOutline(url)
+
+        this.canvas.add(this.colorImg)
+        this.canvas.add(this.outlineImg)
+        this.canvas.setActiveObject(this.outlineImg)
+        this.canvas.renderAll()
 
         fabric.Image.fromURL(this.canvas.toDataURL('png'), async(img) => {
           canvas_crop.add(img)
-          canvas_crop.setHeight(this.height + 12)
-          canvas_crop.setWidth(this.width + 22)
+          canvas_crop.setHeight(this.outlineHeight)
+          canvas_crop.setWidth(this.outlineWidth)
 
-          img.set('top', -95)
-          img.set('left', -90)
+          const top = 100 - (this.outlineHeight - this.height) / 2
+          const left = 100 - (this.outlineWidth - this.width) / 2
+
+          img.set('top', -top || 100)
+          img.set('left', -left || 100)
           canvas_crop.renderAll()
 
           /**
@@ -224,17 +284,22 @@ export default {
            */
           this.preview_img_data = canvas_crop.toDataURL('png')
 
-          setTimeout(() => {
-            this.canvas.remove(this.outlineImg)
-          }, 50)
-          setTimeout(() => {
-            this.canvas.add(this.colorImg)
-          }, 50)
+          // setTimeout(() => {
+          //   this.canvas.remove(this.outlineImg)
+          // }, 50)
+          // setTimeout(() => {
+          //   this.canvas.add(this.colorImg)
+          // }, 50)
 
           this.preview_img = await this.imgUpload(this.preview_img_data, 5)
           this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
+          this.canvas.add(this.rect)
+          this.canvas.setActiveObject(this.originImg)
+          this.canvas.renderAll()
+
           this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
+          canvas_crop.dispose()
         })
       })
     },

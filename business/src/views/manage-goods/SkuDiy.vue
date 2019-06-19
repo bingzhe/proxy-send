@@ -72,6 +72,7 @@
             <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
             <br>
             <el-button type="text" @click="handlerPreviewClick">预览</el-button>
+            <el-button type="text" @click="handlerPreviewClick">合成</el-button>
           </div>
         </div>
       </div>
@@ -80,11 +81,20 @@
     </div>
     <div class="button-group-wrapper">
       <el-button @click="handlerCancelClick">取消</el-button>
-      <el-button type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
+      <el-button :disabled="!preview_img" type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
     </div>
 
     <el-dialog class="preview-dialog" :visible.sync="dialogVisible">
-      <img :src="dialogImageUrl" alt>
+      <div class="preview-img-wrapper">
+        <div>
+          <div>打印图</div>
+          <img :src="dialogPruneUrl" alt>
+        </div>
+        <div>
+          <div>预览图</div>
+          <img :src="dialogImageUrl" alt>
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -132,6 +142,7 @@ export default {
       outline_img_url: '',     // 轮廓
       color_img_url: '',      // 底图
       preview_img_url: '',
+      prune_img_rul: '',
 
       picSource: 1,           // 1.本地 2.图库
       showPicList: false,     // 是否显示图库
@@ -152,7 +163,8 @@ export default {
       picRadius: 0,
 
       // 图片预览
-      dialogImageUrl: '',
+      dialogPruneUrl: '',  // 打印
+      dialogImageUrl: '',  // 预览
       dialogVisible: false
     }
   },
@@ -220,12 +232,14 @@ export default {
       this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
       // this.$refs.diyDesigner.addOriginImg(require('@/assets/images/1.jpg'))
     },
-    handlerPicItemClick(item, i) {
+    async handlerPicItemClick(item, i) {
       this.maxInventory = item.inventory
       this.color_img_url = item.color_img_url
       this.curPic = i
       // <<<<<<<<<<<<<<<<<<
+      await this.$refs.diyDesigner.addOutline(this.outline_img_url)
       this.$refs.diyDesigner.addColorImg(this.color_img_url)
+      // await this.$refs.diyDesigner.addOutline(require('@/assets/images/2.png'))
       // this.$refs.diyDesigner.addColorImg(require('@/assets/images/2.png'))
     },
     async handlerAddCartClick() {
@@ -280,18 +294,22 @@ export default {
     },
     handlerPreviewClick() {
       // <<<<<<<<<<<<<<<<<<
-      this.$refs.diyDesigner.preview(this.outline_img_url)
-      // this.$refs.diyDesigner.preview(require('@/assets/images/2.png'))
+      this.$refs.diyDesigner.preview()
+      // this.$refs.diyDesigner.preview()
     },
     handelrDiySuc({ prune_img, preview_img }) {
       this.prune_img = prune_img
       this.preview_img = preview_img
 
+      this.prune_img_rul = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+        this.token
+      }&opr=get_img&type=4&img_name=${this.prune_img}`
       this.preview_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
       }&opr=get_img&type=5&img_name=${this.preview_img}`
 
       this.dialogImageUrl = this.preview_img_url
+      this.dialogPruneUrl = this.prune_img_rul
       this.dialogVisible = true
     }
   }
@@ -409,19 +427,31 @@ export default {
 .diy-content-wrapper {
   position: relative;
   .diy-designer-wrapper {
-    margin: 20px 30px 20px 0;
+    margin: 20px 0 20px 0;
   }
   .button-group {
     position: absolute;
-    width: 60px;
+    width: 90px;
     top: 0;
     right: 0;
   }
 }
 /deep/ .preview-dialog {
+  .el-dialog__header {
+    // background: rgba(176, 204, 177, 0.51);
+  }
   .el-dialog__body {
     text-align: center;
     max-height: 80vh;
+    // background: rgba(176, 204, 177, 0.51);
+
+    .preview-img-wrapper {
+      display: flex;
+      justify-content: space-around;
+      img {
+        border: 1px solid #ccc;
+      }
+    }
   }
 }
 

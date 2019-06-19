@@ -21,8 +21,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="dialogImageUrl" alt>
+    <el-dialog class="preview-pic-wrapper" :visible.sync="dialogVisible">
+      <img :src="dialogImageUrl" alt>
     </el-dialog>
   </div>
 </template>
@@ -59,6 +59,17 @@ export default {
       width: 64px;
       vertical-align: middle;
       cursor: pointer;
+    }
+  }
+}
+/deep/ .preview-pic-wrapper {
+  .el-dialog__body {
+    max-height: 80vh;
+    text-align: center;
+    padding: 0;
+    img {
+      max-height: 80vh;
+      max-width: 70vh;
     }
   }
 }
