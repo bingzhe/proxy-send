@@ -129,7 +129,7 @@ export default {
       // 给 canvas添加路径
       // this.canvas.clipPath = this.clipPath
     },
-    addOutline() {
+    addOutline(url) {
       return new Promise(resolve => {
         if (this.outlineImg) {
           this.canvas.remove(this.outlineImg)
@@ -235,7 +235,7 @@ export default {
       })
     },
 
-    preview(url) {
+    preview() {
       const canvas_crop = new fabric.Canvas('canvas_crop')
 
       // 去掉底色
