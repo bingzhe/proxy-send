@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="canvasBgWrapper" class="canvas-bg-wrapper">
     <canvas id="diy-designer-wrapper" />
 
     <!-- 截图 canvas -->
@@ -47,9 +47,10 @@ export default {
       // radius: 45,
 
       canvas: null,
+      rect: null,        // 裁剪表示区域
       clipPath: null,
       originImg: null,   // 原图实例
-      outlineImg: null,   // 轮廓图实例
+      outlineImg: null,  // 轮廓图实例
       colorImg: null,    // 地图实例
 
       prune_img_data: '',
@@ -76,9 +77,11 @@ export default {
   },
   methods: {
     init() {
+      console.log(this.$refs.canvasBgWrapper.offsetWidth)
+
       this.canvas = new fabric.Canvas('diy-designer-wrapper', {
-        width: 700,
-        height: 800
+        // width: 700,
+        // height: 80
       })
 
       fabric.Object.prototype.transparentCorners = false
@@ -97,6 +100,19 @@ export default {
         fill: 'transparent'
       })
 
+      this.rect = new fabric.Rect({
+        left: 100,
+        top: 100,
+        width: this.width,
+        height: this.height,
+        rx: this.radius,
+        ry: this.radius,
+        selectable: false,
+        borderColor: 'rgba(102, 153, 255, 0.75)',
+        fill: 'rgba(157, 163, 160, 0.8)'
+      })
+
+      this.canvas.add(this.rect)
       // 给 canvas添加路径
       // this.canvas.clipPath = this.clipPath
     },
@@ -268,8 +284,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// #diy-designer-wrapper {
-//   border: 1px solid #ccc;
-// }
+#diy-designer-wrapper {
+  border: 1px solid #ccc;
+}
+.canvas-bg-wrapper {
+  background: url("../../assets/images/canvas_bg.jpg") repeat;
+}
 </style>
 
