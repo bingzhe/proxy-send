@@ -180,6 +180,8 @@ export default {
   },
   mounted() {
     this.getList()
+    // 更新页面全局数据
+    this.$store.dispatch('user/getUserInfo')
   },
   methods: {
     async getList() {
