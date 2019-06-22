@@ -71,26 +71,26 @@
           <div class="button-group">
             <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
             <br>
-            <el-button type="text" @click="handlerPreviewClick">预览</el-button>
-            <el-button type="text" @click="handlerPreviewClick">合成</el-button>
+            <el-button :disabled="!ori_user_img_url" type="text" @click="handlerPreviewClick">预览</el-button>
+            <el-button :disabled="!ori_user_img_url" type="text" @click="handlerPreviewClick">合成</el-button>
           </div>
         </div>
       </div>
 
-      <material-list v-show="picSource === 2 && showPicList" @on-select="selectMaterialPic" />
+      <material-list v-if="picSource === 2 && showPicList" @on-select="selectMaterialPic" />
     </div>
     <div class="button-group-wrapper">
       <el-button @click="handlerCancelClick">取消</el-button>
       <el-button :disabled="!preview_img" type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
     </div>
 
-    <el-dialog class="preview-dialog" :visible.sync="dialogVisible">
+    <el-dialog class="preview-dialog" :visible.sync="dialogVisible" width="780px">
       <div class="preview-img-wrapper">
-        <div>
+        <div class="img-wrapper">
           <div>打印图</div>
           <img :src="dialogPruneUrl" alt>
         </div>
-        <div>
+        <div class="img-wrapper">
           <div>预览图</div>
           <img :src="dialogImageUrl" alt>
         </div>
@@ -236,11 +236,18 @@ export default {
       this.maxInventory = item.inventory
       this.color_img_url = item.color_img_url
       this.curPic = i
-      // <<<<<<<<<<<<<<<<<<
-      await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+
+      // // <<<<<<<<<<<<<<<<<<
+      this.$refs.diyDesigner.removeOriginImg()
+
       this.$refs.diyDesigner.addColorImg(this.color_img_url)
-      // await this.$refs.diyDesigner.addOutline(require('@/assets/images/2.png'))
-      // this.$refs.diyDesigner.addColorImg(require('@/assets/images/2.png'))
+      // console.log(this.outline_img_url)
+      await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+
+      this.$refs.diyDesigner.addOriginImgAgain()
+      this.$refs.diyDesigner.renderAll()
+      // await this.$refs.diyDesigner.addOutline(require('@/assets/images/4.png'))
+      // this.$refs.diyDesigner.addColorImg(require('@/assets/images/3.jpg'))
     },
     async handlerAddCartClick() {
       if (!this.preview_img) {
@@ -283,11 +290,11 @@ export default {
       }
       this.$refs.diyDesigner.removeOriginImg()
       this.ori_user_img = ''
-      this.outline_img_url = ''
+      // this.outline_img_url = ''
     },
     selectMaterialPic(img) {
       this.ori_user_img = img.material_img
-      this.ori_user_img_url = img.material_img_url
+      this.ori_user_img_url = img.material_img_url_ori
       // this.picSource = 1
       this.showPicList = false
       this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
@@ -448,8 +455,12 @@ export default {
     .preview-img-wrapper {
       display: flex;
       justify-content: space-around;
-      img {
-        border: 1px solid #ccc;
+      .img-wrapper {
+        width: 45%;
+        img {
+          width: 100%;
+          border: 1px solid #ccc;
+        }
       }
     }
   }

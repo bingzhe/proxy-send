@@ -164,7 +164,7 @@ export default {
       this.recharegeInfo.input_remark.value = info.input_remark
       this.rechargeForm.amount = info.amount
 
-      this.screenshot_img_url = `${this.base_url}/img_get.php?token=${this.token}&opr=get_img&width200&height=260&type=2&img_name=${info.screenshot_img}`
+      this.screenshot_img_url = `${this.base_url}/img_get.php?token=${this.token}&opr=get_img&width=200&height=260&type=2&img_name=${info.screenshot_img}`
     }
   }
 

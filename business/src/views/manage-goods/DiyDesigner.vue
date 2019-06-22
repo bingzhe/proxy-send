@@ -9,10 +9,10 @@
     <button @click="addOriginImg(ori_user_img_url)">addOriginImg</button>
     <button @click="addOutline(outline_url)">addOutline</button>
     <button @click="addColorImg(color_img_url)">addColorImg</button>
-    <button @click="removeOutlineImg">removeOutlineImg</button> -->
+    <button @click="removeOutlineImg">removeOutlineImg</button>-->
 
     <!-- <img :src="prune_img_data">
-    <img :src="preview_img_data"> -->
+    <img :src="preview_img_data">-->
   </div>
 </template>
 
@@ -63,6 +63,8 @@ export default {
       outlineHeight: '',
 
       isMoving: false,
+
+      scale: 1,             // canvas 缩放尺寸
 
       // http://b.pso.rockyshi.cn/php/img_get.php?token=T1YL6Do4dje6MDIp&opr=get_img&type=1&img_name=2c8e46b57fe880442d15c24c9c83bb32.png
       outline_url: require('@/assets/images/2.png'),  // 轮廓图
@@ -122,9 +124,11 @@ export default {
 
       if (this.height >= 1000 && this.height < 1500) {
         this.canvas.setZoom(0.5)
+        this.scale = 0.5
       }
       if (this.height >= 1500) {
-        this.canvas.setZoom(0.35)
+        this.canvas.setZoom(0.4)
+        this.scale = 0.4
       }
       // 给 canvas添加路径
       // this.canvas.clipPath = this.clipPath
@@ -168,6 +172,14 @@ export default {
       if (this.originImg) {
         this.canvas.remove(this.originImg)
       }
+    },
+    addOriginImgAgain() {
+      if (this.originImg) {
+        this.canvas.add(this.originImg)
+      }
+    },
+    renderAll() {
+      this.canvas.renderAll()
     },
     addOriginImg(url) {
       if (this.originImg) {
@@ -246,11 +258,11 @@ export default {
 
       fabric.Image.fromURL(this.canvas.toDataURL('png'), async(img) => {
         canvas_crop.add(img)
-        canvas_crop.setHeight(this.height + 2)
-        canvas_crop.setWidth(this.width + 2)
+        canvas_crop.setHeight((this.height + 2) * this.scale)
+        canvas_crop.setWidth((this.width + 2) * this.scale)
 
-        img.set('top', -100)
-        img.set('left', -100)
+        img.set('top', -100 * this.scale)
+        img.set('left', -100 * this.scale)
         canvas_crop.renderAll()
 
         /**
@@ -261,19 +273,23 @@ export default {
         canvas_crop.clear()
         // _this.canvas.clear()
         // await this.addOutline(url)
+        this.canvas.remove(this.originImg)
+        this.canvas.renderAll()
 
         this.canvas.add(this.colorImg)
         this.canvas.add(this.outlineImg)
+        this.canvas.add(this.originImg)
+        // this.canvas.setActiveObject(this.originImg)
         this.canvas.setActiveObject(this.outlineImg)
         this.canvas.renderAll()
 
         fabric.Image.fromURL(this.canvas.toDataURL('png'), async(img) => {
           canvas_crop.add(img)
-          canvas_crop.setHeight(this.outlineHeight)
-          canvas_crop.setWidth(this.outlineWidth)
+          canvas_crop.setHeight(this.outlineHeight * this.scale)
+          canvas_crop.setWidth(this.outlineWidth * this.scale)
 
-          const top = 100 - (this.outlineHeight - this.height) / 2
-          const left = 100 - (this.outlineWidth - this.width) / 2
+          const top = (100 - (this.outlineHeight - this.height) / 2) * this.scale
+          const left = (100 - (this.outlineWidth - this.width) / 2) * this.scale
 
           img.set('top', -top || 100)
           img.set('left', -left || 100)

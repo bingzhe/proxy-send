@@ -116,6 +116,10 @@ export default {
           this.token
         }&opr=get_img&type=1&width=168&height=120&img_name=${item.material_img}`
 
+        item.material_img_url_ori = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&type=1&img_name=${item.material_img}`
+
         return item
       })
     },
@@ -132,8 +136,8 @@ export default {
       this.listQuery.page = val
       this.getPictureList()
     },
-    handlerImageSelect(itme) {
-      this.$emit('on-select', itme)
+    handlerImageSelect(item) {
+      this.$emit('on-select', item)
     }
   }
 }
