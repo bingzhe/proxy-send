@@ -65,7 +65,7 @@
             :inline="true"
             label-width="80px"
           >
-            <el-form-item label="物流选择" prop="company_name" label-width="80px">
+            <el-form-item label="物流选择" prop="company_name" label-width="130px">
               <el-select v-model="consigneeFrom.company_name" placeholder="请选择" @change="getPrice">
                 <el-option
                   v-for="(item,index) in delivery_list"
@@ -76,36 +76,64 @@
               </el-select>
             </el-form-item>
             <br>
-            <el-form-item label="收件人" prop="person" label-width="80px">
-              <el-input v-model="consigneeFrom.person" placeholder="请输入" />
+            <el-form-item label="收件人" prop="person" label-width="130px">
+              <el-input v-model.trim="consigneeFrom.person" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="联系电话" prop="phone" label-width="110px">
-              <el-input v-model="consigneeFrom.phone" placeholder="请输入" />
+              <el-input v-model.trim="consigneeFrom.phone" placeholder="请输入" />
             </el-form-item>
             <br>
-            <el-form-item class="address" label="收货人详细地址" prop="address" label-width="80px">
-              <el-input v-model="consigneeFrom.address" type="textarea" placeholder="请输入" />
+            <el-form-item label="第三方平台订单号" prop="order_id_3rd" label-width="130px">
+              <el-input v-model.trim="consigneeFrom.order_id_3rd" placeholder="请输入" />
+            </el-form-item>
+            <el-form-item label="固定电话" prop="telephone" label-width="110px">
+              <el-input v-model.trim="consigneeFrom.telephone" placeholder="请输入" />
+            </el-form-item>
+            <br>
+            <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
+              <el-input
+                v-model.trim="consigneeFrom.address"
+                v-trim="consigneeFrom.address"
+                type="textarea"
+                placeholder="请输入"
+              />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
               <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br>
-            <el-form-item label="省份" prop="province" label-width="80px">
-              <el-input v-model="consigneeFrom.province" placeholder="请输入" />
-            </el-form-item>
-            <el-form-item label="市区" prop="city" label-width="110px">
-              <el-input v-model="consigneeFrom.city" placeholder="请输入" />
-            </el-form-item>
-            <br>
-            <el-form-item label="区县" prop="area" label-width="80px">
-              <el-input v-model="consigneeFrom.area" placeholder="请输入" />
-            </el-form-item>
-            <el-form-item label="街道/镇" prop="street" label-width="110px">
-              <el-input v-model="consigneeFrom.street" placeholder="请输入" />
-            </el-form-item>
-            <br>
-            <el-form-item label="留言" prop="remark" label-width="80px">
+            <el-form-item label="省/直辖市" prop="province" label-width="130px">
               <el-input
-                v-model="consigneeFrom.remark"
+                v-model.trim="consigneeFrom.province"
+                v-trim="consigneeFrom.province"
+                placeholder="请输入"
+              />
+            </el-form-item>
+            <el-form-item label="市" prop="city" label-width="110px">
+              <el-input
+                v-model.trim="consigneeFrom.city"
+                v-trim="consigneeFrom.city"
+                placeholder="请输入"
+              />
+            </el-form-item>
+            <br>
+            <el-form-item label="区/县" prop="area" label-width="130px">
+              <el-input
+                v-model.trim="consigneeFrom.area"
+                v-trim="consigneeFrom.area"
+                placeholder="请输入"
+              />
+            </el-form-item>
+            <el-form-item label="乡/镇/街道" prop="street" label-width="110px">
+              <el-input
+                v-model.trim="consigneeFrom.street"
+                v-trim="consigneeFrom.street"
+                placeholder="请输入"
+              />
+            </el-form-item>
+            <br>
+            <el-form-item label="留言" prop="remark" label-width="130px">
+              <el-input
+                v-model.trim="consigneeFrom.remark"
                 type="textarea"
                 placeholder="请输入"
                 maxlength="150"
@@ -175,7 +203,9 @@ export default {
         area: '',        // 区县
         street: '',      // 街道
         company_name: '',
-        remark: ''       // 留言
+        remark: '',       // 留言
+        telephone: '',    // 固定电话
+        order_id_3rd: ''  // 第三平台订单号
       },
       consigeneeFromRules: {
         person: [{ required: true, message: '请输入收件人', trigger: 'blur' }],
@@ -267,7 +297,9 @@ export default {
       this.consigneeFrom.area = consignee_info.area
       this.consigneeFrom.street = consignee_info.street
       this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
-      this.consigneeFrom.remark = info.remark
+      this.consigneeFrom.remark = info.remark || ''
+      this.consigneeFrom.telephone = consignee_info.telephone
+      this.consigneeFrom.order_id_3rd = consignee_info.order_id_3rd
 
       this.goods_fee = info.goods_fee
       this.discount_fee = info.discount_fee
@@ -359,12 +391,15 @@ export default {
       const consignee_info = {
         person: this.consigneeFrom.person,                // 收货人名
         phone: this.consigneeFrom.person,                 // 手机号码
+        telephone: this.consigneeFrom.telephone,          // 固定电话
         province: this.consigneeFrom.province,            // 省
         city: this.consigneeFrom.city,                    // 市
         area: this.consigneeFrom.area,                    // 区县
-        street: this.consigneeFrom.street
+        street: this.consigneeFrom.street,
+        address: this.consigneeFrom.address,
+        order_id_3rd: this.consigneeFrom.order_id_3rd
       }
-      consignee_info.address = `${consignee_info.province}${consignee_info.city}${consignee_info.area}${consignee_info.street}`
+      // consignee_info.address = `${consignee_info.province}${consignee_info.city}${consignee_info.area}${consignee_info.street}`
 
       const data = {
         opr: 'save_order',             // 由后把购物车中商品转为订单
@@ -494,7 +529,7 @@ export default {
 
 .consignee-form-wrapper {
   max-width: 950px;
-  padding-left: 130px;
+  padding-left: 80px;
 
   .el-input {
     width: 300px;

@@ -112,7 +112,9 @@ export default {
       consigneeinfo: [{
         person: '',
         phone: '',
-        address: ''
+        address: '',
+        telephone: '',
+        order_id_3rd: ''
       }],
 
       // 费用信息
@@ -202,6 +204,8 @@ export default {
       this.consigneeinfo[0].person = info.consignee_info.person
       this.consigneeinfo[0].phone = info.consignee_info.phone
       this.consigneeinfo[0].address = info.consignee_info.address
+      this.consigneeinfo[0].telephone = info.consignee_info.telephone
+      this.consigneeinfo[0].order_id_3rd = info.consignee_info.order_id_3rd
 
       // 费用信息
       this.orderFeeList[0].goods_fee = info.goods_fee ? `¥ ${info.goods_fee.toFixed(2)}` : '¥ 0.00'

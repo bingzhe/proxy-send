@@ -49,11 +49,11 @@
               <span>{{ scope.row.model_name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="outline_img" label="轮廓图" min-width="80" align="center">
+          <!-- <el-table-column prop="outline_img" label="轮廓图" min-width="80" align="center">
             <template slot-scope="scope">
               <img class="table-cell-img" :src="scope.row.outline_img_url">
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column prop="lastmodtime" label="更新时间" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.lastmodtime_str }}</span>
@@ -141,7 +141,7 @@
             <span slot="suffix" class="input-suffix-text">像素</span>
           </el-input>
         </el-form-item>-->
-        <el-form-item label="轮廓图" prop="outline_img">
+        <!-- <el-form-item label="轮廓图" prop="outline_img">
           <sl-upload class="outline-uploader" :type="3" @on-success="handlerOutlineImgSuccess">
             <img
               v-if="modelForm.outline_img"
@@ -150,7 +150,7 @@
             >
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </sl-upload>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
     </sl-dialog>
 
@@ -247,10 +247,10 @@ export default {
       editModelId: '',
       modelForm: {
         brand_id: '',           // 品牌
-        model_name: '',         // 型号
+        model_name: ''         // 型号
         // border_radius: '',   // 四角弧度
-        outline_img: '',        // 轮廓图
-        outline_img_url: ''
+        // outline_img: '',        // 轮廓图
+        // outline_img_url: ''
         // status: ''              // 正常 1 停用 2
       },
       brandForm: {
@@ -258,9 +258,9 @@ export default {
       },
       modelFormRules: {
         brand_id: [{ required: true, message: '请选择品牌', trigger: 'change' }],
-        model_name: [{ required: true, message: '请输入型号名称', trigger: 'blur' }],
+        model_name: [{ required: true, message: '请输入型号名称', trigger: 'blur' }]
         // border_radius: [{ required: true, message: '请输入边框圆角', trigger: 'blur' }],
-        outline_img: [{ required: true, message: '请上传轮廓图' }]
+        // outline_img: [{ required: true, message: '请上传轮廓图' }]
       },
       brandFormRules: {
         brand_name: [
@@ -320,9 +320,9 @@ export default {
         //   item.status_str = PHONE_STATUS.toString(item.status)
         // }
 
-        item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&type=3&width=44&height=64&img_name=${item.outline_img}`
+        // item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+        //   this.token
+        // }&opr=get_img&type=3&width=44&height=64&img_name=${item.outline_img}`
 
         return item
       })
@@ -362,26 +362,26 @@ export default {
     handlerModelEditClick(row) {
       this.editModelId = row.model_id
       this.modelForm.model_name = row.model_name
-      this.modelForm.outline_img = row.outline_img
-      this.modelForm.outline_img_url = row.outline_img_url
+      // this.modelForm.outline_img = row.outline_img
+      // this.modelForm.outline_img_url = row.outline_img_url
       this.modelForm.brand_id = row.brand_id
       this.$refs.modelEditDialog.show()
     },
     handlerAddModelClick() {
       this.$refs.modelEditDialog.show()
     },
-    handlerOutlineImgSuccess({ img_name }) {
-      this.modelForm.outline_img = img_name
-      this.modelForm.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&type=3&width=117&height=140&img_name=${img_name}`
-    },
+    // handlerOutlineImgSuccess({ img_name }) {
+    //   this.modelForm.outline_img = img_name
+    //   this.modelForm.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+    //     this.token
+    //   }&opr=get_img&type=3&width=117&height=140&img_name=${img_name}`
+    // },
     handlerModelEditDialogClose() {
       this.$refs.modelForm.resetFields()
       this.editModelId = ''
       this.modelForm.model_name = ''
-      this.modelForm.outline_img = ''
-      this.modelForm.outline_img_url = ''
+      // this.modelForm.outline_img = ''
+      // this.modelForm.outline_img_url = ''
       this.modelForm.brand_id = ''
     },
     handlerModelEditDialogConfirm() {
@@ -395,9 +395,9 @@ export default {
       const data = {
         opr: 'save_phone_model',
         brand_id: this.modelForm.brand_id,
-        model_name: this.modelForm.model_name,
+        model_name: this.modelForm.model_name
         // border_radius: this.modelForm.border_radius,
-        outline_img: this.modelForm.outline_img
+        // outline_img: this.modelForm.outline_img
         // status: 1       // 默认启用
       }
 

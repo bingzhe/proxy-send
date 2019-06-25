@@ -100,8 +100,8 @@ export default {
         input_account: [{ required: true, message: '请输入工厂收款账号', trigger: 'blur' }],
         deposit_number: [{ required: true, message: '请输入转账订单号', trigger: 'blur' }],
         output_account: [{ required: true, message: '请输入转账账户', trigger: 'blur' }],
-        amount: [{ required: true, message: '请输入转账金额', trigger: 'blur' }],
-        screenshot_img: [{ required: true, message: '请上传转账截图' }]
+        amount: [{ required: true, message: '请输入转账金额', trigger: 'blur' }]
+        // screenshot_img: [{ required: true, message: '请上传转账截图' }]
       }
     }
   },

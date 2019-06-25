@@ -258,11 +258,16 @@
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="color_img" label="图片" min-width="80" align="center">
+            <el-table-column
+              prop="color_img"
+              :label="goodsType === GOODS_TYPE.DIY ? '底图' : '图片' "
+              min-width="80"
+              align="center"
+            >
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
-                  :rules="{required: true, message: '图片不能为空'}"
+                  :rules="{required: true, message: `${goodsType === GOODS_TYPE.DIY ? '底图' : '图片'}不能为空`}"
                   :prop="'opt_color_list.' + scope.$index + '.color_img'"
                 >
                   <sl-upload
@@ -272,6 +277,34 @@
                     <img
                       v-if="scope.row.color_img"
                       :src="scope.row.color_img_url"
+                      class="upload-preview"
+                    >
+                    <i v-else class="el-icon-plus avatar-uploader-icon" />
+                  </sl-upload>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-if="goodsType === GOODS_TYPE.DIY"
+              prop="outline_img"
+              label="轮廓图"
+              min-width="80"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <el-form-item
+                  class="pictable-form-item"
+                  :rules="{required: true, message: '轮廓图不能为空'}"
+                  :prop="'opt_color_list.' + scope.$index + '.outline_img'"
+                >
+                  <sl-upload
+                    class="outline-uploader"
+                    :type="3"
+                    @on-success="(res) => {return handlerOutlineImgSuc(res,scope.row)}"
+                  >
+                    <img
+                      v-if="scope.row.outline_img"
+                      :src="scope.row.outline_img_url"
                       class="upload-preview"
                     >
                     <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -351,7 +384,7 @@ export default {
         y_offset: '' // 与纵边距离
       },
 
-      // opt_color_list : [{ color_name: '', inventory: '', color_img: '' } ]
+      // opt_color_list : [{ color_name: '', inventory: '', color_img: '', outline_img: '', } ]
       basePicForm: {
         opt_color_list: []
       },
@@ -450,7 +483,8 @@ export default {
       this.basePicForm.opt_color_list.push({
         color_name: '',
         inventory: '',
-        color_img: ''
+        color_img: '',
+        outline_img: ''
       })
     },
     handlerDeletePicClick(item) {
@@ -517,6 +551,9 @@ export default {
           }/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=1&img_name=${
             item.color_img
           }`
+          item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+            this.token
+          }&opr=get_img&width=44&height=64&type=3&img_name=${item.outline_img}`
         })
       }
 
@@ -597,7 +634,13 @@ export default {
       row.color_img = img_name
       row.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
-      }&opr=get_img&width=44&height=64&type=1&img_name=${img_name}`
+      }&opr=get_img&width=44&height=64&type=7&img_name=${img_name}`
+    },
+    handlerOutlineImgSuc({ img_name }, row) {
+      row.outline_img = img_name
+      row.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+        this.token
+      }&opr=get_img&width=44&height=64&type=3&img_name=${img_name}`
     },
     handlerBrandChange(brand_id) {
       this.baseinfoForm.model = ''

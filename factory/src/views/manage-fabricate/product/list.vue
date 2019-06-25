@@ -347,7 +347,7 @@ export default {
       const dataList = productList.map(item => {
         const opr = {
           production_id: item,     // 生产单ID
-          status_txt: '未下载',     // 生产单状态('未下载', '下载失败', '下载成功', '作废')
+          status_txt: '下载中',     // 生产单状态('未下载', '下载失败', '下载成功', '作废')
           reremark: '重新下载'
         }
         return opr

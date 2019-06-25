@@ -1,47 +1,38 @@
-// limit-input-number.js
+// tirm.js
 
 /**
- * <!--默认允许0到2位小数-->
+ * <!--去掉输入中的所有空格 ->
  * <el-input
- *  data-dotrange="{0,2}"
  *  v-model.trim="num"
- *  v-limit-input-number="num"
+ *  v-trim="num"
  * />
  */
 
 // 设置组件中的指定属性的值
 const setValue = function(exp, value, context) {
-  value = isNaN(value) ? '' : value
   new Function('context', 'value', `context.${exp} = value`)(context, value)
 }
 
 // 自定义指令
 export default {
   bind(el, { expression }, { context }) {
-    const inputEl = Array.from(el.children).filter(child => {
+    let inputEl = Array.from(el.children).filter(child => {
       return child.localName === 'input'
     })[0]
 
-    // 初始化lastValue
-    inputEl.lastValue = inputEl.value
+    const textareaEl = Array.from(el.children).filter(child => {
+      return child.localName === 'textarea'
+    })[0]
 
-    const hasDot = !!inputEl.dataset.dotrange
-    const dotRange = inputEl.dataset.dotrange || `{0,2}`   // 默认小数点位数
-    const pattern = `^[0-9]+${hasDot ? `(\\.[0-9]${dotRange})?` : ''}$`
-
+    inputEl = inputEl || textareaEl
     if (!expression) {
       throw new TypeError('请绑定expression')
     }
 
     inputEl.handleInputEvent = function(e) {
       setTimeout(() => {
-        // 如果不匹配重置为上次的值
-        if (e.target.value !== '' && !new RegExp(pattern).test(e.target.value)) {
-          setValue(expression, parseFloat(e.target.lastValue), context)
-          e.target.value = e.target.lastValue
-        }
-
-        e.target.lastValue = e.target.value
+        const newValue = e.target.value.replace(/\s/g, '')
+        setValue(expression, newValue, context)
       }, 0)
     }
     inputEl.addEventListener('input', inputEl.handleInputEvent, false)

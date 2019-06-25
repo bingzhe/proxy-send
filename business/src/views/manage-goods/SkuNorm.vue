@@ -244,7 +244,10 @@ export default {
       }
       &.active {
         .pic-wrapper {
-          border: 1px solid #fd7474;
+          border: 2px solid #fd7474;
+        }
+        .color_name {
+          color: #fd7474;
         }
       }
     }

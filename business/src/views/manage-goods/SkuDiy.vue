@@ -72,7 +72,7 @@
             <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
             <br>
             <el-button :disabled="!ori_user_img_url" type="text" @click="handlerPreviewClick">预览</el-button>
-            <el-button :disabled="!ori_user_img_url" type="text" @click="handlerPreviewClick">合成</el-button>
+            <!-- <el-button :disabled="!ori_user_img_url" type="text" @click="handlerPreviewClick">合成</el-button> -->
           </div>
         </div>
       </div>
@@ -81,19 +81,19 @@
     </div>
     <div class="button-group-wrapper">
       <el-button @click="handlerCancelClick">取消</el-button>
-      <el-button :disabled="!preview_img" type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
+      <el-button type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
     </div>
 
-    <el-dialog class="preview-dialog" :visible.sync="dialogVisible" width="780px">
+    <el-dialog class="preview-dialog" :visible.sync="dialogVisible" width="780px" title="打印图">
       <div class="preview-img-wrapper">
         <div class="img-wrapper">
-          <div>打印图</div>
+          <!-- <div>打印图</div> -->
           <img :src="dialogPruneUrl" alt>
         </div>
-        <div class="img-wrapper">
+        <!-- <div class="img-wrapper">
           <div>预览图</div>
           <img :src="dialogImageUrl" alt>
-        </div>
+        </div>-->
       </div>
     </el-dialog>
   </div>
@@ -147,7 +147,7 @@ export default {
       picSource: 1,           // 1.本地 2.图库
       showPicList: false,     // 是否显示图库
       // 底图颜色
-      curPic: '',              // 底图颜色index
+      curPic: 0,              // 底图颜色index
       opt_color_list: [
         // {
         //   color_img: '',
@@ -165,7 +165,8 @@ export default {
       // 图片预览
       dialogPruneUrl: '',  // 打印
       dialogImageUrl: '',  // 预览
-      dialogVisible: false
+      dialogVisible: false,
+      isShowDialog: true // 是否显示预览
     }
   },
   computed: {
@@ -202,16 +203,17 @@ export default {
       this.picWidth = (info.img_print_param || {}).width
       this.picRadius = (info.img_print_param || {}).radius
 
-      this.$nextTick(() => {
-        this.$refs.diyDesigner.init()
-      })
-
-      this.opt_color_list = (info.opt_color_list || []).map(item => {
+      this.opt_color_list = (info.opt_color_list || []).map((item, index) => {
         item.color_img_url = `${
           process.env.VUE_APP_BASEURL
         }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
           item.color_img
         }`
+
+        if (this.curPic === index) {
+          this.color_img_url = item.color_img_url
+        }
+
         return item
       })
 
@@ -222,6 +224,17 @@ export default {
       }`
 
       this.maxInventory = ((this.opt_color_list || [])[this.curPic] || {}).inventory
+
+      this.$nextTick(async() => {
+        this.$refs.diyDesigner.init()
+
+        /**
+         * 默认选中第一张地图
+         */
+        await this.$refs.diyDesigner.addColorImg(this.color_img_url)
+        // console.log(this.outline_img_url)
+        await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+      })
     },
     handlerUploadSuc({ img_name }) {
       this.ori_user_img = img_name
@@ -240,7 +253,7 @@ export default {
       // // <<<<<<<<<<<<<<<<<<
       this.$refs.diyDesigner.removeOriginImg()
 
-      this.$refs.diyDesigner.addColorImg(this.color_img_url)
+      await this.$refs.diyDesigner.addColorImg(this.color_img_url)
       // console.log(this.outline_img_url)
       await this.$refs.diyDesigner.addOutline(this.outline_img_url)
 
@@ -250,9 +263,12 @@ export default {
       // this.$refs.diyDesigner.addColorImg(require('@/assets/images/3.jpg'))
     },
     async handlerAddCartClick() {
-      if (!this.preview_img) {
+      if (!this.ori_user_img) {
         this.$message.error('DIY照片不能为空，请先上传')
         return
+      }
+      if (!this.preview_img) {
+        await this.$refs.diyDesigner.preview()
       }
 
       const data = {
@@ -317,7 +333,10 @@ export default {
 
       this.dialogImageUrl = this.preview_img_url
       this.dialogPruneUrl = this.prune_img_rul
-      this.dialogVisible = true
+
+      if (this.isShowDialog) {
+        this.dialogVisible = true
+      }
     }
   }
 }
@@ -454,9 +473,9 @@ export default {
 
     .preview-img-wrapper {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       .img-wrapper {
-        width: 45%;
+        width: 60%;
         img {
           width: 100%;
           border: 1px solid #ccc;
