@@ -4,7 +4,7 @@
       <baseinfo-title color="#FB7474" text="新增订单" />
     </div>
 
-    <div class="goodsinfo-wrapper">
+    <div v-loading="loading" class="goodsinfo-wrapper" element-loading-text="拼命加载中">
       <sku-baseinfo :goods-info="goodsInfo" />
 
       <el-row class="select-goodsnum-wrapper">
@@ -165,7 +165,9 @@ export default {
       dialogPruneUrl: '',  // 打印
       dialogImageUrl: '',  // 预览
       dialogVisible: false,
-      isShowDialog: true // 是否显示预览
+      isShowDialog: true, // 是否显示预览
+
+      loading: false
     }
   },
   computed: {
