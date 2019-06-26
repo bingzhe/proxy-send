@@ -19,6 +19,7 @@
 <script>
 import { fabric } from 'fabric'
 import Http from '@/config/encsubmit'
+// import { mapState } from 'vuex'
 
 export default {
   props: {
@@ -71,6 +72,14 @@ export default {
       ori_user_img_url: require('@/assets/images/1.jpg'), // 用户原图
       color_img_url: require('@/assets/images/2.png')   // 底图
     }
+  },
+  computed: {
+    // ...mapState({
+    //   outline_angle_offset: state => state.user.outline_angle_offset
+    // }),
+    // realRadius() {
+    //   return this.radius - this.outline_angle_offset
+    // }
   },
   watch: {
     // width: {

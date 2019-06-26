@@ -272,6 +272,7 @@
                 >
                   <sl-upload
                     class="outline-uploader"
+                    :type="7"
                     @on-success="(res) => {return handlerOutlineImgSuccess(res,scope.row)}"
                   >
                     <img
@@ -548,7 +549,7 @@ export default {
         this.basePicForm.opt_color_list.forEach(item => {
           item.color_img_url = `${
             process.env.VUE_APP_BASEURL
-          }/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=1&img_name=${
+          }/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=7&img_name=${
             item.color_img
           }`
           item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${

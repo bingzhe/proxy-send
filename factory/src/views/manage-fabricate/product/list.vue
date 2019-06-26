@@ -99,6 +99,7 @@
           <el-table :data="list" stripe @selection-change="handleSelectionChange">
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="order_id" label="订单编号" min-width="60" />
+            <el-table-column prop="raw_material" label="材质" min-width="60" />
             <el-table-column prop="brand_name" label="品牌" min-width="60" />
             <el-table-column prop="model_name" label="型号" min-width="60" />
             <el-table-column prop="goods_name" label="商品名称" min-width="60" />

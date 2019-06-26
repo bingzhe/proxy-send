@@ -201,27 +201,33 @@ export default {
 
       this.picHeight = (info.img_print_param || {}).height
       this.picWidth = (info.img_print_param || {}).width
-      this.picRadius = (info.img_print_param || {}).radius
+      this.picRadius = (info.img_print_param || {}).radius_adjius
 
       this.opt_color_list = (info.opt_color_list || []).map((item, index) => {
         item.color_img_url = `${
           process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+        }/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${
           item.color_img
+        }`
+        item.outline_img_url = `${
+          process.env.VUE_APP_BASEURL
+        }/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${
+          item.outline_img
         }`
 
         if (this.curPic === index) {
           this.color_img_url = item.color_img_url
+          this.outline_img_url = item.outline_img_url
         }
 
         return item
       })
 
-      this.outline_img_url = `${
-        process.env.VUE_APP_BASEURL
-      }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
-        info.outline_img
-      }`
+      // this.outline_img_url = `${
+      //   process.env.VUE_APP_BASEURL
+      // }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
+      //   info.outline_img
+      // }`
 
       this.maxInventory = ((this.opt_color_list || [])[this.curPic] || {}).inventory
 
@@ -248,6 +254,7 @@ export default {
     async handlerPicItemClick(item, i) {
       this.maxInventory = item.inventory
       this.color_img_url = item.color_img_url
+      this.outline_img_url = item.outline_img_url
       this.curPic = i
 
       // // <<<<<<<<<<<<<<<<<<
