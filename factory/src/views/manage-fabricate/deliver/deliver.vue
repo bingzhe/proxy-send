@@ -67,8 +67,9 @@
         <div v-if="displayStatus === 3 && showGoodsList" class="goods-info-content">
           <div class="base-title clearfix">
             <baseinfo-title class="baseinfo-title" color="#F39448" text="商品" />
+            <span class="attach-info">{{ attachInfoStr }}</span>
             <el-button
-              :disabled="order_status !== ORDER_STATUS.DELIVERY_WAIT"
+              :disabled="order_status !== ORDER_STATUS.DELIVERY_WAIT || !orderInfo.delivery_number.value"
               class="confirm-deliver btn-h-38"
               type="primary"
               @click="deliverGoods"
@@ -104,6 +105,8 @@ export default {
       },
 
       order_status: '',
+
+      attachInfoStr: '',
 
       searchFormRules: {
         order_id: [
@@ -205,6 +208,11 @@ export default {
           goods.goods_img
         }`
       })
+
+      this.attachInfoStr = (info.attach_list || []).map(attach => {
+        const attach_str = `${attach.goods_name}（${attach.num}）`
+        return attach_str
+      }).join('，')
     },
 
     async deliverGoods() {
@@ -369,7 +377,10 @@ export default {
 .baseinfo-title {
   float: left;
 }
-
+.attach-info{
+  font-size: 14px;
+  margin-left: 14px;
+}
 @media screen and (max-width: 1450px) {
   .order-info-wrapper {
     .goods-info-wrapper {

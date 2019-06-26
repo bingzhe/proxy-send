@@ -55,6 +55,7 @@
               :min="0"
               @change="getPriceSave"
             />
+            <span class="gifs-price">（&yen; {{ item.price }}）</span>
           </div>
         </div>
       </div>
@@ -309,7 +310,7 @@ export default {
 
       const info = resp.data
       const consignee_info = info.consignee_info || {}
-      this.attachList = info.attach_list || []
+      this.attachList = (info.attach_list || []).filter(attach => { return attach.inventory })
 
       this.goodsList = (info.goods_list || []).map(item => {
         item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
@@ -544,6 +545,10 @@ export default {
       padding: 0 8px 0 0;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
+    }
+    .gifs-price {
+      font-size: 14px;
+      color: #606266;
     }
   }
   .el-input-number {

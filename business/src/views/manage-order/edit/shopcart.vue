@@ -50,6 +50,7 @@
               :min="0"
               @change="getPrice"
             />
+            <span class="gifs-price">（&yen; {{ item.price }}）</span>
           </div>
         </div>
       </div>
@@ -390,7 +391,7 @@ export default {
 
       const consignee_info = {
         person: this.consigneeFrom.person,                // 收货人名
-        phone: this.consigneeFrom.person,                 // 手机号码
+        phone: this.consigneeFrom.phone,                 // 手机号码
         telephone: this.consigneeFrom.telephone,          // 固定电话
         province: this.consigneeFrom.province,            // 省
         city: this.consigneeFrom.city,                    // 市
@@ -478,6 +479,10 @@ export default {
       padding: 0 8px 0 0;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
+    }
+    .gifs-price {
+      font-size: 14px;
+      color: #606266;
     }
   }
   .el-input-number {

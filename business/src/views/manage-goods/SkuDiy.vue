@@ -84,17 +84,16 @@
       <el-button type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
     </div>
 
-    <el-dialog class="preview-dialog" :visible.sync="dialogVisible" width="780px" title="打印图">
-      <div class="preview-img-wrapper">
-        <div class="img-wrapper">
-          <!-- <div>打印图</div> -->
+    <el-dialog class="preview-dialog preview-pic-wrapper" :visible.sync="dialogVisible" title="预览图">
+      <!-- <div class="preview-img-wrapper"> -->
+      <!-- <div class="img-wrapper">
+          <div>打印图</div>
           <img :src="dialogPruneUrl" alt>
-        </div>
-        <!-- <div class="img-wrapper">
-          <div>预览图</div>
-          <img :src="dialogImageUrl" alt>
-        </div>-->
+      </div>-->
+      <div class="img-wrapper">
+        <img :src="dialogImageUrl" alt>
       </div>
+      <!-- </div> -->
     </el-dialog>
   </div>
 </template>
@@ -249,7 +248,7 @@ export default {
       }&opr=get_img&type=4&img_name=${this.ori_user_img}`
       // <<<<<<<<<<<<<<<<<<
       this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
-      // this.$refs.diyDesigner.addOriginImg(require('@/assets/images/1.jpg'))
+      // this.$refs.diyDesigner.addOriginImg(require('@/assets/images/origin.jpg'))
     },
     async handlerPicItemClick(item, i) {
       this.maxInventory = item.inventory
@@ -257,17 +256,17 @@ export default {
       this.outline_img_url = item.outline_img_url
       this.curPic = i
 
-      // // <<<<<<<<<<<<<<<<<<
+      // <<<<<<<<<<<<<<<<<<
       this.$refs.diyDesigner.removeOriginImg()
 
       await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-      // console.log(this.outline_img_url)
       await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+
+      // await this.$refs.diyDesigner.addColorImg(require('@/assets/images/color.png'))
+      // await this.$refs.diyDesigner.addOutline(require('@/assets/images/outline.png'))
 
       this.$refs.diyDesigner.addOriginImgAgain()
       this.$refs.diyDesigner.renderAll()
-      // await this.$refs.diyDesigner.addOutline(require('@/assets/images/4.png'))
-      // this.$refs.diyDesigner.addColorImg(require('@/assets/images/3.jpg'))
     },
     async handlerAddCartClick() {
       if (!this.ori_user_img) {
@@ -275,6 +274,7 @@ export default {
         return
       }
       if (!this.preview_img) {
+        this.isShowDialog = false
         await this.$refs.diyDesigner.preview()
       }
 
@@ -323,9 +323,7 @@ export default {
       this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
     },
     handlerPreviewClick() {
-      // <<<<<<<<<<<<<<<<<<
       this.$refs.diyDesigner.preview()
-      // this.$refs.diyDesigner.preview()
     },
     handelrDiySuc({ prune_img, preview_img }) {
       this.prune_img = prune_img
@@ -469,29 +467,39 @@ export default {
     right: 0;
   }
 }
-/deep/ .preview-dialog {
-  .el-dialog__header {
-    // background: rgba(176, 204, 177, 0.51);
-  }
-  .el-dialog__body {
-    text-align: center;
-    max-height: 80vh;
-    // background: rgba(176, 204, 177, 0.51);
+// /deep/ .preview-dialog {
+//   .el-dialog__header {
+//     // background: rgba(176, 204, 177, 0.51);
+//   }
+//   .el-dialog__body {
+//     text-align: center;
+//     max-height: 80vh;
+//     // background: rgba(176, 204, 177, 0.51);
 
-    .preview-img-wrapper {
-      display: flex;
-      justify-content: center;
-      .img-wrapper {
-        width: 60%;
-        img {
-          width: 100%;
-          border: 1px solid #ccc;
-        }
-      }
+//     .preview-img-wrapper {
+//       display: flex;
+//       justify-content: center;
+//       .img-wrapper {
+//         width: 60%;
+//         img {
+//           width: 100%;
+//           border: 1px solid #ccc;
+//         }
+//       }
+//     }
+//   }
+// }
+/deep/ .preview-pic-wrapper {
+  .el-dialog__body {
+    max-height: 80vh;
+    text-align: center;
+    padding: 0;
+    img {
+      max-height: 70vh;
+      max-width: 70vh;
     }
   }
 }
-
 @media only screen and (max-width: 1450px) {
   .goodsinfo-wrapper {
     padding: 0 50px;

@@ -91,6 +91,7 @@
             <el-table-column prop="consignee_phone" label="手机号码" min-width="60" />
             <el-table-column prop="order_fee" label="订单金额" min-width="60" />
             <el-table-column prop="order_status_str" label="订单状态" min-width="60" />
+            <el-table-column prop="delivery_number" label="物流单号" min-width="60" />
             <el-table-column prop="order_time_str" label="下单时间" min-width="60" />
 
             <el-table-column prop="opr" label="操作" width="240">
@@ -326,6 +327,8 @@ export default {
         if (item.order_status) {
           item.order_status_str = ORDER_STATUS.toString(item.order_status)
         }
+
+        item.delivery_number = (item.delivery_info || {}).delivery_number || '-'
 
         return item
       })
