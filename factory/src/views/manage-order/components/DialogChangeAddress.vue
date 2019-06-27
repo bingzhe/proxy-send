@@ -25,6 +25,13 @@
         <el-input v-model.trim="changeAddressForm.phone" placeholder="请输入" />
       </el-form-item>
       <br>
+      <el-form-item label="第三方平台订单号" prop="order_id_3rd" label-width="130px">
+        <el-input v-model.trim="changeAddressForm.order_id_3rd" placeholder="请输入" />
+      </el-form-item>
+      <el-form-item label="固定电话" prop="telephone" label-width="92px">
+        <el-input v-model.trim="changeAddressForm.telephone" placeholder="请输入" />
+      </el-form-item>
+      <br>
       <el-form-item label="物流公司" prop="delivery_company_name" label-width="130px">
         <el-select v-model="changeAddressForm.delivery_company_name" placeholder="请选择">
           <el-option
@@ -84,7 +91,9 @@ export default {
         city: '', // 市
         area: '', // 区县
         street: '', // 街道
-        delivery_company_name: '' // 物流公司名称
+        delivery_company_name: '', // 物流公司名称
+        telephone: '',   // 固定电话
+        order_id_3rd: '' // 第三平台订单号
       },
       changeAddressFormRules: {
         person: [{ required: true, message: '请选择收件人', trigger: 'blur' }],
@@ -123,6 +132,8 @@ export default {
 
       this.changeAddressForm.person = consignee_info.person
       this.changeAddressForm.phone = consignee_info.phone
+      this.changeAddressForm.order_id_3rd = consignee_info.order_id_3rd
+      this.changeAddressForm.telephone = consignee_info.telephone
       this.changeAddressForm.address = consignee_info.address
       this.changeAddressForm.province = consignee_info.province
       this.changeAddressForm.city = consignee_info.city
@@ -160,9 +171,13 @@ export default {
         area: this.changeAddressForm.area, // 区县
         street: this.changeAddressForm.street, // 街道
         delivery_company_name: this.changeAddressForm.delivery_company_name,
-        address: `${this.changeAddressForm.province}${
-          this.changeAddressForm.city
-        }${this.changeAddressForm.area}${this.changeAddressForm.street}` // 收货地址
+        address: this.changeAddressForm.address,
+        telephone: this.changeAddressForm.telephone,
+        order_id_3rd: this.changeAddressForm.order_id_3rd
+
+        // address: `${this.changeAddressForm.province}${
+        //   this.changeAddressForm.city
+        // }${this.changeAddressForm.area}${this.changeAddressForm.street}` // 收货地址
       }
 
       console.log('修改收货人信息 req=>', data)

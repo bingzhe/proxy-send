@@ -29,7 +29,7 @@ export default {
     beforeOutlineImgUpload(file) {
       // console.log('beforeOutlineImgUpload file', file)
       // const isJPG = file.type === 'image/jpeg';
-      const isLt5M = file.size / 1024 / 1024 < 2
+      const isLt5M = file.size / 1024 / 1024 < 5
 
       // if (!isJPG) {
       //   this.$message.error('上传头像图片只能是 JPG 格式!');
@@ -40,6 +40,7 @@ export default {
       return isLt5M
     },
     imgUpload({ file }) {
+      this.$emit('start-upload')
       const data = {
         opr: 'save_img_file',
         type: this.type,

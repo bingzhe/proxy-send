@@ -4,7 +4,7 @@
       <baseinfo-title color="#FB7474" text="新增订单" />
     </div>
 
-    <div v-loading="loading" class="goodsinfo-wrapper" element-loading-text="拼命加载中">
+    <div v-loading="loading" class="goodsinfo-wrapper" :element-loading-text="loadingTipText">
       <sku-baseinfo :goods-info="goodsInfo" />
 
       <el-row class="select-goodsnum-wrapper">
@@ -40,7 +40,12 @@
         <div class="opr-value">
           <el-input v-model="ori_user_img" placeholder="请选择DIY图片" />
         </div>
-        <sl-upload class="outline-uploader" :type="4" @on-success="handlerUploadSuc">
+        <sl-upload
+          class="outline-uploader"
+          :type="4"
+          @on-success="handlerUploadSuc"
+          @start-upload="handlerStartUpload"
+        >
           <el-button type="primary">选择</el-button>
         </sl-upload>
       </div>
@@ -167,7 +172,8 @@ export default {
       dialogVisible: false,
       isShowDialog: true, // 是否显示预览
 
-      loading: false
+      loading: false,
+      loadingTipText: '正在合成'
     }
   },
   computed: {
@@ -243,7 +249,12 @@ export default {
         await this.$refs.diyDesigner.addOutline(this.outline_img_url)
       })
     },
+    handlerStartUpload() {
+      this.loading = true
+      this.loadingTipText = '正在上传'
+    },
     handlerUploadSuc({ img_name }) {
+      this.loading = false
       this.ori_user_img = img_name
       this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
         this.token
@@ -277,7 +288,10 @@ export default {
       }
       if (!this.preview_img) {
         this.isShowDialog = false
+        this.loading = true
+        this.loadingTipText = '正在提交'
         await this.$refs.diyDesigner.preview()
+        this.loading = false
       }
 
       const data = {
@@ -324,8 +338,11 @@ export default {
       this.showPicList = false
       this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
     },
-    handlerPreviewClick() {
-      this.$refs.diyDesigner.preview()
+    async handlerPreviewClick() {
+      this.loading = true
+      this.loadingTipText = '正在合成'
+      await this.$refs.diyDesigner.preview()
+      this.loading = false
     },
     handelrDiySuc({ prune_img, preview_img }) {
       this.prune_img = prune_img
