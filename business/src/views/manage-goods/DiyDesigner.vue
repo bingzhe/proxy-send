@@ -12,13 +12,13 @@
     <button @click="removeOutlineImg">removeOutlineImg</button>-->
 
     <!-- <img :src="prune_img_data">
-    <img :src="preview_img_data"> -->
+    <img :src="preview_img_data">-->
   </div>
 </template>
 
 <script>
 import { fabric } from 'fabric'
-import Http from '@/config/encsubmit'
+// import Http from '@/config/encsubmit'
 // import { mapState } from 'vuex'
 
 export default {
@@ -156,8 +156,8 @@ export default {
           const left = 100 - (img.width - this.width) / 2
           const top = 100 - (img.height - this.height) / 2
           /**
-         * 轮廓位置调整
-         */
+           * 轮廓位置调整
+           */
           img.set('top', top || 100)
           img.set('left', left || 100)
           // img && img.setCrossOrigin('anonymous')
@@ -278,6 +278,7 @@ export default {
           canvas_crop.add(img)
           canvas_crop.setHeight(this.height)
           canvas_crop.setWidth(this.width)
+          canvas_crop.setBackgroundColor('rgba(	255,255,255,1)')
 
           img.set('top', -100)
           img.set('left', -100)
@@ -286,7 +287,7 @@ export default {
           /**
            * 生成第一张图片已缩放、旋转，但不包含轮廓
            */
-          this.prune_img_data = canvas_crop.toDataURL('png')
+          this.prune_img_data = canvas_crop.toDataURL({ format: 'jpeg' })
 
           canvas_crop.clear()
           // _this.canvas.clear()
@@ -305,6 +306,7 @@ export default {
             canvas_crop.add(img)
             canvas_crop.setHeight(this.outlineHeight)
             canvas_crop.setWidth(this.outlineWidth)
+            canvas_crop.setBackgroundColor('rgba(	255,255,255,1)')
 
             const top = 100 - (this.outlineHeight - this.height) / 2
             const left = 100 - (this.outlineWidth - this.width) / 2
@@ -316,70 +318,63 @@ export default {
             /**
              * 生成第二张图片 和轮廓图合并后的图
              */
-            this.preview_img_data = canvas_crop.toDataURL('png')
+            this.preview_img_data = canvas_crop.toDataURL({ format: 'jpeg' })
 
-            // setTimeout(() => {
-            //   this.canvas.remove(this.outlineImg)
-            // }, 50)
-            // setTimeout(() => {
-            //   this.canvas.add(this.colorImg)
-            // }, 50)
-
-            this.preview_img = await this.imgUpload(this.preview_img_data, 5)
-            this.prune_img = await this.imgUpload(this.prune_img_data, 6)
+            // this.preview_img = await this.imgUpload(this.preview_img_data, 5)
+            // this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
             this.canvas.add(this.rect)
             this.canvas.setActiveObject(this.originImg)
             this.canvas.renderAll()
 
-            this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
+            this.$emit('preview-success', { preview_img_data: this.preview_img_data, prune_img_data: this.prune_img_data })
+            // this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
             canvas_crop.dispose()
             resolve()
           })
         })
       })
-    },
-
-    imgUpload(fileData, type) {
-      return new Promise((resolve, reject) => {
-        const file = this.base64ToFile(fileData)
-        const data = {
-          opr: 'save_img_file',
-          type: type,
-          imgfile: file
-        }
-
-        Http.EncSubmit(this.url, data, resp => {
-          if (resp.ret !== 0) {
-            reject(resp)
-            return this.$message.error(resp.msg)
-          }
-          resolve(resp.data.img_name)
-        })
-      })
-    },
-
-    base64ToFile(urlData) {
-      var arr = urlData.split(',')
-      var mime = arr[0].match(/:(.*?);/)[1] || 'image/png'
-      // 去掉url的头，并转化为byte
-      var bytes = window.atob(arr[1])
-      // 处理异常,将ascii码小于0的转换为大于0
-      var ab = new ArrayBuffer(bytes.length)
-      // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
-      var ia = new Uint8Array(ab)
-
-      for (var i = 0; i < bytes.length; i++) {
-        ia[i] = bytes.charCodeAt(i)
-      }
-
-      // return new Blob([ab], {
-      //   type: mime
-      // })
-      return new File([ab], 'preview.png', {
-        type: mime
-      })
     }
+    // imgUpload(fileData, type) {
+    //   return new Promise((resolve, reject) => {
+    //     const file = this.base64ToFile(fileData)
+    //     const data = {
+    //       opr: 'save_img_file',
+    //       type: type,
+    //       imgfile: file
+    //     }
+
+    //     Http.EncSubmit(this.url, data, resp => {
+    //       if (resp.ret !== 0) {
+    //         reject(resp)
+    //         return this.$message.error(resp.msg)
+    //       }
+    //       resolve(resp.data.img_name)
+    //     })
+    //   })
+    // },
+
+    // base64ToFile(urlData) {
+    //   var arr = urlData.split(',')
+    //   var mime = arr[0].match(/:(.*?);/)[1] || 'image/png'
+    //   // 去掉url的头，并转化为byte
+    //   var bytes = window.atob(arr[1])
+    //   // 处理异常,将ascii码小于0的转换为大于0
+    //   var ab = new ArrayBuffer(bytes.length)
+    //   // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
+    //   var ia = new Uint8Array(ab)
+
+    //   for (var i = 0; i < bytes.length; i++) {
+    //     ia[i] = bytes.charCodeAt(i)
+    //   }
+
+    //   // return new Blob([ab], {
+    //   //   type: mime
+    //   // })
+    //   return new File([ab], 'preview.png', {
+    //     type: mime
+    //   })
+    // }
   }
 }
 </script>

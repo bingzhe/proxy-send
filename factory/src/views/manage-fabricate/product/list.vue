@@ -281,7 +281,7 @@ export default {
         }
         item.preview_img_url = `${
           process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&width=300&height=390&type=5&img_name=${
+        }/img_get.php?token=${this.token}&opr=get_img&width=300&height=390&type=5&to=jpg&img_name=${
           item.preview_img
         }`
         return item

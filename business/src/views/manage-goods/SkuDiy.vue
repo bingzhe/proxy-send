@@ -70,8 +70,9 @@
               :height="picHeight"
               :width="picWidth"
               :radius="picRadius"
-              @on-success="handelrDiySuc"
+              @preview-success="handlerPreviewSuc"
             />
+            <!-- @on-success="handelrDiySuc" -->
           </div>
           <div class="button-group">
             <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
@@ -111,6 +112,7 @@ import { goodsGet, buycartSave } from '@/api/api'
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
 import DiyDesigner from './DiyDesigner'
+import Http from '@/config/encsubmit'
 
 export default {
   components: {
@@ -124,6 +126,7 @@ export default {
   data() {
     return {
       token: window.Store.GetGlobalData('token'),
+      url: process.env.VUE_APP_BASEURL + '/img_save.php',
 
       goodsInfo: {
         goods_id: '',        // 商品编号(ID)（空时为新建）
@@ -173,7 +176,12 @@ export default {
       isShowDialog: true, // 是否显示预览
 
       loading: false,
-      loadingTipText: '正在合成'
+      loadingTipText: '正在合成',
+
+      // 图片base64数据
+      prune_img_data: '',
+      preview_img_data: ''
+
     }
   },
   computed: {
@@ -286,13 +294,20 @@ export default {
         this.$message.error('DIY照片不能为空，请先上传')
         return
       }
+
+      this.loading = true
+      this.loadingTipText = '正在提交'
+
       if (!this.preview_img) {
         this.isShowDialog = false
-        this.loading = true
-        this.loadingTipText = '正在提交'
+        // this.loading = true
+        // this.loadingTipText = '正在提交'
         await this.$refs.diyDesigner.preview()
-        this.loading = false
+        // this.loading = false
       }
+
+      this.preview_img = await this.imgUpload(this.preview_img_data, 5)
+      this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
       const data = {
         opr: 'put_to_buycart_diy',
@@ -311,7 +326,7 @@ export default {
       console.log('diy加入购物车', data)
       const resp = await buycartSave(data)
       console.log('diy加入购物车', resp)
-
+      this.loading = false
       if (resp.ret !== 0) return
 
       /**
@@ -344,24 +359,73 @@ export default {
       await this.$refs.diyDesigner.preview()
       this.loading = false
     },
-    handelrDiySuc({ prune_img, preview_img }) {
-      this.prune_img = prune_img
-      this.preview_img = preview_img
+    // handelrDiySuc({ prune_img, preview_img }) {
+    //   this.prune_img = prune_img
+    //   this.preview_img = preview_img
 
-      this.prune_img_rul = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&type=4&img_name=${this.prune_img}`
-      this.preview_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&type=5&img_name=${this.preview_img}`
+    //   this.prune_img_rul = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+    //     this.token
+    //   }&opr=get_img&type=4&img_name=${this.prune_img}`
+    //   this.preview_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+    //     this.token
+    //   }&opr=get_img&type=5&img_name=${this.preview_img}`
 
-      this.dialogImageUrl = this.preview_img_url
-      this.dialogPruneUrl = this.prune_img_rul
+    //   this.dialogImageUrl = this.preview_img_url
+    //   this.dialogPruneUrl = this.prune_img_rul
+
+    //   if (this.isShowDialog) {
+    //     this.dialogVisible = true
+    //   }
+    // },
+    handlerPreviewSuc({ preview_img_data, prune_img_data }) {
+      this.preview_img_data = preview_img_data
+      this.prune_img_data = prune_img_data
+      this.dialogImageUrl = this.preview_img_data
 
       if (this.isShowDialog) {
         this.dialogVisible = true
       }
+    },
+    base64ToFile(urlData) {
+      var arr = urlData.split(',')
+      var mime = arr[0].match(/:(.*?);/)[1] || 'image/png'
+      // 去掉url的头，并转化为byte
+      var bytes = window.atob(arr[1])
+      // 处理异常,将ascii码小于0的转换为大于0
+      var ab = new ArrayBuffer(bytes.length)
+      // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
+      var ia = new Uint8Array(ab)
+
+      for (var i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i)
+      }
+
+      // return new Blob([ab], {
+      //   type: mime
+      // })
+      return new File([ab], 'preview.png', {
+        type: mime
+      })
+    },
+    imgUpload(fileData, type) {
+      return new Promise((resolve, reject) => {
+        const file = this.base64ToFile(fileData)
+        const data = {
+          opr: 'save_img_file',
+          type: type,
+          imgfile: file
+        }
+
+        Http.EncSubmit(this.url, data, resp => {
+          if (resp.ret !== 0) {
+            reject(resp)
+            return this.$message.error(resp.msg)
+          }
+          resolve(resp.data.img_name)
+        })
+      })
     }
+
   }
 }
 </script>
