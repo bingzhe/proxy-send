@@ -301,11 +301,24 @@ export default {
       this.$refs.uploadFile.value = ''
 
       if (resp.ret !== 0) return
-      this.$notify({
-        title: '成功',
-        message: '导入成功',
-        type: 'success'
-      })
+
+      const okNum = resp.data.ok_num
+      const errNum = resp.data.err_num
+      const idStr = (resp.data.err_order_id_list || []).join('，')
+
+      const tipOptions = {
+        title: '提示',
+        message: `导入成功 <strong>${okNum}</strong> 条<br>`,
+        dangerouslyUseHTMLString: true,
+        type: 'info',
+        duration: 0
+      }
+
+      if (errNum) {
+        tipOptions.message = `导入成功 <strong>${okNum}</strong> 条<br> 导入出错 <strong>${errNum}</strong> 条<br> 导入出错订单 ${idStr}`
+      }
+
+      this.$notify(tipOptions)
     },
     handlerImportClick() {
       this.$refs.uploadFile.click()
