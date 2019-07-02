@@ -12,7 +12,7 @@
     <button @click="removeOutlineImg">removeOutlineImg</button>-->
 
     <!-- <img :src="prune_img_data">
-    <img :src="preview_img_data">-->
+    <img :src="preview_img_data"> -->
   </div>
 </template>
 
@@ -250,7 +250,7 @@ export default {
           canvas_crop.add(img)
           canvas_crop.setHeight(this.height)
           canvas_crop.setWidth(this.width)
-          canvas_crop.setBackgroundColor('rgba(	255,255,255,1)')
+          // canvas_crop.setBackgroundColor('rgba(	255,255,255,1)')
 
           img.set('top', -100)
           img.set('left', -100)
@@ -259,7 +259,7 @@ export default {
           /**
            * 生成第一张图片已缩放、旋转，但不包含轮廓
            */
-          this.prune_img_data = canvas_crop.toDataURL({ format: 'jpeg' })
+          this.prune_img_data = canvas_crop.toDataURL({ format: 'png' })
 
           canvas_crop.clear()
           // _this.canvas.clear()
