@@ -17,6 +17,10 @@ export default {
     type: {
       type: Number,
       default: 1
+    },
+    getFile: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -40,7 +44,13 @@ export default {
       return isLt5M
     },
     imgUpload({ file }) {
+      if (this.getFile) {
+        this.$emit('get-file', { file })
+        return
+      }
+
       this.$emit('start-upload')
+
       const data = {
         opr: 'save_img_file',
         type: this.type,

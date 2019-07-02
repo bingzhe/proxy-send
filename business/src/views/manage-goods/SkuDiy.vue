@@ -43,8 +43,8 @@
         <sl-upload
           class="outline-uploader"
           :type="4"
-          @on-success="handlerUploadSuc"
-          @start-upload="handlerStartUpload"
+          :get-file="true"
+          @get-file="handlerGetUploadFile"
         >
           <el-button type="primary">选择</el-button>
         </sl-upload>
@@ -72,13 +72,11 @@
               :radius="picRadius"
               @preview-success="handlerPreviewSuc"
             />
-            <!-- @on-success="handelrDiySuc" -->
           </div>
           <div class="button-group">
             <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
             <br>
-            <el-button :disabled="!ori_user_img_url" type="text" @click="handlerPreviewClick">预览</el-button>
-            <!-- <el-button :disabled="!ori_user_img_url" type="text" @click="handlerPreviewClick">合成</el-button> -->
+            <el-button :disabled="!ori_user_img" type="text" @click="handlerPreviewClick">预览</el-button>
           </div>
         </div>
       </div>
@@ -179,6 +177,7 @@ export default {
       loadingTipText: '正在合成',
 
       // 图片base64数据
+      ori_user_img_data: '',
       prune_img_data: '',
       preview_img_data: ''
 
@@ -257,19 +256,26 @@ export default {
         await this.$refs.diyDesigner.addOutline(this.outline_img_url)
       })
     },
-    handlerStartUpload() {
-      this.loading = true
-      this.loadingTipText = '正在上传'
-    },
-    handlerUploadSuc({ img_name }) {
-      this.loading = false
-      this.ori_user_img = img_name
-      this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&type=4&img_name=${this.ori_user_img}`
-      // <<<<<<<<<<<<<<<<<<
-      this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
-      // this.$refs.diyDesigner.addOriginImg(require('@/assets/images/origin.jpg'))
+    handlerGetUploadFile({ file }) {
+      // this.loading = true
+      // this.loadingTipText = '正在加载'
+
+      this.ori_user_img = file.name
+
+      const _this = this
+      const fr = new FileReader()
+
+      fr.onload = function() {
+        _this.ori_user_img_data = fr.result
+
+        // <<<<<<<<<<<<<<<<<<
+        _this.$refs.diyDesigner.addOriginImg(fr.result)
+        // _this.$refs.diyDesigner.addOriginImg(require('@/assets/images/origin.jpg'))
+
+        // _this.loading = false
+      }
+
+      fr.readAsDataURL(file)
     },
     async handlerPicItemClick(item, i) {
       this.maxInventory = item.inventory
@@ -300,12 +306,15 @@ export default {
 
       if (!this.preview_img) {
         this.isShowDialog = false
-        // this.loading = true
-        // this.loadingTipText = '正在提交'
         await this.$refs.diyDesigner.preview()
-        // this.loading = false
       }
 
+      /**
+       * 本地选择的图片需要先上传
+       */
+      if (this.picSource === 1) {
+        this.ori_user_img = await this.imgUpload(this.ori_user_img_data, 4)
+      }
       this.preview_img = await this.imgUpload(this.preview_img_data, 5)
       this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
@@ -314,9 +323,9 @@ export default {
         goods_id: this.goodsInfo.goods_id,                          // 商品编号(ID)
         num: this.num,                                              // 订购数量
         color: this.opt_color_list[this.curPic].color_name,         // 颜色分类("红色"、"绿色"...)
-        preview_img: this.preview_img,                                          // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
-        prune_img: this.prune_img,                                             // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-        ori_user_img: this.ori_user_img                                // 用户上传的未经处理的原图
+        preview_img: this.preview_img,                              // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+        prune_img: this.prune_img,                                  // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+        ori_user_img: this.ori_user_img                             // 用户上传的未经处理的原图
       }
 
       if (this.buycart_id) {
@@ -344,12 +353,12 @@ export default {
       }
       this.$refs.diyDesigner.removeOriginImg()
       this.ori_user_img = ''
+      this.ori_user_img_data = ''
       // this.outline_img_url = ''
     },
     selectMaterialPic(img) {
       this.ori_user_img = img.material_img
       this.ori_user_img_url = img.material_img_url_ori
-      // this.picSource = 1
       this.showPicList = false
       this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
     },
@@ -359,24 +368,6 @@ export default {
       await this.$refs.diyDesigner.preview()
       this.loading = false
     },
-    // handelrDiySuc({ prune_img, preview_img }) {
-    //   this.prune_img = prune_img
-    //   this.preview_img = preview_img
-
-    //   this.prune_img_rul = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-    //     this.token
-    //   }&opr=get_img&type=4&img_name=${this.prune_img}`
-    //   this.preview_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-    //     this.token
-    //   }&opr=get_img&type=5&img_name=${this.preview_img}`
-
-    //   this.dialogImageUrl = this.preview_img_url
-    //   this.dialogPruneUrl = this.prune_img_rul
-
-    //   if (this.isShowDialog) {
-    //     this.dialogVisible = true
-    //   }
-    // },
     handlerPreviewSuc({ preview_img_data, prune_img_data }) {
       this.preview_img_data = preview_img_data
       this.prune_img_data = prune_img_data
@@ -410,6 +401,7 @@ export default {
     imgUpload(fileData, type) {
       return new Promise((resolve, reject) => {
         const file = this.base64ToFile(fileData)
+
         const data = {
           opr: 'save_img_file',
           type: type,

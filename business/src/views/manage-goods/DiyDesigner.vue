@@ -18,8 +18,6 @@
 
 <script>
 import { fabric } from 'fabric'
-// import Http from '@/config/encsubmit'
-// import { mapState } from 'vuex'
 
 export default {
   props: {
@@ -41,7 +39,7 @@ export default {
   },
   data() {
     return {
-      url: process.env.VUE_APP_BASEURL + '/img_save.php',
+      // url: process.env.VUE_APP_BASEURL + '/img_save.php',
 
       // height: 620,
       // width: 300,
@@ -73,24 +71,6 @@ export default {
       ori_user_img_url: require('@/assets/images/origin.jpg'), // 用户原图
       color_img_url: require('@/assets/images/color.png')      // 底图
     }
-  },
-  computed: {
-    // ...mapState({
-    //   outline_angle_offset: state => state.user.outline_angle_offset
-    // }),
-    // realRadius() {
-    //   return this.radius - this.outline_angle_offset
-    // }
-  },
-  watch: {
-    // width: {
-    //   handler() {
-    //     this.init()
-    //   }
-    // }
-  },
-  mounted() {
-    // this.init()
   },
   methods: {
     init() {
@@ -175,41 +155,17 @@ export default {
         })
       })
     },
-    removeOutlineImg() {
-      if (this.outlineImg) {
-        this.canvas.remove(this.outlineImg)
-      }
-    },
-    removeOriginImg() {
-      if (this.originImg) {
-        this.canvas.remove(this.originImg)
-      }
-    },
-    addOriginImgAgain() {
-      if (this.originImg) {
-        this.canvas.add(this.originImg)
-      }
-    },
-    renderAll() {
-      this.canvas.renderAll()
-    },
     addOriginImg(url) {
       if (this.originImg) {
         this.canvas.remove(this.originImg)
       }
-      // if (this.outlineImg) {
-      //   this.canvas.remove(this.outlineImg)
-      // }
 
       fabric.Image.fromURL(url, (img) => {
         img.clipPath = this.clipPath
         img.scaleToWidth(this.width, false)  // 缩放图片的高度到400
 
-        // img.width = this.width
-        // img.height = this.height
         img.top = 100
         img.left = 100
-        // img && img.setCrossOrigin('anonymous')
 
         this.originImg = img
 
@@ -236,7 +192,6 @@ export default {
         this.canvas.add(img)
       })
     },
-
     addColorImg(url) {
       return new Promise(resolve => {
         if (this.colorImg) {
@@ -263,7 +218,24 @@ export default {
         })
       })
     },
-
+    removeOutlineImg() {
+      if (this.outlineImg) {
+        this.canvas.remove(this.outlineImg)
+      }
+    },
+    removeOriginImg() {
+      if (this.originImg) {
+        this.canvas.remove(this.originImg)
+      }
+    },
+    addOriginImgAgain() {
+      if (this.originImg) {
+        this.canvas.add(this.originImg)
+      }
+    },
+    renderAll() {
+      this.canvas.renderAll()
+    },
     preview() {
       return new Promise(resolve => {
         const canvas_crop = new fabric.Canvas('canvas_crop')
@@ -335,46 +307,6 @@ export default {
         })
       })
     }
-    // imgUpload(fileData, type) {
-    //   return new Promise((resolve, reject) => {
-    //     const file = this.base64ToFile(fileData)
-    //     const data = {
-    //       opr: 'save_img_file',
-    //       type: type,
-    //       imgfile: file
-    //     }
-
-    //     Http.EncSubmit(this.url, data, resp => {
-    //       if (resp.ret !== 0) {
-    //         reject(resp)
-    //         return this.$message.error(resp.msg)
-    //       }
-    //       resolve(resp.data.img_name)
-    //     })
-    //   })
-    // },
-
-    // base64ToFile(urlData) {
-    //   var arr = urlData.split(',')
-    //   var mime = arr[0].match(/:(.*?);/)[1] || 'image/png'
-    //   // 去掉url的头，并转化为byte
-    //   var bytes = window.atob(arr[1])
-    //   // 处理异常,将ascii码小于0的转换为大于0
-    //   var ab = new ArrayBuffer(bytes.length)
-    //   // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
-    //   var ia = new Uint8Array(ab)
-
-    //   for (var i = 0; i < bytes.length; i++) {
-    //     ia[i] = bytes.charCodeAt(i)
-    //   }
-
-    //   // return new Blob([ab], {
-    //   //   type: mime
-    //   // })
-    //   return new File([ab], 'preview.png', {
-    //     type: mime
-    //   })
-    // }
   }
 }
 </script>
