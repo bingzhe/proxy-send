@@ -57,6 +57,9 @@
           </span>
           <span>订单审核列表</span>
         </div>
+        <div class="add-button-group">
+          <el-button class="goods-add btn-h-38" type="primary" @click="handlerMuAuditClick">审核通过</el-button>
+        </div>
       </div>
 
       <div class="table-content default-table-change">
@@ -141,7 +144,7 @@
   </div>
 </template>
 <script>
-import { orderGet } from '@/api/api'
+import { orderGet, orderSave } from '@/api/api'
 import moment from 'moment'
 import { ORDER_STATUS, pickerOptions } from '@/config/cfg'
 
@@ -281,6 +284,40 @@ export default {
         query: {
           orderid: id
         }
+      })
+    },
+    /**
+     * 批量审核通过
+     */
+    async handlerMuAuditClick() {
+      const order_id_list = this.multipleSelection.map(item => {
+        return item.order_id
+      })
+
+      if (order_id_list.length === 0) {
+        this.$notify({
+          title: '警告',
+          message: '请选择要批量操作的订单',
+          type: 'warning'
+        })
+        return
+      }
+
+      const data = {
+        opr: 'batch_order_audit',
+        order_id_list
+      }
+
+      console.log('订单批量审核 req=>', data)
+      const resp = await orderSave(data)
+      console.log('订单批量审核 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.getList()
+      this.$notify({
+        title: '成功',
+        message: '批量操作成功',
+        type: 'success'
       })
     }
   }

@@ -27,6 +27,23 @@
         <el-form-item label="物流单号" prop="delivery_number" label-width="84px">
           <el-input v-model.trim="searchForm.delivery_number" placeholder="请输入" />
         </el-form-item>
+        <el-form-item label="材质" prop="goods_material" label-width="70px">
+          <el-select v-model="searchForm.goods_material" placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="商品种类" prop="type" label-width="70px">
+          <el-select v-model="searchForm.type" placeholder="请选择">
+            <el-option key="全部" label="全部" value />
+            <el-option
+              v-for="item in goodsTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="下单时间" prop="create_time" label-width="70px">
           <el-date-picker
             v-model="searchForm.create_time"
@@ -58,13 +75,14 @@
           <span>物流单列表</span>
         </div>
         <div class="add-button-group">
+          <el-button class="goods-add btn-h-38" type="primary" @click="handlerDeliverSucClick">发货成功</el-button>
           <el-button
             v-if="multipleSelectionLength === 0"
             class="goods-add btn-h-38"
             type="primary"
             @click="handelrNoSelectExportClick"
           >导出</el-button>
-          <a v-else :href="exportOrderListUrl" target="_black">
+          <a v-else :href="exportOrderListUrl" target="_black" style="margin-left: 10px;">
             <el-button class="goods-add btn-h-38" type="primary">导出</el-button>
           </a>
           <!-- target="_blank" -->
@@ -87,10 +105,13 @@
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="55" />
           <el-table-column prop="order_id" label="订单编号" min-width="60" />
+          <el-table-column prop="type_liststr" label="商品种类" min-width="60" />
+          <el-table-column prop="raw_material_liststr" label="材质" min-width="60" />
           <el-table-column prop="person" label="收货人" min-width="60" />
           <el-table-column prop="phone" label="手机号码" min-width="60" />
           <el-table-column prop="delivery_number" label="物流单号" min-width="60" />
           <el-table-column prop="create_time_txt" label="下单时间" min-width="60" />
+          <el-table-column prop="order_status_txt" label="订单状态" min-width="60" />
           <el-table-column prop="status_txt" label="物流单状态" min-width="60" />
           <el-table-column prop="opr" label="操作" width="200" align="center">
             <template slot-scope="scope">
@@ -134,8 +155,8 @@
   </div>
 </template>
 <script>
-import { deliveryOrderGet } from '@/api/api'
-import { pickerOptions } from '@/config/cfg'
+import { deliveryOrderGet, deliveryOrderSave } from '@/api/api'
+import { GOODS_TYPE, pickerOptions } from '@/config/cfg'
 import ChangeDeliverynum from './ChangeDeliverynum'
 import moment from 'moment'
 import { mapState } from 'vuex'
@@ -154,6 +175,8 @@ export default {
         order_id: '',              // 订单id(编号)
         phone: '',                 // 手机号码
         person: '',                // 收货人
+        goods_material: '',        // 材质
+        type: '',                  // 商品种类
         create_time: '',
         delivery_number: '',       // 物流单号（发货的单号）
         // factory_id: '',            // 厂商id
@@ -173,14 +196,28 @@ export default {
 
       // statusList: ['未导出', '成功导出', '成功导入', '导出失败', '导入失败', '作废'],
       pickerOptions,
-
+      goodsTypeOptions: [
+        {
+          value: GOODS_TYPE.DIY,
+          label: GOODS_TYPE.toString(GOODS_TYPE.DIY)
+        },
+        {
+          value: GOODS_TYPE.NORM,
+          label: GOODS_TYPE.toString(GOODS_TYPE.NORM)
+        },
+        {
+          value: GOODS_TYPE.GIFT,
+          label: GOODS_TYPE.toString(GOODS_TYPE.GIFT)
+        }
+      ],
       curDialog: {}, // 打开弹窗处理的物流单
       exportOrderListUrl: ''
     }
   },
   computed: {
     ...mapState({
-      delivery_order_status_list: state => state.user.delivery_order_status_list
+      delivery_order_status_list: state => state.user.delivery_order_status_list,
+      raw_material_list: state => state.user.raw_material_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -218,6 +255,14 @@ export default {
       // 收货人
       if (this.searchForm.person) {
         data.person = this.searchForm.person
+      }
+      // 材质
+      if (this.searchForm.goods_material) {
+        data.goods_material = this.searchForm.goods_material
+      }
+      // 商品种类
+      if (this.searchForm.type) {
+        data.type = this.searchForm.type
       }
       // 物流单号（发货的单号）
       if (this.searchForm.delivery_number) {
@@ -330,6 +375,37 @@ export default {
           orderid: id
         }
       })
+    },
+    async handlerDeliverSucClick() {
+      const delivery_id_list = this.multipleSelection.map(item => {
+        return item.delivery_id
+      })
+
+      if (delivery_id_list.length === 0) {
+        this.$notify({
+          title: '警告',
+          message: '请选择要批量操作的物流单',
+          type: 'warning'
+        })
+        return
+      }
+
+      const data = {
+        opr: 'batch_modify_delivery_status',
+        delivery_id_list
+      }
+
+      console.log('订单批量发货成功 req=>', data)
+      const resp = await deliveryOrderSave(data)
+      console.log('订单批量发货成功 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.getList()
+      this.$notify({
+        title: '成功',
+        message: '批量操作成功',
+        type: 'success'
+      })
     }
   }
 
@@ -346,10 +422,10 @@ export default {
   padding-top: 30px;
 
   .el-input {
-    width: 180px;
+    width: 160px;
   }
   .el-select {
-    width: 180px;
+    width: 160px;
   }
 }
 .el-table {

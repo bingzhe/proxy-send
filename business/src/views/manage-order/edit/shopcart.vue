@@ -91,17 +91,6 @@
               <el-input v-model.trim="consigneeFrom.telephone" placeholder="请输入" />
             </el-form-item>
             <br>
-            <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.address"
-                v-trim="consigneeFrom.address"
-                type="textarea"
-                placeholder="请输入"
-              />
-              <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
-              <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
-            </el-form-item>
-            <br>
             <el-form-item label="省/直辖市" prop="province" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.province"
@@ -130,6 +119,17 @@
                 v-trim="consigneeFrom.street"
                 placeholder="请输入"
               />
+            </el-form-item>
+            <br>
+            <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
+              <el-input
+                v-model.trim="consigneeFrom.address"
+                v-trim="consigneeFrom.address"
+                type="textarea"
+                placeholder="请输入"
+              />
+              <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
+              <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br>
             <el-form-item label="留言" prop="remark" label-width="130px">

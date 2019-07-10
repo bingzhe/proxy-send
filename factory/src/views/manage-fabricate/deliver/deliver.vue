@@ -110,7 +110,7 @@ export default {
 
       searchFormRules: {
         order_id: [
-          { required: true, message: '请输入物流号或订单号', trigger: 'blur' }
+          // { required: true, message: '请输入物流号或订单号', trigger: 'blur' }
         ]
       },
       orderInfo: {
@@ -129,7 +129,9 @@ export default {
       loading: false,
 
       displayStatus: 1, // 1搜索前 2无订单 3订单存在
-      ORDER_STATUS
+      ORDER_STATUS,
+
+      cacheOrderId: ''
     }
   },
   computed: {
@@ -156,11 +158,16 @@ export default {
       })
     },
 
-    async getOrderinfo() {
+    async getOrderinfo(type) {
       const data = {
         opr: 'get_order_info',
         query_value: this.searchForm.order_id
       }
+
+      if (type && type === 'deliver') {
+        data.query_value = this.cacheOrderId
+      }
+
       this.loading = true
 
       console.log('订单详情 req=>', data)
@@ -175,6 +182,7 @@ export default {
       /**
        * 搜索成功，清空并获得焦点
        */
+      this.cacheOrderId = this.searchForm.order_id
       this.searchForm.order_id = ''
       this.$refs.searchInput.focus()
 
@@ -201,7 +209,7 @@ export default {
       this.goods_list = info.goods_list || []
       this.goods_list.forEach(goods => {
         goods.type_str = GOODS_TYPE.toString(goods.type)
-        goods.des_str = `${goods.type_str}/${goods.raw_material}/${goods.model_txt}/${goods.color}/${goods.num}`
+        goods.des_str = `${goods.type_str}/${goods.raw_material}/${goods.brand_txt}/${goods.model_txt}/${goods.color}/${goods.num}`
         goods.goods_img_url = `${
           process.env.VUE_APP_BASEURL
         }/img_get.php?token=${this.token}&opr=get_img&width=225&height=280&type=1&img_name=${
@@ -239,7 +247,7 @@ export default {
         type: 'success',
         duration: 2000
       })
-      this.getOrderinfo()
+      this.getOrderinfo('deliver')
       /**
        * 发货成功，清空并获得焦点
        */
@@ -377,9 +385,11 @@ export default {
 .baseinfo-title {
   float: left;
 }
-.attach-info{
-  font-size: 14px;
+.attach-info {
+  font-size: 16px;
   margin-left: 14px;
+  font-weight: bold;
+  color: #f56c6c;
 }
 @media screen and (max-width: 1450px) {
   .order-info-wrapper {

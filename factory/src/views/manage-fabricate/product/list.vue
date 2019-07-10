@@ -105,7 +105,8 @@
             <el-table-column prop="goods_name" label="商品名称" min-width="60" />
             <el-table-column prop="num" label="生产数量" min-width="60" />
             <el-table-column prop="create_time_str" label="下单时间" min-width="80" />
-            <el-table-column prop="status_txt" label="状态" min-width="60" />
+            <el-table-column prop="order_status_txt" label="订单状态" min-width="60" />
+            <el-table-column prop="status_txt" label="生产单状态" min-width="60" />
             <el-table-column prop="opr" label="操作" width="200" align="center">
               <template slot-scope="scope">
                 <el-button type="text" @click="openProductInfo(scope.row)">生产单详情</el-button>
