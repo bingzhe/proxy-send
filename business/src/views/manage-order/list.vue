@@ -91,6 +91,7 @@
             <el-table-column prop="consignee_phone" label="手机号码" min-width="60" />
             <el-table-column prop="order_fee" label="订单金额" min-width="60" />
             <el-table-column prop="order_status_str" label="订单状态" min-width="60" />
+            <el-table-column prop="delivery_company_name" label="物流公司" min-width="60" />
             <el-table-column prop="delivery_number" label="物流单号" min-width="60" />
             <el-table-column prop="order_time_str" label="下单时间" min-width="60" />
 
@@ -329,6 +330,7 @@ export default {
         }
 
         item.delivery_number = (item.delivery_info || {}).delivery_number || '-'
+        item.delivery_company_name = (item.delivery_info || {}).company_name || '-'
 
         return item
       })
