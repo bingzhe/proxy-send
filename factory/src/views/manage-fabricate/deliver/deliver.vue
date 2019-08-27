@@ -9,6 +9,7 @@
             v-focus
             placeholder="请输入物流号或订单号"
             @keyup.enter.native="handlerSearchClick"
+            @blur="handleBlurClick"
           />
         </el-form-item>
         <el-form-item>
@@ -103,6 +104,7 @@ export default {
       searchForm: {
         order_id: ''
       },
+      preSearchVal: '',
 
       order_status: '',
 
@@ -131,7 +133,10 @@ export default {
       displayStatus: 1, // 1搜索前 2无订单 3订单存在
       ORDER_STATUS,
 
-      cacheOrderId: ''
+      cacheOrderId: '',
+
+      timer: null,  // 计时器，监控输入框500ms如果没有变化执行查找
+      isNoneOrder: false
     }
   },
   computed: {
@@ -148,6 +153,30 @@ export default {
         return false
       }
     }
+  },
+  watch: {
+    'searchForm.order_id': function(val, oldVal) {
+      this.isNoneOrder = false
+    }
+  },
+  mounted() {
+    this.timer = setInterval(() => {
+      if (!this.searchForm.order_id) {
+        return
+      }
+      /**
+       * 值等于上一次值的时候调接口
+       */
+      if (this.searchForm.order_id === this.preSearchVal) {
+        if (!this.isNoneOrder) {
+          this.handlerSearchClick()
+        }
+      }
+      this.preSearchVal = this.searchForm.order_id
+    }, 1000)
+  },
+  beforeDestroy() {
+    window.clearInterval(this.timer)
   },
   methods: {
     handlerSearchClick() {
@@ -175,13 +204,17 @@ export default {
       console.log('订单详情 res=>', resp)
       this.loading = false
       // 订单不存在
-      if (resp.ret === -60340) this.displayStatus = 2
+      if (resp.ret === -60340) {
+        this.displayStatus = 2
+        this.isNoneOrder = true
+        this.$refs.searchInput.select()
+      }
 
       if (resp.ret !== 0) return
 
       /**
-       * 搜索成功，清空并获得焦点
-       */
+     * 搜索成功，清空并获得焦点
+     */
       this.cacheOrderId = this.searchForm.order_id
       this.searchForm.order_id = ''
       this.$refs.searchInput.focus()
@@ -249,10 +282,16 @@ export default {
       })
       this.getOrderinfo('deliver')
       /**
-       * 发货成功，清空并获得焦点
-       */
+     * 发货成功，清空并获得焦点
+     */
       this.searchForm.order_id = ''
       this.$refs.searchInput.focus()
+    },
+
+    handleBlurClick() {
+      setTimeout(() => {
+        this.$refs && this.$refs.searchInput && this.$refs.searchInput.focus()
+      }, 2000)
     }
   }
 }
