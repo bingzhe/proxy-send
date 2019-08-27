@@ -173,7 +173,7 @@ export default {
         }
       }
       this.preSearchVal = this.searchForm.order_id
-    }, 1000)
+    }, 500)
   },
   beforeDestroy() {
     window.clearInterval(this.timer)
