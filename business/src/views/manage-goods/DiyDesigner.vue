@@ -12,7 +12,7 @@
     <button @click="removeOutlineImg">removeOutlineImg</button>-->
 
     <!-- <img :src="prune_img_data">
-    <img :src="preview_img_data"> -->
+    <img :src="preview_img_data">-->
   </div>
 </template>
 
@@ -77,9 +77,20 @@ export default {
       // console.log(this.$refs.canvasBgWrapper.offsetWidth)
       const heightWrapper = this.$refs.canvasBgWrapper.offsetWidth
 
+      /**
+       * 设置画布和真实图片缩放比例
+       */
+
+      if (this.height >= 1000 && this.height < 1500) {
+        this.scale = 0.5
+      }
+      if (this.height >= 1500) {
+        this.scale = 0.4
+      }
+
       this.canvas = new fabric.Canvas('diy-designer-wrapper', {
         width: heightWrapper,
-        height: 800
+        height: this.height * this.scale + 300 * this.scale
       })
 
       fabric.Object.prototype.transparentCorners = false
@@ -112,14 +123,15 @@ export default {
 
       this.canvas.add(this.rect)
 
-      if (this.height >= 1000 && this.height < 1500) {
-        this.canvas.setZoom(0.5)
-        this.scale = 0.5
-      }
-      if (this.height >= 1500) {
-        this.canvas.setZoom(0.4)
-        this.scale = 0.4
-      }
+      // if (this.height >= 1000 && this.height < 1500) {
+      //   this.canvas.setZoom(0.5)
+      //   this.scale = 0.5
+      // }
+      // if (this.height >= 1500) {
+      //   this.canvas.setZoom(0.4)
+      //   this.scale = 0.4
+      // }
+      this.canvas.setZoom(this.scale)
       // 给 canvas添加路径
       // this.canvas.clipPath = this.clipPath
     },
