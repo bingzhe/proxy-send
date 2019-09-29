@@ -163,6 +163,7 @@ export default {
 
           // 设为active,准备截图
           // this.canvas.setActiveObject(img)
+          img.evented = false
           resolve()
         })
       })
@@ -196,12 +197,23 @@ export default {
         img.on('scaling', () => { setOutlineTop() })
         img.on('rotating', () => { setOutlineTop() })
         img.on('skewing', () => { setOutlineTop() })
-        img.on('moved', () => { setOutlineBottom() })
-        img.on('scaled', () => { setOutlineBottom() })
-        img.on('rotated', () => { setOutlineBottom() })
-        img.on('skewed', () => { setOutlineBottom() })
+        // img.on('moved', () => { setOutlineBottom() })
+        // img.on('scaled', () => { setOutlineBottom() })
+        // img.on('rotated', () => { setOutlineBottom() })
+        // img.on('skewed', () => { setOutlineBottom() })
+
+        // img.on('selected', (e) => {
+        //   if (!(e.e && e.e.dbClick)) {
+        //     // setOutlineTop()
+        //   }
+        // })
+        // img.on('mousedblclick', (e) => {
+        //   this.canvas.setActiveObject(this.originImg, { dbClick: true })
+        // })
 
         this.canvas.add(img)
+        setOutlineTop()
+        // this.canvas.setActiveObject(this.originImg)
       })
     },
     addColorImg(url) {
