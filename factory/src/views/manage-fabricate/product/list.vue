@@ -54,6 +54,9 @@
           <el-form-item label="型号" prop="model_name" label-width="70px">
             <el-input v-model.trim="searchForm.model_name" placeholder="请输入" />
           </el-form-item>
+          <el-form-item label="商户名" prop="username" label-width="70px">
+            <el-input v-model.trim="searchForm.username" placeholder="请输入" />
+          </el-form-item>
           <el-form-item label="下单时间" prop="create_time" label-width="70px">
             <el-date-picker
               v-model="searchForm.create_time"
@@ -99,6 +102,7 @@
           <el-table :data="list" stripe @selection-change="handleSelectionChange">
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="order_id" label="订单编号" min-width="60" />
+            <el-table-column prop="username" label="商户名" min-width="60" />
             <el-table-column prop="raw_material" label="材质" min-width="60" />
             <el-table-column prop="brand_name" label="品牌" min-width="60" />
             <el-table-column prop="model_name" label="型号" min-width="60" />
@@ -182,7 +186,8 @@ export default {
         model_name: '',            // 型号名称
         create_time: '',
         create_time_begin: 0,      // 创建时间（开始）时间戳，秒
-        create_time_end: 0         // 创建时间（终止）时间戳，秒
+        create_time_end: 0,        // 创建时间（终止）时间戳，秒
+        username: ''               // 用户名
       },
 
       list: [],
@@ -247,6 +252,10 @@ export default {
       // 型号名称
       if (this.searchForm.model_name) {
         data.model_name = this.searchForm.model_name
+      }
+      // 商户名
+      if (this.searchForm.username) {
+        data.username = this.searchForm.username
       }
       // 下单时间
       if (this.searchForm.create_time) {
