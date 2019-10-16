@@ -315,7 +315,7 @@ export default {
       this.goodsList = (info.goods_list || []).map(item => {
         item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
           this.token
-        }&opr=get_img&width=35&height=70&type=1&img_name=${item.goods_img}`
+        }&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
 
         item.type_str = GOODS_TYPE.toString(item.type)
         item.goods_info_str = `${item.raw_material}_${item.brand_name}_${item.model_name}_${item.color}_${item.goods_id}`

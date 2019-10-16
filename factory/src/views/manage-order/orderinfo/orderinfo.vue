@@ -257,12 +257,12 @@ export default {
         goods.total_price = goods.num * goods.price
         goods.goods_img_url = `${
           process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=1&img_name=${
+        }/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${
           goods.goods_img
         }`
         goods.goods_img_url_preview = `${
           process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&type=5&to=jpg&img_name=${
+        }/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${
           goods.goods_img
         }`
         return goods
