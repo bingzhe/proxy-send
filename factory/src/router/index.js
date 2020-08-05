@@ -215,6 +215,13 @@ export const constantRoutes = [
         meta: { title: '商户管理', icon: 'shagnhuguanli' }
       },
       {
+        path: 'warehouse',
+        name: 'warehouse',
+        access: '11',
+        component: () => import('@/views/manage-system/warehouse/warehouse'),
+        meta: { title: '仓库管理', icon: 'shagnhuguanli' }
+      },
+      {
         path: 'param',
         name: 'param',
         access: '12',
@@ -248,11 +255,12 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
 
 const router = createRouter()
 
