@@ -78,13 +78,19 @@
         </div>
       </div>
     </div>
+
+    <WarehouseEdit ref="warehouseEdit" />
   </div>
 </template>
 
 <script>
 import { warehouseGet } from '@/api/api'
+import WarehouseEdit from './WarehouseEdit'
 
 export default {
+  components: {
+    WarehouseEdit
+  },
   data() {
     return {
       searchForm: {
@@ -159,7 +165,9 @@ export default {
       this.listQuery.page = val
       this.getWarehouseList()
     },
-    handleAddWarehouseClick() {},
+    handleAddWarehouseClick() {
+      this.$refs.warehouseEdit.show()
+    },
     handleWarehouseClick() {},
     handleDelClick() {}
   }
