@@ -123,7 +123,7 @@
 </template>
 <script>
 import { STAFF_STATUS, pickerOptions } from '@/config/cfg'
-import { employeeSave, employeeGet, roleGet } from '@/api/api'
+import { employeeSave, employeeGet } from '@/api/api' // roleGet
 import moment from 'moment'
 import StaffEdit from './StaffEdit'
 import { mapState } from 'vuex'
@@ -138,14 +138,14 @@ export default {
   data() {
     return {
       searchForm: {
-        status: '',                // 状态(1:正常,2:停用)
-        role_id: '',               // 角色ID
-        username: '',              // 账户名
-        real_name: '',             // 员工姓名
-        phone: '',                 // 手机号
-        create_time: '',           // 创建时间
-        create_time_begin: 0,      // 创建时间（开始）（时间戳，秒）
-        create_time_end: 0         // 创建时间（终止）（时间戳，秒）
+        status: '', // 状态(1:正常,2:停用)
+        role_id: '', // 角色ID
+        username: '', // 账户名
+        real_name: '', // 员工姓名
+        phone: '', // 手机号
+        create_time: '', // 创建时间
+        create_time_begin: 0, // 创建时间（开始）（时间戳，秒）
+        create_time_end: 0 // 创建时间（终止）（时间戳，秒）
       },
 
       list: [],
@@ -176,7 +176,7 @@ export default {
   },
   computed: {
     ...mapState({
-      role_list: state => state.user.role_list
+      role_list: (state) => state.user.role_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -230,14 +230,12 @@ export default {
       this.list = resp.data.list
       this.total = resp.data.total
 
-      this.list.map(item => {
+      this.list.map((item) => {
         if (item.status) {
           item.status_str = STAFF_STATUS.toString(item.status)
         }
         if (item.create_time) {
-          item.create_time_str = moment(item.create_time * 1000).format(
-            'YYYY-MM-DD HH:mm:ss'
-          )
+          item.create_time_str = moment(item.create_time * 1000).format('YYYY-MM-DD HH:mm:ss')
         }
         return item
       })
@@ -283,9 +281,11 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.delOpr(employee_id)
-      }).catch(() => { })
+      })
+        .then(() => {
+          this.delOpr(employee_id)
+        })
+        .catch(() => {})
     },
     async delOpr(id) {
       const data = {

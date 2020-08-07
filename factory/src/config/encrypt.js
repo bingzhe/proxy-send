@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 const Crypt = new function() {
   // 加密模式
   this.Encmode = Object.freeze({

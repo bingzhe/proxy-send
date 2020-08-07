@@ -1,6 +1,6 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+// import { login, logout, getInfo } from '@/api/user'
+import { getToken, removeToken } from '@/utils/auth' // setToken
+// import { resetRouter } from '@/router'
 import { loginGet } from '@/api/api'
 import { constantRoutes } from '@/router/index.js'
 
@@ -11,19 +11,19 @@ const state = {
 
   employee_id: '',
 
-  siteInfo: {},                          // 网站基本 信息
-  username: '',                          // 用户名
-  permmap: {},                           // 权限 map
-  vip_level_list: [],                    // vip list
-  employee_list: [],                     // 员工 list
-  role_list: [],                         // 角色列表
-  phone_brand_list: [],                  // 品牌 型号 list
-  model_list: [],                        // 型号list
-  raw_material_list: [],                 // 材质 list
-  theme_list: [],                        // 图库主题分类
-  delivery_order_status_list: [],        // 物流单状态列表
-  production_order_status_list: [],      // 生产单状态列
-  delivery_list: []                      // 快递公司
+  siteInfo: {}, // 网站基本 信息
+  username: '', // 用户名
+  permmap: {}, // 权限 map
+  vip_level_list: [], // vip list
+  employee_list: [], // 员工 list
+  role_list: [], // 角色列表
+  phone_brand_list: [], // 品牌 型号 list
+  model_list: [], // 型号list
+  raw_material_list: [], // 材质 list
+  theme_list: [], // 图库主题分类
+  delivery_order_status_list: [], // 物流单状态列表
+  production_order_status_list: [], // 生产单状态列
+  delivery_list: [] // 快递公司
 }
 
 const mutations = {
@@ -51,8 +51,10 @@ const mutations = {
     state.delivery_order_status_list = siteInfo.delivery_order_status_list || []
     state.production_order_status_list = siteInfo.production_order_status_list || []
 
-    const delivery_list = (siteInfo.delivery_list || []).map(item => {
-      item.delivery_str = item.price ? `${item.name}（邮费：${item.price}元）` : `${item.name}（邮费：包邮）`
+    const delivery_list = (siteInfo.delivery_list || []).map((item) => {
+      item.delivery_str = item.price
+        ? `${item.name}（邮费：${item.price}元）`
+        : `${item.name}（邮费：包邮）`
       return item
     })
 
@@ -116,7 +118,7 @@ const actions = {
       const data = {
         opr: 'get_home_data'
       }
-      loginGet(data).then(resp => {
+      loginGet(data).then((resp) => {
         console.log('界面初始化数据 res=>', resp)
         if (resp.ret !== 0) {
           reject()
@@ -128,7 +130,7 @@ const actions = {
 
         let model_list = []
 
-        phone_brand_list.forEach(brand => {
+        phone_brand_list.forEach((brand) => {
           brand.model_list = brand.model_list || []
           model_list = [...model_list, ...brand.model_list]
         })
@@ -142,7 +144,7 @@ const actions = {
         // access存在 并且 permap存在  并且 permap中check为0 隐藏
         const permmap = siteInfo.permmap
 
-        constantRoutes.forEach(router => {
+        constantRoutes.forEach((router) => {
           // if (router.access) {
           //   if (!permmap[router.access]) {
           //     router.hidden = true
@@ -154,12 +156,12 @@ const actions = {
           // }
 
           if (router.children) {
-            router.children.forEach(ch_router => {
+            router.children.forEach((ch_router) => {
               if (ch_router.access) {
                 if (!permmap[ch_router.access]) {
                   ch_router.hidden = true
                 } else {
-                  if (!(permmap[ch_router.access].checked)) {
+                  if (!permmap[ch_router.access].checked) {
                     ch_router.hidden = true
                   } else {
                     ch_router.hidden = false
@@ -168,11 +170,11 @@ const actions = {
               }
             })
 
-            const hiddenList = router.children.map(ch_router => {
+            const hiddenList = router.children.map((ch_router) => {
               return ch_router.hidden
             })
 
-            const isAllHidden = hiddenList.every(item => {
+            const isAllHidden = hiddenList.every((item) => {
               return item
             })
 
@@ -190,7 +192,7 @@ const actions = {
 
   // remove token
   resetToken({ commit }) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       commit('SET_TOKEN', '')
       removeToken()
       resolve()
@@ -204,4 +206,3 @@ export default {
   mutations,
   actions
 }
-

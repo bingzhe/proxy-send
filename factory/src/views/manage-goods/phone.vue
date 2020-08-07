@@ -53,7 +53,7 @@
             <template slot-scope="scope">
               <img class="table-cell-img" :src="scope.row.outline_img_url">
             </template>
-          </el-table-column> -->
+          </el-table-column>-->
           <el-table-column prop="lastmodtime" label="更新时间" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.lastmodtime_str }}</span>
@@ -150,7 +150,7 @@
             >
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </sl-upload>
-        </el-form-item> -->
+        </el-form-item>-->
       </el-form>
     </sl-dialog>
 
@@ -197,27 +197,22 @@
 
 <script>
 import SlDialog from '@/components/Dialog/Dialog'
-import {
-  phonemodelGet,
-  phonemodelSave,
-  phonebrandGet,
-  phonebrandSave
-} from '@/api/api'
+import { phonemodelGet, phonemodelSave, phonebrandGet, phonebrandSave } from '@/api/api'
 import { PHONE_STATUS } from '@/config/cfg'
 import moment from 'moment'
-import SlUpload from '@/components/upload/index'
+// import SlUpload from '@/components/upload/index'
 
 export default {
   components: {
-    SlDialog,
-    SlUpload
+    SlDialog
+    // SlUpload
   },
   data() {
     /**
      * 校验品牌名重复
      */
     const validateBrand = (rule, value, callback) => {
-      const brandList = this.phoneBrandOptions.map(brand => brand.brand_name)
+      const brandList = this.phoneBrandOptions.map((brand) => brand.brand_name)
       if (brandList.indexOf(value) !== -1) {
         callback(new Error('品牌名重复'))
       } else {
@@ -229,8 +224,8 @@ export default {
       token: window.Store.GetGlobalData('token'),
 
       searchForm: {
-        brand_name: '',     // 品牌
-        model_name: ''     // 型号
+        brand_name: '', // 品牌
+        model_name: '' // 型号
       },
 
       list: [],
@@ -246,15 +241,15 @@ export default {
       // modelDilaog
       editModelId: '',
       modelForm: {
-        brand_id: '',           // 品牌
-        model_name: ''         // 型号
+        brand_id: '', // 品牌
+        model_name: '' // 型号
         // border_radius: '',   // 四角弧度
         // outline_img: '',        // 轮廓图
         // outline_img_url: ''
         // status: ''              // 正常 1 停用 2
       },
       brandForm: {
-        brand_name: ''      // 品牌
+        brand_name: '' // 品牌
       },
       modelFormRules: {
         brand_id: [{ required: true, message: '请选择品牌', trigger: 'change' }],
@@ -309,11 +304,9 @@ export default {
       this.list = resp.data.list
       this.total = resp.data.total
 
-      this.list = this.list.map(item => {
+      this.list = this.list.map((item) => {
         if (item.lastmodtime) {
-          item.lastmodtime_str = moment(item.lastmodtime * 1000).format(
-            'YYYY-MM-DD HH:mm:ss'
-          )
+          item.lastmodtime_str = moment(item.lastmodtime * 1000).format('YYYY-MM-DD HH:mm:ss')
         }
 
         // if (item.status) {
@@ -385,7 +378,7 @@ export default {
       this.modelForm.brand_id = ''
     },
     handlerModelEditDialogConfirm() {
-      this.$refs.modelForm.validate(valid => {
+      this.$refs.modelForm.validate((valid) => {
         if (valid) {
           this.savePhoneModel()
         }
@@ -432,7 +425,7 @@ export default {
       this.$refs.brandEditDialog.show()
     },
     handlerDialogAddBrandClick() {
-      this.$refs.brandForm.validate(valid => {
+      this.$refs.brandForm.validate((valid) => {
         if (valid) {
           this.saveBrand()
         }
@@ -482,9 +475,11 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.delOpr(model_id)
-      }).catch(() => { })
+      })
+        .then(() => {
+          this.delOpr(model_id)
+        })
+        .catch(() => {})
     },
     async delOpr(id) {
       const data = {
@@ -502,7 +497,6 @@ export default {
       })
     }
   }
-
 }
 </script>
 
