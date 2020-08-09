@@ -134,3 +134,6 @@ export const accounttrackGet = generateRequestFn('accounttrack_get.php')
 // =================== 仓库管理 ======================
 // warehouse_get
 export const warehouseGet = generateRequestFn('warehouse_get.php')
+
+// region_get
+export const regionGet = generateRequestFn('region_get.php')

@@ -26,9 +26,9 @@
         <el-input v-model.trim="warehouseForm.address" placeholder="请输入" />
       </el-form-item>
     </el-form>
-    <el-form-item label="仓库详细地址" prop="send_area_list">
+    <!-- <el-form-item label="仓库详细地址" prop="send_area_list">
       <el-input v-model.trim="warehouseForm.send_area_list" placeholder="请输入" />
-    </el-form-item>
+    </el-form-item>-->
   </SlDialog>
 </template>
 
@@ -73,4 +73,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/deep/ .el-dialog__body {
+  padding-right: 150px;
+}
 </style>

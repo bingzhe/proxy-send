@@ -6,8 +6,8 @@
         <el-form-item label="仓库ID" prop="warehouse_id" label-width="70px">
           <el-input v-model.trim="searchForm.warehouse_id" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="仓库名称" prop="name" label-width="70px">
-          <el-input v-model.trim="searchForm.name" placeholder="请输入" />
+        <el-form-item label="仓库名称" prop="warehouse_name" label-width="70px">
+          <el-input v-model.trim="searchForm.warehouse_name" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
           <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
@@ -41,10 +41,10 @@
           <el-table :data="list" stripe @selection-change="handleSelectionChange">
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="warehouse_id" label="仓库ID" min-width="60" />
-            <el-table-column prop="name" label="仓库名称" min-width="80" />
+            <el-table-column prop="warehouse_name" label="仓库名称" min-width="80" />
             <el-table-column prop="city" label="仓库位置" min-width="60" />
             <el-table-column prop="address" label="地址" min-width="60" />
-            <el-table-column prop="send_area_list" label="可城市发货" min-width="60" />
+            <el-table-column prop="sendCityText" label="可城市发货" min-width="60" />
             <el-table-column prop="opr" label="操作" min-width="80" align="center">
               <template slot-scope="scope">
                 <el-button type="text" @click="handleWarehouseClick(scope.row)">编辑</el-button>
@@ -59,20 +59,9 @@
             <div class="pagination-total">
               <span>
                 共
-                <span class="num-text">{{ pageTotal }}</span>页/
                 <span class="num-text">{{ total }}</span>条数据
               </span>
             </div>
-            <el-pagination
-              class="sl-pagination"
-              :current-page.sync="listQuery.page"
-              :page-sizes="[10,20,40]"
-              :page-size="listQuery.limit"
-              layout="prev, pager, next, jumper"
-              :total="total"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
           </div>
           <!-- 分页 end -->
         </div>
@@ -84,7 +73,7 @@
 </template>
 
 <script>
-import { warehouseGet } from '@/api/api'
+import { warehouseGet, regionGet } from '@/api/api'
 import WarehouseEdit from './WarehouseEdit'
 
 export default {
@@ -95,18 +84,10 @@ export default {
     return {
       searchForm: {
         warehouse_id: '', // 仓库ID
-        name: '' // 仓库名称
+        warehouse_name: '' // 仓库名称
       },
 
-      list: [
-        {
-          warehouse_id: '11', // 仓库ID（空时为新建）
-          name: '111', // 仓库名称
-          city: '222', // 仓库所在位置(城市)
-          address: '333', // 仓库详细地址
-          send_area_list: ['深圳市'] // 可向哪些城市发货
-        }
-      ],
+      list: [],
       tableLoading: false,
       // 分页
       total: 100, // 分页总条数
@@ -116,14 +97,10 @@ export default {
       }
     }
   },
-  computed: {
-    pageTotal() {
-      return Math.ceil(this.total / this.listQuery.limit)
-    }
-  },
+  computed: {},
   mounted() {
-    console.log(warehouseGet)
     this.getWarehouseList()
+    this.getRegionGet()
   },
   methods: {
     async getWarehouseList() {
@@ -136,17 +113,25 @@ export default {
         data.warehouse_id = this.searchForm.warehouse_id
       }
       //  仓库名称
-      if (this.searchForm.name) {
-        data.name = this.searchForm.name
+      if (this.searchForm.warehouse_name) {
+        data.warehouse_name = this.searchForm.warehouse_name
       }
       this.tableLoading = true
 
       console.log('仓库列表 req=>', data)
-      // const resp = await warehouseGet(data)
-      // console.log('仓库列表 res=>', resp)
+      const resp = await warehouseGet(data)
+      console.log('仓库列表 res=>', resp)
 
-      // if (resp.ret !== 0) return
+      if (resp.ret !== 0) return
       this.tableLoading = false
+
+      this.list = resp.data.list || []
+      this.total = this.list.length
+
+      this.list = this.list.map((item) => {
+        item.sendCityText = (item.send_area_list || []).join('，')
+        return item
+      })
     },
     handlerSearchClick() {
       this.listQuery.page = 1
@@ -156,20 +141,16 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-    handleSizeChange(val) {
-      this.listQuery.page = 1
-      this.listQuery.limit = val
-      this.getWarehouseList()
-    },
-    handleCurrentChange(val) {
-      this.listQuery.page = val
-      this.getWarehouseList()
-    },
     handleAddWarehouseClick() {
       this.$refs.warehouseEdit.show()
     },
     handleWarehouseClick() {},
-    handleDelClick() {}
+    handleDelClick() {},
+    async getRegionGet() {
+      const resp = await regionGet({ opr: 'get_region_info' })
+
+      console.log(resp)
+    }
   }
 }
 </script>
