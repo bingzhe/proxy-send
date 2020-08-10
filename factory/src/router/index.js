@@ -215,6 +215,13 @@ export const constantRoutes = [
         meta: { title: '商户管理', icon: 'shagnhuguanli' }
       },
       {
+        path: 'shopinfo',
+        name: 'shopinfo',
+        hidden: true,
+        component: () => import('@/views/manage-system/shop/ShopDetail'),
+        meta: { title: '商户编辑', activeMenu: '/manage-system/shop' }
+      },
+      {
         path: 'warehouse',
         name: 'warehouse',
         access: '11',

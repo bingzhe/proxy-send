@@ -23,7 +23,7 @@
       <el-form-item label="账户密码" prop="password">
         <el-input v-model="shopEditForm.password" placeholder="请输入" />
       </el-form-item>
-      <br>
+      <br />
       <el-form-item label="手机号" prop="telephone">
         <el-input
           v-model="shopEditForm.telephone"
@@ -42,7 +42,7 @@
           />
         </el-select>
       </el-form-item>
-      <br>
+      <br />
       <el-form-item label="商户姓名" prop="business_name">
         <el-input v-model="shopEditForm.business_name" placeholder="请输入" />
       </el-form-item>
@@ -56,7 +56,7 @@
           />
         </el-select>
       </el-form-item>
-      <br>
+      <br />
       <el-form-item label="状态" prop="status">
         <el-select v-model="shopEditForm.status" placeholder="请选择">
           <el-option
@@ -78,7 +78,7 @@
           />
         </el-select>
       </el-form-item>
-      <br>
+      <br />
       <el-form-item label="联系地址" prop="address">
         <el-input
           v-model="shopEditForm.address"
@@ -88,7 +88,7 @@
           :rows="3"
         />
       </el-form-item>
-      <br>
+      <br />
       <el-form-item label="商铺URL" prop="url">
         <el-input v-model="shopEditForm.url" class="business-url" placeholder="请输入" />
       </el-form-item>
@@ -126,16 +126,16 @@ export default {
     }
     return {
       shopEditForm: {
-        username: '',            // 登录用户名(同用户表中的)
+        username: '', // 登录用户名(同用户表中的)
         password: '',
-        telephone: '',           // 联系电话
-        vip_level: '',           // VIP等级
-        business_name: '',       // 商户姓名（注：不是登录名）
-        salesman: '',            // 业务员ID(跟单人)
-        status: '',              // 状态(1:正常,2:停用)
-        designer_valid: '',      // 可使用DIY设计器(1:可使用,0:不能使用)
-        address: '',             // 联系地址
-        url: ''                  // 商铺URL
+        telephone: '', // 联系电话
+        vip_level: '', // VIP等级
+        business_name: '', // 商户姓名（注：不是登录名）
+        salesman: '', // 业务员ID(跟单人)
+        status: '', // 状态(1:正常,2:停用)
+        designer_valid: '', // 可使用DIY设计器(1:可使用,0:不能使用)
+        address: '', // 联系地址
+        url: '' // 商铺URL
       },
       shopEditFormRules: {
         username: [{ required: true, message: '请输入账户名', trigger: 'blur' }],
@@ -151,7 +151,9 @@ export default {
         business_name: [{ required: true, message: '请输入商户姓名', trigger: 'blur' }],
         salesman: [{ required: true, message: '请选择业务员', trigger: 'change' }],
         status: [{ required: true, message: '请选择状态', trigger: 'change' }],
-        designer_valid: [{ required: true, message: '请选择是否可使用DIY设计器', trigger: 'change' }],
+        designer_valid: [
+          { required: true, message: '请选择是否可使用DIY设计器', trigger: 'change' }
+        ],
         address: [{ required: true, message: '请输入联系地址', trigger: 'blur' }]
       },
 
@@ -180,8 +182,8 @@ export default {
   },
   computed: {
     ...mapState({
-      vip_level_list: state => state.user.vip_level_list,
-      employee_list: state => state.user.employee_list
+      vip_level_list: (state) => state.user.vip_level_list,
+      employee_list: (state) => state.user.employee_list
     })
   },
   methods: {
@@ -213,7 +215,7 @@ export default {
       this.shopEditForm.url = info.url
     },
     handlerShopEditConfirm() {
-      this.$refs.shopEditForm.validate(valid => {
+      this.$refs.shopEditForm.validate((valid) => {
         if (valid) {
           this.saveBusiness()
         }

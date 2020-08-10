@@ -135,5 +135,8 @@ export const accounttrackGet = generateRequestFn('accounttrack_get.php')
 // warehouse_get
 export const warehouseGet = generateRequestFn('warehouse_get.php')
 
+// warehouse_save
+export const warehouseSave = generateRequestFn('warehouse_save.php')
+
 // region_get
 export const regionGet = generateRequestFn('region_get.php')

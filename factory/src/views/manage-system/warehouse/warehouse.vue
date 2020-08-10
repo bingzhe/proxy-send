@@ -47,7 +47,7 @@
             <el-table-column prop="sendCityText" label="可城市发货" min-width="60" />
             <el-table-column prop="opr" label="操作" min-width="80" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="handleWarehouseClick(scope.row)">编辑</el-button>
+                <el-button type="text" @click="handleWarehouseEditClick(scope.row)">编辑</el-button>
                 <el-button class="btn-red" type="text" @click="handleDelClick(scope.row)">删除</el-button>
               </template>
             </el-table-column>
@@ -67,8 +67,13 @@
         </div>
       </div>
     </div>
-
-    <WarehouseEdit ref="warehouseEdit" />
+    <WarehouseEdit
+      ref="warehouseEdit"
+      :warehouse_id="editWarehouseId"
+      :regionList="regionList"
+      @on-close="handleWarehouseEditClose"
+      @on-success="getWarehouseList"
+    />
   </div>
 </template>
 
@@ -94,7 +99,28 @@ export default {
       listQuery: {
         page: 1,
         limit: 20
-      }
+      },
+
+      editWarehouseId: '', //编辑的仓库id
+
+      regionList: [
+        {
+          value: '1',
+          label: '广东省',
+          children: [
+            { value: '11', label: '广州市' },
+            { value: '12', label: '深圳市' }
+          ]
+        },
+        {
+          value: '2',
+          label: '陕西省',
+          children: [
+            { value: '21', label: '西安市' },
+            { value: '22', label: '宝鸡市' }
+          ]
+        }
+      ]
     }
   },
   computed: {},
@@ -144,12 +170,44 @@ export default {
     handleAddWarehouseClick() {
       this.$refs.warehouseEdit.show()
     },
-    handleWarehouseClick() {},
-    handleDelClick() {},
+    handleWarehouseEditClick(row) {
+      this.editWarehouseId = row.warehouse_id
+      this.$refs.warehouseEdit.show()
+    },
     async getRegionGet() {
       const resp = await regionGet({ opr: 'get_region_info' })
-
       console.log(resp)
+    },
+    handleWarehouseEditClose() {
+      this.editWarehouseId = ''
+    },
+    handleDelClick(row) {
+      const warehouse_id = row.warehouse_id
+      this.$confirm('确认要删除选中仓库？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.delOpr(warehouse_id)
+        })
+        .catch(() => {})
+    },
+    async delOpr(id) {
+      const data = {
+        opr: 'del',
+        warehouse_id: id
+      }
+
+      console.log('删除操作 req=>', data)
+      // const resp = await warehouseSave(data)
+      // if (resp.ret !== 0) return
+      // this.getWarehouseList()
+      // this.$notify({
+      //   title: '成功',
+      //   message: '删除成功',
+      //   type: 'success'
+      // })
     }
   }
 }
