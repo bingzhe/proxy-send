@@ -27,7 +27,6 @@
           clearable
           :show-all-levels="false"
           filterable
-          @change="handleChange"
         />
       </el-form-item>
       <el-form-item label="仓库详细地址" prop="address">
@@ -42,7 +41,6 @@
           :show-all-levels="false"
           :props="{ multiple: true }"
           filterable
-          @change="handleChange"
         />
       </el-form-item>
     </el-form>
@@ -64,6 +62,10 @@ export default {
     },
     regionList: {
       type: Array,
+      required: true
+    },
+    areaMap: {
+      type: Object,
       required: true
     }
   },
@@ -125,15 +127,17 @@ export default {
 
       this.warehouseForm.warehouse_name = info.warehouse_name
       this.warehouseForm.address = info.address
-      this.warehouseForm.send_area_id_list = info.send_area_id_list
-      this.warehouseForm.city_id = info.city_id
+      this.warehouseForm.city_id = (this.areaMap[info.city] || {}).path || []
+      this.warehouseForm.send_area_id_list = (info.send_area_list || []).map((item) => {
+        return (this.areaMap[item] || {}).path || []
+      })
     },
     async saveWarehose() {
       const citySelect = this.$refs.cityCascader.getCheckedNodes()
       const sendCitySelect = this.$refs.cityListCascader.getCheckedNodes(true)
 
-      const city = citySelect.map((item) => item.label).join('')
-      const sendCity = sendCitySelect.map((item) => item.label)
+      const city = citySelect.map((item) => item.value).join('')
+      const sendCity = sendCitySelect.map((item) => item.value)
 
       const data = {
         opr: 'save_warehouse',
@@ -159,9 +163,6 @@ export default {
         message: this.warehouse_id ? '保存成功' : '提交成功',
         type: 'success'
       })
-    },
-    handleChange(value) {
-      console.log(value)
     }
   }
 }

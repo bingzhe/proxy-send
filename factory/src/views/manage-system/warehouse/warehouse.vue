@@ -41,11 +41,11 @@
           <el-table :data="list" stripe @selection-change="handleSelectionChange">
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="warehouse_id" label="仓库ID" min-width="60" />
-            <el-table-column prop="warehouse_name" label="仓库名称" min-width="80" />
-            <el-table-column prop="city" label="仓库位置" min-width="60" />
+            <el-table-column prop="warehouse_name" label="仓库名称" min-width="60" />
+            <el-table-column prop="cityText" label="仓库位置" min-width="60" />
             <el-table-column prop="address" label="地址" min-width="60" />
-            <el-table-column prop="sendCityText" label="可城市发货" min-width="60" />
-            <el-table-column prop="opr" label="操作" min-width="80" align="center">
+            <el-table-column prop="sendCityText" label="可城市发货" min-width="100" />
+            <el-table-column prop="opr" label="操作" min-width="60" align="center">
               <template slot-scope="scope">
                 <el-button type="text" @click="handleWarehouseEditClick(scope.row)">编辑</el-button>
                 <el-button class="btn-red" type="text" @click="handleDelClick(scope.row)">删除</el-button>
@@ -71,6 +71,7 @@
       ref="warehouseEdit"
       :warehouse_id="editWarehouseId"
       :regionList="regionList"
+      :areaMap="areaMap"
       @on-close="handleWarehouseEditClose"
       @on-success="getWarehouseList"
     />
@@ -101,7 +102,7 @@ export default {
         limit: 20
       },
 
-      editWarehouseId: '', //编辑的仓库id
+      editWarehouseId: '', // 编辑的仓库id
 
       regionList: [
         {
@@ -120,13 +121,14 @@ export default {
             { value: '22', label: '宝鸡市' }
           ]
         }
-      ]
+      ],
+      areaMap: {}
     }
   },
   computed: {},
-  mounted() {
-    this.getWarehouseList()
-    this.getRegionGet()
+  async mounted() {
+    await this.getRegionGet()
+    await this.getWarehouseList()
   },
   methods: {
     async getWarehouseList() {
@@ -155,7 +157,10 @@ export default {
       this.total = this.list.length
 
       this.list = this.list.map((item) => {
-        item.sendCityText = (item.send_area_list || []).join('，')
+        item.sendCityText = (item.send_area_list || [])
+          .map((city) => (this.areaMap[city] || {}).label)
+          .join('，')
+        item.cityText = (this.areaMap[item.city] || {}).label
         return item
       })
     },
@@ -173,10 +178,6 @@ export default {
     handleWarehouseEditClick(row) {
       this.editWarehouseId = row.warehouse_id
       this.$refs.warehouseEdit.show()
-    },
-    async getRegionGet() {
-      const resp = await regionGet({ opr: 'get_region_info' })
-      console.log(resp)
     },
     handleWarehouseEditClose() {
       this.editWarehouseId = ''
@@ -208,6 +209,23 @@ export default {
       //   message: '删除成功',
       //   type: 'success'
       // })
+    },
+    async getRegionGet() {
+      const resp = await regionGet({ opr: 'get_region_list' })
+      console.log(resp)
+
+      this.areaMap = resp.data.area_map
+      this.regionList = (resp.data.list || []).map((province) => {
+        province.children = (province.children || []).map((city) => {
+          const item = {
+            value: city.value,
+            label: city.label,
+            parent: city.parent
+          }
+          return item
+        })
+        return province
+      })
     }
   }
 }
