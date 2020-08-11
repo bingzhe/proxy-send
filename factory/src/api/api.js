@@ -140,3 +140,10 @@ export const warehouseSave = generateRequestFn('warehouse_save.php')
 
 // region_get
 export const regionGet = generateRequestFn('region_get.php')
+
+// 创建/修改淘宝店铺信息(商户)
+// tshop_save
+export const tshopSave = generateRequestFn('tshop_save.php')
+
+// tshop_get
+export const tshopGet = generateRequestFn('tshop_get.php')

@@ -31,7 +31,7 @@
         <el-form-item label="商户名称" prop="business_name" label-width="70px">
           <el-input v-model.trim="searchForm.business_name" placeholder="请输入" />
         </el-form-item>
-        <br>
+        <br />
         <el-form-item label="联系电话" prop="telephone" label-width="70px">
           <el-input v-model.trim="searchForm.telephone" placeholder="请输入" />
         </el-form-item>
@@ -139,14 +139,14 @@ export default {
   data() {
     return {
       searchForm: {
-        status: '',                // 状态(1:正常,2:停用)
-        salesman: '',              // 业务员ID(跟单人)
-        username: '',              // 账户名
-        business_name: '',         // 商户姓名（注：不是登录名）
-        telephone: '',             // 联系电话
-        create_time: '',           // /开户时间
-        create_time_begin: 0,      // 开户时间（开始）（时间戳，秒）
-        create_time_end: 0         // 开户时间（终止）（时间戳，秒）
+        status: '', // 状态(1:正常,2:停用)
+        salesman: '', // 业务员ID(跟单人)
+        username: '', // 账户名
+        business_name: '', // 商户姓名（注：不是登录名）
+        telephone: '', // 联系电话
+        create_time: '', // /开户时间
+        create_time_begin: 0, // 开户时间（开始）（时间戳，秒）
+        create_time_end: 0 // 开户时间（终止）（时间戳，秒）
       },
 
       list: [],
@@ -177,8 +177,8 @@ export default {
   },
   computed: {
     ...mapState({
-      vip_level_list: state => state.user.vip_level_list,
-      employee_list: state => state.user.employee_list
+      vip_level_list: (state) => state.user.vip_level_list,
+      employee_list: (state) => state.user.employee_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -231,14 +231,12 @@ export default {
       this.list = resp.data.list
       this.total = resp.data.total
 
-      this.list = this.list.map(item => {
+      this.list = this.list.map((item) => {
         if (item.status) {
           item.status_str = BUSINESS_STATUS.toString(item.status)
         }
         if (item.create_time) {
-          item.create_time_str = moment(item.create_time * 1000).format(
-            'YYYY-MM-DD HH:mm:ss'
-          )
+          item.create_time_str = moment(item.create_time * 1000).format('YYYY-MM-DD HH:mm:ss')
         }
         return item
       })
@@ -261,14 +259,23 @@ export default {
       this.getBusinessList()
     },
     handlerAddBusinessClick() {
-      this.$refs.shopEdit.show()
+      // this.$refs.shopEdit.show()
+      this.$router.push({
+        path: '/manage-system/shopinfo'
+      })
     },
     handlerShopEditClose() {
       this.editbBusinessId = ''
     },
     handlerShopEditClick(row) {
-      this.editbBusinessId = row.business_id
-      this.$refs.shopEdit.show()
+      // this.editbBusinessId = row.business_id
+      // this.$refs.shopEdit.show()
+      this.$router.push({
+        path: '/manage-system/shopinfo',
+        query: {
+          id: row.business_id
+        }
+      })
     },
     handlerDelClick(row) {
       const business_id = row.business_id
@@ -276,11 +283,11 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.delOpr(business_id)
-      }).catch(() => {
-
       })
+        .then(() => {
+          this.delOpr(business_id)
+        })
+        .catch(() => {})
     },
     async delOpr(id) {
       const data = {

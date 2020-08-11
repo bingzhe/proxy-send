@@ -117,46 +117,115 @@
     <div class="tshop-wrapper">
       <div class="tshop-title-wrapper">
         <baseinfo-title color="#F3C148" text="淘宝店铺" />
-        <div class="add-btn-wrapper" @click="handlerAddPicClick">
+        <div class="add-btn-wrapper" @click="handleAddTshopClick">
           <i class="el-icon-circle-plus" />
           <span class="add-btn-text">新增</span>
         </div>
       </div>
       <div class="tshop-table-wrapper default-table-change">
         <el-form ref="tshopForm" :model="tshopForm">
-          <el-table :data="tshopForm.tshopList" stripe border>
-            <el-table-column prop="num" label="序号" width="80" align="center">
+          <el-table v-loading="tshopTableLoading" :data="tshopForm.tshopList" stripe border>
+            <el-table-column prop="num" label="序号" width="55" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.$index + 1 }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="tshop_id" label="淘宝店铺ID" min-width="80" align="center"></el-table-column>
-            <el-table-column prop="tshop_name" label="店铺名称" min-width="80" align="center">
+            <el-table-column prop="tshop_id" label="淘宝店铺ID" min-width="50" align="center" />
+            <el-table-column prop="tshop_name" label="店铺名称" min-width="60" align="center">
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
                   :rules="{required: true, message: '请输入店铺名称', trigger:'blur'}"
                   :prop="'tshopList.' + scope.$index + '.tshop_name'"
                 >
-                  <el-input v-model.trim="scope.row.tshop_name" placeholder="请输入" />
+                  <el-input
+                    v-if="scope.row.isEdit"
+                    v-model.trim="scope.row.tshop_name"
+                    placeholder="请输入"
+                  />
+                  <span v-else>{{ scope.row.tshop_name }}</span>
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="wdt_account" label="旺店通子账号" min-width="80" align="center">
+            <el-table-column prop="tshop_url" label="店铺url" min-width="80" align="center">
+              <template slot-scope="scope">
+                <el-form-item
+                  class="pictable-form-item"
+                  :rules="{required: true, message: '店铺url', trigger:'blur'}"
+                  :prop="'tshopList.' + scope.$index + '.tshop_url'"
+                >
+                  <el-input
+                    v-if="scope.row.isEdit"
+                    v-model.trim="scope.row.tshop_url"
+                    placeholder="请输入"
+                  />
+                  <span v-else>{{ scope.row.tshop_url }}</span>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column prop="wdt_account" label="旺店通子账号" min-width="60" align="center">
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
                   :rules="{required: true, message: '请输入旺店通子账号', trigger:'blur'}"
                   :prop="'tshopList.' + scope.$index + '.wdt_account'"
                 >
-                  <el-input v-model.trim="scope.row.wdt_account" placeholder="请输入" />
+                  <el-input
+                    v-if="scope.row.isEdit"
+                    v-model.trim="scope.row.wdt_account"
+                    placeholder="请输入"
+                  />
+                  <span v-else>{{ scope.row.wdt_account }}</span>
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="warehouse_id" label="发货仓库" min-width="80" align="center"></el-table-column>
+            <el-table-column prop="warehouse_id" label="发货仓库" min-width="60" align="center">
+              <template slot-scope="scope">
+                <el-form-item class="pictable-form-item">
+                  <el-select
+                    v-if="scope.row.isEdit"
+                    v-model="scope.row.warehouse_id"
+                    filterable
+                    clearable
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      v-for="item in warehouseList"
+                      :key="item.warehouse_id"
+                      :label="item.warehouse_name"
+                      :value="item.warehouse_id"
+                    />
+                  </el-select>
+                  <span v-else>{{ scope.row.warehouse_id }}</span>
+                </el-form-item>
+              </template>
+            </el-table-column>
             <el-table-column prop="opr" label="操作" min-width="45" align="center">
               <template slot-scope="scope">
-                <el-button class="text-btn" type="text" @click="handlerDeletePicClick(scope.row)">删除</el-button>
+                <el-button
+                  v-if="scope.row.isEdit"
+                  class="text-btn save-btn"
+                  type="text"
+                  @click="handleTshopSaveClick(scope.row)"
+                >保存</el-button>
+                <el-button
+                  v-if="scope.row.isEdit"
+                  class="text-btn save-btn"
+                  type="text"
+                  @click="handleTshopCancelClick(scope.row)"
+                >取消</el-button>
+                <el-button
+                  v-if="!scope.row.isEdit"
+                  class="text-btn edit-btn"
+                  type="text"
+                  @click="handleTshopEditClick(scope.row)"
+                >编辑</el-button>
+                <el-button
+                  v-if="!scope.row.isEdit"
+                  class="text-btn del-btn"
+                  type="text"
+                  @click="handleDelTshopClick(scope.row)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -179,7 +248,7 @@
 
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
-import { businessSave, businessGet } from '@/api/api'
+import { businessSave, businessGet, tshopSave, tshopGet, warehouseGet } from '@/api/api'
 import { BUSINESS_STATUS, CANUSE_DESIGNERDIV } from '@/config/cfg'
 import { mapState } from 'vuex'
 
@@ -256,25 +325,10 @@ export default {
       ],
 
       tshopForm: {
-        tshopList: [
-          {
-            tshop_id: '12', // 淘宝店铺ID(空时为新建)
-            tshop_name: '12', // 店铺名称(必填)
-            tshop_url: '123', // 店铺url
-            business_id: '123', // 店铺所属的商户ID
-            wdt_account: '123', // 旺店通子账号(必填)
-            warehouse_id: '123' // 特定发货仓库（下拉，单选）（可为空）
-          },
-          {
-            tshop_id: '123', // 淘宝店铺ID(空时为新建)
-            tshop_name: '', // 店铺名称(必填)
-            tshop_url: '', // 店铺url
-            business_id: '', // 店铺所属的商户ID
-            wdt_account: '', // 旺店通子账号(必填)
-            warehouse_id: '' // 特定发货仓库（下拉，单选）（可为空）
-          }
-        ]
-      }
+        tshopList: []
+      },
+      tshopTableLoading: false,
+      warehouseList: []
     }
   },
   computed: {
@@ -283,13 +337,170 @@ export default {
       employee_list: (state) => state.user.employee_list
     })
   },
+  created() {
+    if (this.$route.query.id) {
+      this.businessId = this.$route.query.id
+      this.getBusinessInfo()
+      this.getTshopList()
+    }
+    this.getWarehouseList()
+  },
   methods: {
     handlerGoBackClick() {
       this.$router.go(-1)
     },
-    handlerAddPicClick() {},
-    handlerSaveBtnClick() {},
-    handlerDeletePicClick() {}
+    async getBusinessInfo() {
+      const data = {
+        opr: 'get_business_info',
+        business_id: this.businessId
+      }
+      // console.log('商户详情 req=>', data)
+      const resp = await businessGet(data)
+      // console.log('商户详情 res=>', resp)
+      if (resp.ret !== 0) return
+
+      const info = resp.data.info
+
+      this.shopEditForm.username = info.username
+      this.shopEditForm.password = info.password
+      this.shopEditForm.telephone = info.telephone
+      this.shopEditForm.vip_level = info.vip_level
+      this.shopEditForm.business_name = info.business_name
+      this.shopEditForm.salesman = info.salesman
+      this.shopEditForm.status = info.status
+      this.shopEditForm.designer_valid = info.designer_valid
+      this.shopEditForm.address = info.address
+      this.shopEditForm.url = info.url
+    },
+    async handlerSaveBtnClick() {
+      // eslint-disable-next-line space-before-function-paren
+      this.$refs.shopEditForm.validate(async (valid) => {
+        if (valid) {
+          const data = {
+            opr: 'save_business',
+            username: this.shopEditForm.username,
+            password: this.shopEditForm.password,
+            telephone: this.shopEditForm.telephone,
+            vip_level: this.shopEditForm.vip_level,
+            business_name: this.shopEditForm.business_name,
+            salesman: this.shopEditForm.salesman,
+            status: this.shopEditForm.status,
+            designer_valid: this.shopEditForm.designer_valid,
+            address: this.shopEditForm.address,
+            url: this.shopEditForm.url
+          }
+
+          if (this.businessId) {
+            data.business_id = this.businessId
+          }
+
+          // console.log('商户保存 req=>', data)
+          const resp = await businessSave(data)
+          // console.log('商户保存 res=>', resp)
+          if (resp.ret !== 0) return
+          this.$notify({
+            title: '成功',
+            message: this.goods_id ? '保存成功' : '提交成功',
+            type: 'success',
+            duration: 2000
+          })
+          setTimeout(() => {
+            this.$router.go(-1)
+          }, 2000)
+        }
+      })
+    },
+    handleAddTshopClick() {
+      if (!this.businessId) {
+        return this.$message.error('请先保存下商户，才能录入淘宝店铺信息。')
+      }
+
+      const hasEditTshop = this.tshopForm.tshopList.some((item) => item.isEdit)
+      if (hasEditTshop) {
+        return this.$message.error('请先保存正在编辑的淘宝店铺。')
+      }
+
+      const tshop = {
+        tshop_id: '', // 淘宝店铺ID(空时为新建)
+        tshop_name: '', // 店铺名称(必填)
+        tshop_url: '', // 店铺url
+        wdt_account: '', // 旺店通子账号(必填)
+        warehouse_id: '', // 特定发货仓库（下拉，单选）（可为空）
+        isEdit: true
+      }
+
+      this.tshopForm.tshopList.push(tshop)
+    },
+    handleDelTshopClick() {},
+    handleTshopEditClick(row) {
+      const hasEditTshop = this.tshopForm.tshopList.some((item) => item.isEdit)
+      if (hasEditTshop) {
+        return this.$message.error('请先保存正在编辑的淘宝店铺。')
+      }
+
+      row.isEdit = true
+    },
+    handleTshopCancelClick(row) {
+      row.isEdit = false
+      if (!row.tshop_id) {
+        this.tshopForm.tshopList.pop()
+      }
+    },
+    async handleTshopSaveClick(row) {
+      // eslint-disable-next-line space-before-function-paren
+      this.$refs.tshopForm.validate(async (valid) => {
+        const data = {
+          opr: 'save_tshop',
+          business_id: this.businessId, // 店铺所属的商户ID
+          tshop_name: row.tshop_name, // 店铺名称(必填)
+          tshop_url: row.tshop_url, // 店铺url
+          wdt_account: row.wdt_account, // 旺店通子账号(必填)
+          warehouse_id: row.warehouse_id // 特定发货仓库（下拉，单选）（可为空）
+        }
+
+        if (row.tshop_id) {
+          data.tshop_id = row.tshop_id
+        }
+
+        console.log('淘宝店铺保存 req=>', data)
+        const resp = await tshopSave(data)
+        console.log('淘宝店铺保存 res=>', resp)
+
+        if (resp.ret !== 0) return
+        this.getTshopList()
+      })
+    },
+    async getTshopList() {
+      const data = {
+        opr: 'get_tshop_list',
+        business_id: this.businessId // 商户账户ID
+      }
+
+      // console.log('商户淘宝店铺列表 req=>', data)
+      const resp = await tshopGet(data)
+      // console.log('商户淘宝店铺列表 res=>', resp)
+      if (resp.ret !== 0) return
+
+      this.tshopForm.tshopList = (resp.data.list || []).map((item) => {
+        item.isEdit = false
+        return item
+      })
+    },
+    async getWarehouseList() {
+      const data = {
+        opr: 'get_warehouse_list'
+      }
+
+      this.tshopTableLoading = true
+      // console.log('仓库列表 req=>', data)
+      const resp = await warehouseGet(data)
+      // console.log('仓库列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.tshopTableLoading = false
+
+      this.warehouseList = resp.data.list || []
+    }
   }
 }
 </script>
@@ -345,9 +556,18 @@ export default {
           padding: 0;
         }
       }
+      /deep/ .el-form-item__content {
+        line-height: 23px;
+      }
     }
     .text-btn {
       color: #e33119;
+    }
+    .edit-btn {
+      color: #2584f9;
+    }
+    .save-btn {
+      color: #2584f9;
     }
   }
   //   .base-image-wrapper {

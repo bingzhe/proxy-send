@@ -19,6 +19,7 @@ module.exports = {
   // add your custom rules here
   //it is base on https://github.com/vuejs/eslint-config-vue
   rules: {
+    'vue/html-self-closing': 'never',
     'vue/attribute-hyphenation': 'never',
     'vue/prop-name-casing': ['off', 'camelCase' | 'snake_case'],
     'vue/max-attributes-per-line': [

@@ -42,7 +42,7 @@
             />
           </el-select>
         </el-form-item>
-        <br>
+        <br />
         <el-form-item label="商品名称" prop="goods_name" label-width="70px">
           <el-input v-model.trim="searchForm.goods_name" placeholder="请输入" />
         </el-form-item>
@@ -167,14 +167,14 @@ export default {
     return {
       // search
       searchForm: {
-        goods_material: '',   // 材质
-        type: '',       // 商品种类
-        brand: '',      // 品牌
-        model: '',      // 型号
-        goods_name: '',       // 商品名称
-        goods_id: '',         // 商品编号
+        goods_material: '', // 材质
+        type: '', // 商品种类
+        brand: '', // 品牌
+        model: '', // 型号
+        goods_name: '', // 商品名称
+        goods_id: '', // 商品编号
         goods_stock_type: '', // 库存类型   （1.大于等于：more 2.小于等于：less）
-        goods_stock: ''       // 商品库存
+        goods_stock: '' // 商品库存
       },
 
       list: [],
@@ -206,9 +206,9 @@ export default {
   },
   computed: {
     ...mapState({
-      phone_brand_list: state => state.user.phone_brand_list,
-      model_list: state => state.user.model_list,
-      raw_material_list: state => state.user.raw_material_list
+      phone_brand_list: (state) => state.user.phone_brand_list,
+      model_list: (state) => state.user.model_list,
+      raw_material_list: (state) => state.user.raw_material_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -265,7 +265,7 @@ export default {
       this.list = resp.data.list
       this.total = resp.data.total
 
-      this.list = this.list.map(goods => {
+      this.list = this.list.map((goods) => {
         goods.status = goods.status || 2
         goods.status_str = GOODS_STATUS.toString(goods.status)
 
@@ -303,9 +303,11 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.delOpr(id)
-      }).catch(() => { })
+      })
+        .then(() => {
+          this.delOpr(id)
+        })
+        .catch(() => {})
     },
     async delOpr(id) {
       const data = {
@@ -325,7 +327,7 @@ export default {
     async handlerOnOffClick(id, type) {
       const data = {
         opr: 'save_goods_status',
-        goods_id: id        // 商品编号(ID)
+        goods_id: id // 商品编号(ID)
         // status          : 2,            // 状态(1:未上架, 2:已上架)
       }
       if (type === 'on') {
