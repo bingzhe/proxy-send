@@ -23,7 +23,10 @@ const state = {
   theme_list: [], // 图库主题分类
   delivery_order_status_list: [], // 物流单状态列表
   production_order_status_list: [], // 生产单状态列
-  delivery_list: [] // 快递公司
+  delivery_list: [], // 快递公司
+
+  icp_txt: '', // 备案信息
+  icp_url: '' // 点击后跳转的地址
 }
 
 const mutations = {
@@ -59,6 +62,9 @@ const mutations = {
     })
 
     state.delivery_list = delivery_list
+
+    state.icp_txt = (siteInfo.icp || {}).text || ''
+    state.icp_url = (siteInfo.icp || {}).url || ''
   }
 }
 

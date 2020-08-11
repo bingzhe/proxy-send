@@ -52,6 +52,7 @@
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
           <el-table-column type="selection" align="center" width="55" />
 
+          <el-table-column prop="business_name" label="商户" min-width="60" />
           <el-table-column prop="material_name" label="素材名称" min-width="60">
             <template slot-scope="scope">
               <span>{{ scope.row.material_name }}</span>
@@ -64,7 +65,7 @@
           </el-table-column>
           <el-table-column prop="material_img" label="缩略图" min-width="60">
             <template slot-scope="scope">
-              <img class="table-cell-img" :src="scope.row.material_img_url">
+              <img class="table-cell-img" :src="scope.row.material_img_url" />
             </template>
           </el-table-column>
           <el-table-column prop="lastmodtime" label="上传时间" min-width="80">
@@ -159,7 +160,7 @@
                 v-if="pictureForm.material_img"
                 :src="pictureForm.material_img_url"
                 class="upload-preview"
-              >
+              />
               <i v-else class="el-icon-plus avatar-uploader-icon" />
             </sl-upload>
           </el-form-item>
@@ -212,12 +213,8 @@ export default {
         material_img_url: ''
       },
       pictureFormRules: {
-        material_name: [
-          { required: true, message: '请输入图片名称', trigger: 'blur' }
-        ],
-        theme: [
-          { required: true, message: '请选择主题分类', trigger: 'change' }
-        ],
+        material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
+        theme: [{ required: true, message: '请选择主题分类', trigger: 'change' }],
         // status: [{ required: true, message: '请选择状态', trigger: 'change' }],
         material_img: [{ required: true, message: '请上传轮廓图' }]
       },
@@ -232,7 +229,7 @@ export default {
   },
   computed: {
     ...mapState({
-      theme_list: state => state.user.theme_list
+      theme_list: (state) => state.user.theme_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -270,20 +267,16 @@ export default {
       this.list = resp.data.list || []
       this.total = resp.data.total
 
-      this.list = this.list.map(item => {
+      this.list = this.list.map((item) => {
         if (item.lastmodtime) {
-          item.lastmodtime_str = moment(item.lastmodtime * 1000).format(
-            'YYYY-MM-DD HH:mm:ss'
-          )
+          item.lastmodtime_str = moment(item.lastmodtime * 1000).format('YYYY-MM-DD HH:mm:ss')
         }
 
         // if (item.status) {
         //   item.status_str = PICTURE_STATUS.toString(item.status)
         // }
 
-        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&type=1&width=44&height=64&img_name=${item.material_img}`
+        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=44&height=64&img_name=${item.material_img}`
 
         return item
       })
@@ -314,12 +307,10 @@ export default {
     handlerOutlineImgSuccess({ img_name }) {
       this.pictureForm.material_img = img_name
       // http://f.pso.rockyshi.cn/php/img_get.php?token=TestToken&opr=get_img&type=1&img_name=d508bf88200289028d152ace532dbc6a.jpg
-      this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&type=1&width=117&height=140&img_name=${img_name}`
+      this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=117&height=140&img_name=${img_name}`
     },
     handlerPicEditDialogConfirm() {
-      this.$refs.pictureForm.validate(valid => {
+      this.$refs.pictureForm.validate((valid) => {
         if (valid) {
           this.savePicture()
         }
@@ -378,9 +369,11 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.delOpr(material_id)
-      }).catch(() => { })
+      })
+        .then(() => {
+          this.delOpr(material_id)
+        })
+        .catch(() => {})
     },
     async delOpr(id) {
       const data = {

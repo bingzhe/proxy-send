@@ -11,25 +11,28 @@ const state = {
 
   employee_id: '',
 
-  siteInfo: {},                          // 网站基本 信息
-  username: '',                          // 用户名
-  permmap: {},                           // 权限 map
-  vip_level_list: [],                    // vip list
-  employee_list: [],                     // 员工 list
-  role_list: [],                         // 角色列表
-  phone_brand_list: [],                  // 品牌 型号 list
-  model_list: [],                        // 型号list
-  raw_material_list: [],                 // 材质 list
-  theme_list: [],                        // 图库主题分类
-  delivery_order_status_list: [],        // 物流单状态列表
-  production_order_status_list: [],      // 生产单状态列
-  delivery_list: [],                     // 快递公司,
+  siteInfo: {}, // 网站基本 信息
+  username: '', // 用户名
+  permmap: {}, // 权限 map
+  vip_level_list: [], // vip list
+  employee_list: [], // 员工 list
+  role_list: [], // 角色列表
+  phone_brand_list: [], // 品牌 型号 list
+  model_list: [], // 型号list
+  raw_material_list: [], // 材质 list
+  theme_list: [], // 图库主题分类
+  delivery_order_status_list: [], // 物流单状态列表
+  production_order_status_list: [], // 生产单状态列
+  delivery_list: [], // 快递公司,
 
-  business_id: '',                       // 商户id
-  business_info: {},                     // 商户信息
-  buycart_id: '',                        // 购物车id
-  input_account_list: [],                // 收款账户
-  outline_angle_offset: ''               // 圆角偏差值
+  business_id: '', // 商户id
+  business_info: {}, // 商户信息
+  buycart_id: '', // 购物车id
+  input_account_list: [], // 收款账户
+  outline_angle_offset: '', // 圆角偏差值
+
+  icp_txt: '', // 备案信息
+  icp_url: '' // 点击后跳转的地址
 }
 
 const mutations = {
@@ -64,12 +67,17 @@ const mutations = {
     state.input_account_list = siteInfo.input_account_list || []
     state.outline_angle_offset = siteInfo.outline_angle_offset || 0
 
-    const delivery_list = (siteInfo.delivery_list || []).map(item => {
-      item.delivery_str = item.price ? `${item.name}（邮费：${item.price}元）` : `${item.name}（邮费：包邮）`
+    const delivery_list = (siteInfo.delivery_list || []).map((item) => {
+      item.delivery_str = item.price
+        ? `${item.name}（邮费：${item.price}元）`
+        : `${item.name}（邮费：包邮）`
       return item
     })
 
     state.delivery_list = delivery_list
+
+    state.icp_txt = (siteInfo.icp || {}).text || ''
+    state.icp_url = (siteInfo.icp || {}).url || ''
   }
 }
 
@@ -129,7 +137,7 @@ const actions = {
       const data = {
         opr: 'get_home_data'
       }
-      loginGet(data).then(resp => {
+      loginGet(data).then((resp) => {
         console.log('界面初始化数据 res=>', resp)
         if (resp.ret !== 0) {
           reject()
@@ -141,7 +149,7 @@ const actions = {
 
         let model_list = []
 
-        phone_brand_list.forEach(brand => {
+        phone_brand_list.forEach((brand) => {
           brand.model_list = brand.model_list || []
           model_list = [...model_list, ...brand.model_list]
         })
@@ -194,7 +202,7 @@ const actions = {
 
   // remove token
   resetToken({ commit }) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       commit('SET_TOKEN', '')
       removeToken()
       resolve()
@@ -208,4 +216,3 @@ export default {
   mutations,
   actions
 }
-

@@ -4,16 +4,21 @@
       <router-view :key="key" />
     </transition>
     <div class="app-footer">
-      <div>Copyright © All Rights Reserved.</div>
-      <!-- <div>客服信息：QQ:XXXXXXXXX； 交流群：143434343443</div> -->
+      <a :href="icp_url" target="block">{{ icp_txt }}</a>
     </div>
   </section>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'AppMain',
   computed: {
+    ...mapState({
+      icp_txt: (state) => state.user.icp_txt,
+      icp_url: (state) => state.user.icp_url
+    }),
     key() {
       return this.$route.fullPath
     }
