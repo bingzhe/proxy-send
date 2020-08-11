@@ -93,6 +93,29 @@
             </el-form-item>
           </el-col>
 
+          <el-col :span="11" :xs="20">
+            <el-form-item label="图库最大使用空间" prop="space_max">
+              <el-input
+                v-model.trim="shopEditForm.space_max"
+                v-limit-input-number="shopEditForm.space_max"
+                data-dotrange="{0,2}"
+                placeholder="请输入"
+              >
+                <!-- type="number" -->
+                <span slot="suffix" class="input-suffix-text">MB</span>
+              </el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="11" :xs="20">
+            <el-form-item label="图库已使用空间" prop="space_used">
+              <el-input v-model.trim="shopEditForm.space_used" readonly>
+                <!-- type="number" -->
+                <span slot="suffix" class="input-suffix-text">MB</span>
+              </el-input>
+            </el-form-item>
+          </el-col>
+
           <el-col :span="22" :xs="20">
             <el-form-item label="联系地址" prop="address">
               <el-input
@@ -279,7 +302,9 @@ export default {
         status: '', // 状态(1:正常,2:停用)
         designer_valid: '', // 可使用DIY设计器(1:可使用,0:不能使用)
         address: '', // 联系地址
-        url: '' // 商铺URL
+        url: '', // 商铺URL
+        space_max: '', // 最大使用空间（浮点数，可输入，单位：MB）
+        space_used: '' // 已使用空间（浮点数，只显示，单位：MB）
       },
 
       shopEditFormRules: {
@@ -371,6 +396,8 @@ export default {
       this.shopEditForm.designer_valid = info.designer_valid
       this.shopEditForm.address = info.address
       this.shopEditForm.url = info.url
+      this.shopEditForm.space_max = info.space_max
+      this.shopEditForm.space_used = info.space_used
     },
     async handlerSaveBtnClick() {
       // eslint-disable-next-line space-before-function-paren
@@ -388,6 +415,10 @@ export default {
             designer_valid: this.shopEditForm.designer_valid,
             address: this.shopEditForm.address,
             url: this.shopEditForm.url
+          }
+
+          if (this.shopEditForm.space_max) {
+            data.space_max = this.shopEditForm.space_max
           }
 
           if (this.businessId) {
@@ -527,6 +558,11 @@ export default {
   max-width: 1035px;
   .baseinfo-title-wrapper {
     padding: 24px 30px;
+  }
+
+  /deep/ .input-suffix-text {
+    color: #333;
+    margin-right: 10px;
   }
 }
 
