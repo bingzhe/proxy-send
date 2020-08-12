@@ -247,7 +247,79 @@
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="inventory" label="库存" min-width="80" align="center">
+            <el-table-column prop="sku" label="sku编码" min-width="80" align="center">
+              <template slot-scope="scope">
+                <el-form-item
+                  class="pictable-form-item"
+                  :rules="{
+                    required: true, message: 'sku编码不能为空', trigger: 'blur'
+                  }"
+                  :prop="'opt_color_list.' + scope.$index + '.sku'"
+                >
+                  <el-input v-model="scope.row.sku" placeholder="请输入" />
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column prop="warehouse_inventory" label="库存" min-width="240" align="center">
+              <template slot-scope="scope">
+                <div class="warehouse-addbtn-wrapper">
+                  <el-button
+                    type="primary"
+                    size="mini"
+                    @click="handleAddWarehouseClick(scope.row)"
+                  >新增仓库</el-button>
+                </div>
+                <el-row
+                  v-for="(item ,index) in scope.row.warehouse_inventory"
+                  :key="index"
+                  :gutter="6"
+                >
+                  <el-col :span="10">
+                    <el-form-item
+                      class="warehouse-form-item"
+                      :rules="{required: true, message: '请选择仓库', trigger: 'change'}"
+                      :prop="'opt_color_list.' + scope.$index + '.warehouse_inventory.' + index + '.warehouse_id'"
+                    >
+                      <el-select
+                        v-model="item.warehouse_id"
+                        size="mini"
+                        filterable
+                        clearable
+                        placeholder="请选择"
+                      >
+                        <el-option
+                          v-for="warehouse in warehouseList"
+                          :key="warehouse.warehouse_id"
+                          :label="warehouse.warehouse_name"
+                          :value="warehouse.warehouse_id"
+                        />
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="9">
+                    <el-form-item
+                      class="warehouse-form-item"
+                      :rules="[
+                        {required: true, message: '请输入仓库库存', trigger: 'blur'},
+                        {type: 'number', message: '仓库库存必须为数组'}
+                      ]"
+                      :prop="'opt_color_list.' + scope.$index + '.warehouse_inventory.' + index + '.inventory'"
+                    >
+                      <el-input v-model.number="item.inventory" size="mini" placeholder="请输入" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="5" class="warehouse-form-item">
+                    <el-button
+                      v-if="index !== 0"
+                      type="danger"
+                      size="mini"
+                      @click="handleDelWarehouseClick(scope.row, index)"
+                    >删除</el-button>
+                  </el-col>
+                </el-row>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column prop="inventory" label="库存" min-width="80" align="center">
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
@@ -257,7 +329,7 @@
                   <el-input v-model.trim="scope.row.inventory" placeholder="请输入" />
                 </el-form-item>
               </template>
-            </el-table-column>
+            </el-table-column>-->
             <el-table-column
               prop="color_img"
               :label="goodsType === GOODS_TYPE.DIY ? '底图' : '图片' "
@@ -279,7 +351,7 @@
                       v-if="scope.row.color_img"
                       :src="scope.row.color_img_url"
                       class="upload-preview"
-                    >
+                    />
                     <i v-else class="el-icon-plus avatar-uploader-icon" />
                   </sl-upload>
                 </el-form-item>
@@ -307,7 +379,7 @@
                       v-if="scope.row.outline_img"
                       :src="scope.row.outline_img_url"
                       class="upload-preview"
-                    >
+                    />
                     <i v-else class="el-icon-plus avatar-uploader-icon" />
                   </sl-upload>
                 </el-form-item>
@@ -338,7 +410,7 @@
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import { GOODS_TYPE, GOODS_PRINT_POSITION } from '@/config/cfg'
-import { goodsSave, goodsGet } from '@/api/api'
+import { goodsSave, goodsGet, warehouseGet } from '@/api/api'
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
 
@@ -391,36 +463,22 @@ export default {
       },
 
       baseinfoFormRules: {
-        goods_name: [
-          { required: true, message: '请输入商品名称', trigger: 'blur' }
-        ],
-        type: [
-          { required: true, message: '请选择商品种类', trigger: 'change' }
-        ],
-        raw_material: [
-          { required: true, message: '请选择材质', trigger: 'change' }
-        ],
+        goods_name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
+        type: [{ required: true, message: '请选择商品种类', trigger: 'change' }],
+        raw_material: [{ required: true, message: '请选择材质', trigger: 'change' }],
         brand: [{ required: true, message: '请选择品牌', trigger: 'change' }],
         model: [{ required: true, message: '请选择型号', trigger: 'change' }],
         price: [{ required: true, message: '请输入单价', trigger: 'blur' }],
-        inventory: [
-          { required: true, message: '请输入商品库存', trigger: 'blur' }
-        ]
+        inventory: [{ required: true, message: '请输入商品库存', trigger: 'blur' }]
       },
 
       printinfoFormRules: {
         height: [{ required: true, message: '请输入图像高', trigger: 'blur' }],
         width: [{ required: true, message: '请输入图像宽', trigger: 'blur' }],
-        radius: [
-          { required: true, message: '请输入四角弧度', trigger: 'blur' }
-        ],
+        radius: [{ required: true, message: '请输入四角弧度', trigger: 'blur' }],
         pos: [{ required: true, message: '请选择定位角', trigger: 'change' }],
-        x_offset: [
-          { required: true, message: '请输入与横边距离', trigger: 'blur' }
-        ],
-        y_offset: [
-          { required: true, message: '请输入与纵边距离', trigger: 'blur' }
-        ]
+        x_offset: [{ required: true, message: '请输入与横边距离', trigger: 'blur' }],
+        y_offset: [{ required: true, message: '请输入与纵边距离', trigger: 'blur' }]
       },
 
       GOODS_TYPE,
@@ -458,19 +516,19 @@ export default {
         },
         {
           value: GOODS_PRINT_POSITION.RIGHT_BOTTOM,
-          label: GOODS_PRINT_POSITION.toString(
-            GOODS_PRINT_POSITION.RIGHT_BOTTOM
-          )
+          label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.RIGHT_BOTTOM)
         }
       ],
 
-      checkInventory
+      checkInventory,
+
+      warehouseList: [] // 库存选择仓库列表
     }
   },
   computed: {
     ...mapState({
-      phone_brand_list: state => state.user.phone_brand_list,
-      raw_material_list: state => state.user.raw_material_list
+      phone_brand_list: (state) => state.user.phone_brand_list,
+      raw_material_list: (state) => state.user.raw_material_list
     })
   },
   created() {
@@ -478,6 +536,7 @@ export default {
       this.goods_id = this.$route.query.goodsid
       this.getGoodsInfo()
     }
+    this.getWarehouseList()
   },
   methods: {
     handlerAddPicClick() {
@@ -485,7 +544,9 @@ export default {
         color_name: '',
         inventory: '',
         color_img: '',
-        outline_img: ''
+        outline_img: '',
+        sku: '',
+        warehouse_inventory: [{ warehouse_id: '', inventory: '' }]
       })
     },
     handlerDeletePicClick(item) {
@@ -502,7 +563,7 @@ export default {
     },
     validateForm(formName) {
       return new Promise((resolve, reject) => {
-        this.$refs[formName].validate(valid => {
+        this.$refs[formName].validate((valid) => {
           resolve(valid)
         })
       })
@@ -540,21 +601,22 @@ export default {
         this.printinfoForm.y_offset = info.img_print_param.y_offset
       }
 
-      if (
-        this.goodsType === GOODS_TYPE.DIY ||
-        this.goodsType === GOODS_TYPE.NORM
-      ) {
+      if (this.goodsType === GOODS_TYPE.DIY || this.goodsType === GOODS_TYPE.NORM) {
         this.basePicForm.opt_color_list = info.opt_color_list || []
 
-        this.basePicForm.opt_color_list.forEach(item => {
-          item.color_img_url = `${
-            process.env.VUE_APP_BASEURL
-          }/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=7&img_name=${
-            item.color_img
-          }`
-          item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-            this.token
-          }&opr=get_img&width=44&height=64&type=3&img_name=${item.outline_img}`
+        this.basePicForm.opt_color_list.forEach((item) => {
+          item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=7&img_name=${item.color_img}`
+          item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=3&img_name=${item.outline_img}`
+
+          // <<<<<<<<<<<<<<<<<<<<<<<<< 兼容后台数据格式不正确时候
+          if (!Array.isArray(item.warehouse_inventory)) {
+            item.warehouse_inventory = [
+              {
+                inventory: '',
+                warehouse_id: ''
+              }
+            ]
+          }
         })
       }
 
@@ -582,6 +644,13 @@ export default {
         data.remark = this.baseinfoForm.remark
 
         data.img_print_param = this.printinfoForm
+        this.basePicForm.opt_color_list.forEach((item) => {
+          let inventory = 0
+          item.warehouse_inventory.forEach((warehouse) => {
+            inventory += warehouse.inventory
+          })
+          item.inventory = inventory
+        })
         data.opt_color_list = this.basePicForm.opt_color_list
       } else if (this.goodsType === GOODS_TYPE.NORM) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
@@ -596,6 +665,14 @@ export default {
         data.model = this.baseinfoForm.model
         data.price = this.baseinfoForm.price
         data.remark = this.baseinfoForm.remark
+
+        this.basePicForm.opt_color_list.forEach((item) => {
+          let inventory = 0
+          item.warehouse_inventory.forEach((warehouse) => {
+            inventory += warehouse.inventory
+          })
+          item.inventory = inventory
+        })
         data.opt_color_list = this.basePicForm.opt_color_list
       } else if (this.goodsType === GOODS_TYPE.GIFT) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
@@ -633,23 +710,49 @@ export default {
 
     handlerOutlineImgSuccess({ img_name }, row) {
       row.color_img = img_name
-      row.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&width=44&height=64&type=7&img_name=${img_name}`
+      row.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=7&img_name=${img_name}`
     },
     handlerOutlineImgSuc({ img_name }, row) {
       row.outline_img = img_name
-      row.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&width=44&height=64&type=3&img_name=${img_name}`
+      row.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=3&img_name=${img_name}`
     },
     handlerBrandChange(brand_id) {
       this.baseinfoForm.model = ''
-      this.phone_brand_list.forEach(brand => {
+      this.phone_brand_list.forEach((brand) => {
         if (brand.brand_id === brand_id) {
           this.model_list = brand.model_list
         }
       })
+    },
+    /**
+     * 添加仓库库存输入
+     */
+    handleAddWarehouseClick(row) {
+      row.warehouse_inventory.push({ warehouse_id: '', inventory: '' })
+    },
+    /**
+     * 删除仓库库存输入
+     */
+    handleDelWarehouseClick(row, i) {
+      row.warehouse_inventory.splice(i, 1)
+    },
+    /**
+     * 获取仓库列表
+     */
+    async getWarehouseList() {
+      const data = {
+        opr: 'get_warehouse_list'
+      }
+
+      this.tshopTableLoading = true
+      // console.log('仓库列表 req=>', data)
+      const resp = await warehouseGet(data)
+      // console.log('仓库列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.tshopTableLoading = false
+
+      this.warehouseList = resp.data.list || []
     }
   }
 }
@@ -769,4 +872,31 @@ export default {
     display: block;
   }
 }
+
+/** 仓库库存 start */
+.warehouse-addbtn-wrapper {
+  text-align: left;
+  margin: 5px 0;
+  .el-button--mini {
+    padding: 7px 8px;
+  }
+}
+
+.warehouse-form-item {
+  margin-bottom: 16px;
+
+  /deep/ .el-input--mini .el-input__inner {
+    height: 28px;
+    line-height: 28px;
+  }
+
+  /deep/ .el-form-item__content {
+    line-height: 28px;
+  }
+
+  .el-button--mini {
+    padding: 7px 8px;
+  }
+}
+/** 仓库库存 end */
 </style>
