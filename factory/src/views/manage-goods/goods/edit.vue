@@ -744,13 +744,11 @@ export default {
         opr: 'get_warehouse_list'
       }
 
-      this.tshopTableLoading = true
       // console.log('仓库列表 req=>', data)
       const resp = await warehouseGet(data)
       // console.log('仓库列表 res=>', resp)
 
       if (resp.ret !== 0) return
-      this.tshopTableLoading = false
 
       this.warehouseList = resp.data.list || []
     }

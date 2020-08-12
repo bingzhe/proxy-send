@@ -5,7 +5,7 @@
     :confirm-text="staffId ? '保存': '提交'"
     :validate="true"
     width="900px"
-    top="15vh"
+    top="8vh"
     @confirm="handlerStaffEditConfirm"
     @close="handlerStaffEditClose"
     @open="handlerStaffEditOpen"
@@ -23,7 +23,7 @@
       <el-form-item label="账户密码" prop="password">
         <el-input v-model.trim="staffEditForm.password" placeholder="请输入" />
       </el-form-item>
-      <br>
+      <br />
       <el-form-item label="手机号" prop="phone">
         <el-input
           v-model.trim="staffEditForm.phone"
@@ -42,7 +42,7 @@
           />
         </el-select>
       </el-form-item>
-      <br>
+      <br />
       <el-form-item label="姓名" prop="real_name">
         <el-input v-model.trim="staffEditForm.real_name" placeholder="请输入" />
       </el-form-item>
@@ -56,7 +56,33 @@
           />
         </el-select>
       </el-form-item>
-      <br>
+      <el-form-item label="仓库订单审核" prop="warehouse_list">
+        <el-select
+          v-model="staffEditForm.warehouse_list"
+          class="warehouse-list"
+          filterable
+          multiple
+          clearable
+          placeholder="请选择"
+        >
+          <el-option
+            v-for="warehouse in warehouseList"
+            :key="warehouse.warehouse_id"
+            :label="warehouse.warehouse_name"
+            :value="warehouse.warehouse_id"
+          />
+        </el-select>
+
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="当前用户只能审核由所设仓库发货的订单（根据订单地址关联）"
+          placement="top-end"
+        >
+          <i class="el-icon-question" />
+        </el-tooltip>
+      </el-form-item>
+      <br />
       <el-form-item label="备注" prop="remark">
         <el-input
           v-model.trim="staffEditForm.remark"
@@ -66,7 +92,7 @@
           :rows="3"
         />
       </el-form-item>
-      <br>
+      <br />
     </el-form>
   </sl-dialog>
 </template>
@@ -86,6 +112,10 @@ export default {
     staffId: {
       type: String,
       required: true
+    },
+    warehouseList: {
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -100,14 +130,15 @@ export default {
     }
     return {
       staffEditForm: {
-        username: '',              // 用户名(即用户表中的)
-        password: '',              // 密码
-        phone: '',                 // 手机号
-        role_id: '',               // 角色ID
-        real_name: '',             // 员工姓名
+        username: '', // 用户名(即用户表中的)
+        password: '', // 密码
+        phone: '', // 手机号
+        role_id: '', // 角色ID
+        real_name: '', // 员工姓名
         // employee_no: '',           // 员工工号
-        status: '',                // 状态(1:正常, 2:停用)
-        remark: ''                 // 备注
+        status: '', // 状态(1:正常, 2:停用)
+        remark: '', // 备注,
+        warehouse_list: [] // 当前用户只能审核由所设仓库发货的订单（根据订单地址来关联）
       },
       staffEditFormRules: {
         username: [{ required: true, message: '请输入账户名', trigger: 'blur' }],
@@ -121,7 +152,10 @@ export default {
           { min: 11, max: 11, message: '请输入11位手机号', trigger: 'blur' }
         ],
         role_id: [{ required: true, message: '请选择角色', trigger: 'change' }],
-        status: [{ required: true, message: '请选择状态', trigger: 'change' }]
+        status: [{ required: true, message: '请选择状态', trigger: 'change' }],
+        warehouse_list: [
+          { type: 'array', required: true, message: '请选择仓库', trigger: 'change' }
+        ]
       },
       statusOptions: [
         {
@@ -137,7 +171,7 @@ export default {
   },
   computed: {
     ...mapState({
-      role_list: state => state.user.role_list
+      role_list: (state) => state.user.role_list
     })
   },
   methods: {
@@ -163,9 +197,13 @@ export default {
       this.staffEditForm.real_name = info.real_name
       this.staffEditForm.status = info.status
       this.staffEditForm.remark = info.remark
+
+      this.staffEditForm.warehouse_list = (info.warehouse_list || []).map(
+        (item) => item.warehouse_id
+      )
     },
     handlerStaffEditConfirm() {
-      this.$refs.staffEditForm.validate(valid => {
+      this.$refs.staffEditForm.validate((valid) => {
         if (valid) {
           this.saveStaff()
         }
@@ -180,7 +218,8 @@ export default {
         role_id: this.staffEditForm.role_id,
         real_name: this.staffEditForm.real_name,
         status: this.staffEditForm.status,
-        remark: this.staffEditForm.remark
+        remark: this.staffEditForm.remark,
+        warehouse_list: this.staffEditForm.warehouse_list
       }
 
       if (this.staffId) {
@@ -224,8 +263,12 @@ export default {
 .el-textarea.remark {
   width: 603px;
 }
-.business-url.el-input {
+.warehouse-list.el-select {
   width: 603px;
+}
+.el-icon-question {
+  color: #e6a23c;
+  font-size: 20px;
 }
 </style>
 

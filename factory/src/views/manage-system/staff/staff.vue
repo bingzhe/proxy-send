@@ -31,7 +31,7 @@
         <el-form-item label="姓名" prop="real_name" label-width="70px">
           <el-input v-model.trim="searchForm.real_name" placeholder="请输入" />
         </el-form-item>
-        <br>
+        <br />
         <el-form-item label="联系电话" prop="phone" label-width="70px">
           <el-input v-model.trim="searchForm.phone" placeholder="请输入" />
         </el-form-item>
@@ -115,6 +115,7 @@
 
     <staff-edit
       ref="staffEdit"
+      :warehouseList="warehouseList"
       :staff-id="editStaffId"
       @on-success="handlerEidtSuc"
       @on-close="handlerEditClose"
@@ -123,7 +124,7 @@
 </template>
 <script>
 import { STAFF_STATUS, pickerOptions } from '@/config/cfg'
-import { employeeSave, employeeGet } from '@/api/api' // roleGet
+import { employeeSave, employeeGet, warehouseGet } from '@/api/api' // roleGet
 import moment from 'moment'
 import StaffEdit from './StaffEdit'
 import { mapState } from 'vuex'
@@ -171,7 +172,9 @@ export default {
         }
       ],
 
-      pickerOptions
+      pickerOptions,
+
+      warehouseList: [] // 仓库列表
     }
   },
   computed: {
@@ -185,6 +188,7 @@ export default {
   mounted() {
     this.getStaffList()
     // this.getRoleList()
+    this.getWarehouseList()
   },
   methods: {
     async getStaffList() {
@@ -301,6 +305,21 @@ export default {
         message: '删除成功',
         type: 'success'
       })
+    },
+    /**
+     * 获取仓库列表
+     */
+    async getWarehouseList() {
+      const data = {
+        opr: 'get_warehouse_list'
+      }
+
+      // console.log('仓库列表 req=>', data)
+      const resp = await warehouseGet(data)
+      // console.log('仓库列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.warehouseList = resp.data.list || []
     }
   }
 }
