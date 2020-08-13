@@ -261,6 +261,7 @@ export const ORDER_STATUS = {
   REVOCAT: 5,
   REFUND: 6,
   COMPLETE: 7,
+  REPLENISH_WAIT: 8,
 
   code: {
     1: '待审核',
@@ -269,7 +270,8 @@ export const ORDER_STATUS = {
     4: '已发货',
     5: '已撤销',
     6: '已退款',
-    7: '已完成'
+    7: '已完成',
+    8: '待补货'
   },
 
   toString: function(code) {
@@ -406,29 +408,33 @@ export const STAFF_STATUS = {
  * 日期选择配置项
  */
 export const pickerOptions = {
-  shortcuts: [{
-    text: '最近一周',
-    onClick(picker) {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-      picker.$emit('pick', [start, end])
+  shortcuts: [
+    {
+      text: '最近一周',
+      onClick(picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+        picker.$emit('pick', [start, end])
+      }
+    },
+    {
+      text: '最近一个月',
+      onClick(picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+        picker.$emit('pick', [start, end])
+      }
+    },
+    {
+      text: '最近三个月',
+      onClick(picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+        picker.$emit('pick', [start, end])
+      }
     }
-  }, {
-    text: '最近一个月',
-    onClick(picker) {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-      picker.$emit('pick', [start, end])
-    }
-  }, {
-    text: '最近三个月',
-    onClick(picker) {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-      picker.$emit('pick', [start, end])
-    }
-  }]
+  ]
 }

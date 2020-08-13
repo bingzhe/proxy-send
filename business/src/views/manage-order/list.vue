@@ -41,7 +41,7 @@
           <el-form-item label="订单编号" prop="order_id" label-width="70px">
             <el-input v-model.trim="searchForm.order_id" placeholder="请输入" />
           </el-form-item>
-          <br>
+          <br />
           <el-form-item label="商品名称" prop="goods_name" label-width="70px">
             <el-input v-model.trim="searchForm.goods_name" placeholder="请输入" />
           </el-form-item>
@@ -106,7 +106,7 @@
                     @click="openUndoDialogTip(scope.row.order_id)"
                   >撤销订单</el-button>
                   <el-button
-                    v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL"
+                    v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL || scope.row.order_status === ORDER_STATUS.REPLENISH_WAIT"
                     type="text"
                     @click="handlerEditBtnClick(scope.row.order_id)"
                   >编辑订单</el-button>
@@ -298,12 +298,8 @@ export default {
       }
       // 下单时间
       if (this.searchForm.order_time) {
-        data.order_time_begin = parseInt(
-          moment(this.searchForm.order_time[0]).format('X')
-        )
-        data.order_time_end = parseInt(
-          moment(this.searchForm.order_time[1]).format('X')
-        )
+        data.order_time_begin = parseInt(moment(this.searchForm.order_time[0]).format('X'))
+        data.order_time_end = parseInt(moment(this.searchForm.order_time[1]).format('X'))
       }
 
       this.tableLoading = true
@@ -318,11 +314,9 @@ export default {
       this.list = resp.data.list
       this.total = resp.data.total
 
-      this.list = this.list.map(item => {
+      this.list = this.list.map((item) => {
         if (item.order_time) {
-          item.order_time_str = moment(item.order_time * 1000).format(
-            'YYYY-MM-DD HH:mm:ss'
-          )
+          item.order_time_str = moment(item.order_time * 1000).format('YYYY-MM-DD HH:mm:ss')
         }
 
         if (item.order_status) {
