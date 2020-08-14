@@ -83,6 +83,20 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/manage-goods/SkuDiy'),
         meta: { title: 'DIY下单', activeMenu: '/manage-goods/goodslist' }
+      },
+      {
+        path: 'tbnorm/:goods_id',
+        name: 'tbgoodsnorm',
+        hidden: true,
+        component: () => import('@/views/manage-goods/SkuNormTb'),
+        meta: { title: '标品下单', activeMenu: '/manage-goods/goodslist' }
+      },
+      {
+        path: 'tbdiy/:goods_id',
+        name: 'tbgoodsdiy',
+        hidden: true,
+        component: () => import('@/views/manage-goods/SkuDiyTb'),
+        meta: { title: 'DIY下单', activeMenu: '/manage-goods/goodslist' }
       }
     ]
   },
@@ -171,11 +185,12 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
 
 const router = createRouter()
 

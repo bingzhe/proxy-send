@@ -35,7 +35,7 @@
         <el-form-item label="型号" prop="model" label-width="70px">
           <el-input v-model.trim="searchForm.model" placeholder="请输入" />
         </el-form-item>
-        <br>
+        <br />
         <el-form-item label="商品名称" prop="goods_name" label-width="70px">
           <el-input v-model.trim="searchForm.goods_name" placeholder="请输入" />
         </el-form-item>
@@ -149,9 +149,9 @@ export default {
   },
   computed: {
     ...mapState({
-      phone_brand_list: state => state.user.phone_brand_list,
-      model_list: state => state.user.model_list,
-      raw_material_list: state => state.user.raw_material_list
+      phone_brand_list: (state) => state.user.phone_brand_list,
+      model_list: (state) => state.user.model_list,
+      raw_material_list: (state) => state.user.raw_material_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -202,7 +202,7 @@ export default {
       this.list = resp.data.list
       this.total = resp.data.total
 
-      this.list = this.list.map(goods => {
+      this.list = this.list.map((goods) => {
         goods.status = goods.status || 2
         goods.status_str = GOODS_STATUS.toString(goods.status)
 
@@ -229,11 +229,23 @@ export default {
     handlerOrderBtnClick(row) {
       const goodsType = row.type
       const goodsId = row.goods_id
+      const source = this.$route.query.source
 
-      if (goodsType === GOODS_TYPE.DIY) {
-        this.$router.push({ path: `/manage-goods/diy/${goodsId}` })
-      } else if (goodsType === GOODS_TYPE.NORM) {
-        this.$router.push({ path: `/manage-goods/norm/${goodsId}` })
+      /**
+       * source 区分是不是淘宝订单需要添加商品
+       */
+      if (source === 'tborder') {
+        if (goodsType === GOODS_TYPE.DIY) {
+          this.$router.push({ path: `/manage-goods/tbdiy/${goodsId}` })
+        } else if (goodsType === GOODS_TYPE.NORM) {
+          this.$router.push({ path: `/manage-goods/tbnorm/${goodsId}` })
+        }
+      } else {
+        if (goodsType === GOODS_TYPE.DIY) {
+          this.$router.push({ path: `/manage-goods/diy/${goodsId}` })
+        } else if (goodsType === GOODS_TYPE.NORM) {
+          this.$router.push({ path: `/manage-goods/norm/${goodsId}` })
+        }
       }
     }
   }

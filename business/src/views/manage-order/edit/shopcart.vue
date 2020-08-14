@@ -17,7 +17,7 @@
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
               <template slot-scope="scope">
-                <img class="table-img" :src="scope.row.goods_img_url">
+                <img class="table-img" :src="scope.row.goods_img_url" />
               </template>
             </el-table-column>
             <el-table-column prop="type_str" label="商品类型" min-width="50" />
@@ -29,8 +29,13 @@
             </el-table-column>
             <el-table-column prop="price" label="单价" min-width="50" />
             <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
-            <el-table-column prop="opr" label="操作" min-width="50">
+            <el-table-column prop="opr" label="操作" width="85" align="center">
               <template slot-scope="scope">
+                <el-button
+                  v-if="ORDER_STATUS.REPLENISH_WAIT === order_status"
+                  type="text"
+                  @click="handleGoodsEditClick(scope.row)"
+                >编辑</el-button>
                 <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
               </template>
             </el-table-column>
@@ -76,21 +81,21 @@
                 />
               </el-select>
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="收件人" prop="person" label-width="130px">
               <el-input v-model.trim="consigneeFrom.person" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="联系电话" prop="phone" label-width="110px">
               <el-input v-model.trim="consigneeFrom.phone" placeholder="请输入" />
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="第三方平台订单号" prop="order_id_3rd" label-width="130px">
               <el-input v-model.trim="consigneeFrom.order_id_3rd" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="固定电话" prop="telephone" label-width="110px">
               <el-input v-model.trim="consigneeFrom.telephone" placeholder="请输入" />
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="省/直辖市" prop="province" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.province"
@@ -105,7 +110,7 @@
                 placeholder="请输入"
               />
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="区/县" prop="area" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.area"
@@ -120,7 +125,7 @@
                 placeholder="请输入"
               />
             </el-form-item>
-            <br>
+            <br />
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.address"
@@ -131,7 +136,7 @@
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
               <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.remark"
@@ -160,7 +165,7 @@
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import { orderGet, orderSave } from '@/api/api'
 import { mapState } from 'vuex'
-// import { GOODS_TYPE } from '@/config/cfg'
+import { ORDER_STATUS } from '@/config/cfg'
 
 export const GOODS_TYPE = {
   DIY: 1,
@@ -173,7 +178,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function(code) {
+  toString: function (code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -188,6 +193,11 @@ export default {
       token: window.Store.GetGlobalData('token'),
 
       order_id: '',
+      /**
+       * 审核未通过，淘宝过来的订单通过状态进行区别
+       */
+      order_status: '',
+      ORDER_STATUS,
 
       goodsList: [],
       attachList: [],
@@ -196,17 +206,17 @@ export default {
 
       // 收货人信息
       consigneeFrom: {
-        person: '',      // 收货人名
-        phone: '',       // 手机号码
-        address: '',     // 收货地址
-        province: '',    // 省
-        city: '',        // 市
-        area: '',        // 区县
-        street: '',      // 街道
+        person: '', // 收货人名
+        phone: '', // 手机号码
+        address: '', // 收货地址
+        province: '', // 省
+        city: '', // 市
+        area: '', // 区县
+        street: '', // 街道
         company_name: '',
-        remark: '',       // 留言
-        telephone: '',    // 固定电话
-        order_id_3rd: ''  // 第三平台订单号
+        remark: '', // 留言
+        telephone: '', // 固定电话
+        order_id_3rd: '' // 第三平台订单号
       },
       consigeneeFromRules: {
         person: [{ required: true, message: '请输入收件人', trigger: 'blur' }],
@@ -218,18 +228,18 @@ export default {
         company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }]
       },
 
-      goods_fee: 0.00,        // 商品合计费用
-      discount_fee: 0.00,      // 折扣金额
-      actual_fee: 0.00        // 实付金额
+      goods_fee: 0.0, // 商品合计费用
+      discount_fee: 0.0, // 折扣金额
+      actual_fee: 0.0 // 实付金额
     }
   },
   computed: {
     ...mapState({
-      delivery_list: state => state.user.delivery_list
+      delivery_list: (state) => state.user.delivery_list
     }),
     total() {
       let total = 0
-      this.goodsList.forEach(goods => {
+      this.goodsList.forEach((goods) => {
         total += goods.num
       })
       return total
@@ -237,8 +247,8 @@ export default {
   },
   watch: {
     goodsList: {
-      handler: function() {
-        this.goodsList.forEach(item => {
+      handler: function () {
+        this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
       },
@@ -268,7 +278,7 @@ export default {
         order_id: this.order_id
       }
 
-      console.log('订单详情 req=>', data)
+      // console.log('订单详情 req=>', data)
       const resp = await orderGet(data)
       console.log('订单详情 res=>', resp)
 
@@ -278,10 +288,8 @@ export default {
       const consignee_info = info.consignee_info || {}
       this.attachList = info.attach_list || []
 
-      this.goodsList = (info.goods_list || []).map(item => {
-        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
+      this.goodsList = (info.goods_list || []).map((item) => {
+        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
 
         item.type_str = GOODS_TYPE.toString(item.type)
         item.goods_info_str = `${item.raw_material}_${item.brand_txt}_${item.model_txt}_${item.color}_${item.goods_id}`
@@ -305,6 +313,10 @@ export default {
       this.goods_fee = info.goods_fee
       this.discount_fee = info.discount_fee
       this.actual_fee = info.actual_fee
+
+      // <<<<<<<<<<<<<<<<<<<<<<
+      // this.order_status = info.order_status
+      this.order_status = 8
     },
     autoSplit() {
       const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
@@ -317,7 +329,7 @@ export default {
     },
     async getPrice() {
       // 只计算选中的 multipleSelection
-      const goods_list = this.multipleSelection.map(goods => {
+      const goods_list = this.multipleSelection.map((goods) => {
         return {
           goods_id: goods.goods_id,
           color: goods.color,
@@ -326,7 +338,7 @@ export default {
         }
       })
 
-      const attach_list = this.attachList.map(attach => {
+      const attach_list = this.attachList.map((attach) => {
         return {
           goods_id: attach.goods_id,
           num: attach.num
@@ -340,9 +352,9 @@ export default {
         delivery_company_name: this.consigneeFrom.company_name
       }
 
-      console.log('计算订单费用 req=>', data)
+      // console.log('计算订单费用 req=>', data)
       const resp = await orderGet(data)
-      console.log('计算订单费用 res=>', resp)
+      // console.log('计算订单费用 res=>', resp)
 
       // <<<<<<<<<<<<<<<<<<<<<<<<<<
       // if (resp.ret !== 0) return
@@ -362,18 +374,29 @@ export default {
       }
       this.goodsList.splice(index, 1)
     },
+    /**
+     * 淘宝过来的订单需要编辑
+     */
+    handleGoodsEditClick(row) {
+      this.$router.push({
+        path: '/manage-goods/goodslist',
+        query: {
+          source: 'tborder'
+        }
+      })
+    },
     handlerSaveOrderClick() {
       if (this.multipleSelection.length === 0) {
         this.$slnotify({ message: '您还没有选择任何商品' })
       }
-      this.$refs.consigneeFrom.validate(valid => {
+      this.$refs.consigneeFrom.validate((valid) => {
         if (valid && this.multipleSelection.length !== 0) {
           this.saveOrderOpr()
         }
       })
     },
     async saveOrderOpr() {
-      const goods_list = this.multipleSelection.map(goods => {
+      const goods_list = this.multipleSelection.map((goods) => {
         return {
           goods_id: goods.goods_id,
           index_id: goods.index_id,
@@ -382,7 +405,7 @@ export default {
         }
       })
 
-      const attach_list = this.attachList.map(attach => {
+      const attach_list = this.attachList.map((attach) => {
         return {
           goods_id: attach.goods_id,
           num: attach.num
@@ -390,12 +413,12 @@ export default {
       })
 
       const consignee_info = {
-        person: this.consigneeFrom.person,                // 收货人名
-        phone: this.consigneeFrom.phone,                 // 手机号码
-        telephone: this.consigneeFrom.telephone,          // 固定电话
-        province: this.consigneeFrom.province,            // 省
-        city: this.consigneeFrom.city,                    // 市
-        area: this.consigneeFrom.area,                    // 区县
+        person: this.consigneeFrom.person, // 收货人名
+        phone: this.consigneeFrom.phone, // 手机号码
+        telephone: this.consigneeFrom.telephone, // 固定电话
+        province: this.consigneeFrom.province, // 省
+        city: this.consigneeFrom.city, // 市
+        area: this.consigneeFrom.area, // 区县
         street: this.consigneeFrom.street,
         address: this.consigneeFrom.address,
         order_id_3rd: this.consigneeFrom.order_id_3rd
@@ -403,7 +426,7 @@ export default {
       // consignee_info.address = `${consignee_info.province}${consignee_info.city}${consignee_info.area}${consignee_info.street}`
 
       const data = {
-        opr: 'save_order',             // 由后把购物车中商品转为订单
+        opr: 'save_order', // 由后把购物车中商品转为订单
         order_id: this.order_id,
         goods_list,
         attach_list,
@@ -428,7 +451,16 @@ export default {
       }, 2000)
     },
     goGoodsList() {
-      this.$router.push('/manage-goods/goodslist')
+      if (this.order_status === ORDER_STATUS.REPLENISH_WAIT) {
+        this.$router.push({
+          path: '/manage-goods/goodslist',
+          query: {
+            source: 'tborder'
+          }
+        })
+      } else {
+        this.$router.push('/manage-goods/goodslist')
+      }
     }
   }
 }
@@ -460,6 +492,10 @@ export default {
   .table-img {
     height: 70px;
     width: 35px;
+  }
+  /deep/ .el-table .cell {
+    padding-left: 5px;
+    padding-right: 5px;
   }
 }
 .gifs-form-wrapper {
