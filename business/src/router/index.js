@@ -173,6 +173,12 @@ export const constantRoutes = [
         meta: { title: '账户信息', icon: 'shagnhuguanli' }
       },
       {
+        path: 'picture',
+        name: 'picture',
+        component: () => import('@/views/manage-system/Picture'),
+        meta: { title: '图片信息', icon: 'shagnhuguanli' }
+      },
+      {
         path: 'changepassword',
         name: 'changepassword',
         component: () => import('@/views/manage-system/ChangePassword'),
