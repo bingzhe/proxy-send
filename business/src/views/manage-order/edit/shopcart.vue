@@ -315,8 +315,8 @@ export default {
       this.actual_fee = info.actual_fee
 
       // <<<<<<<<<<<<<<<<<<<<<<
-      // this.order_status = info.order_status
-      this.order_status = 8
+      this.order_status = info.order_status
+      // this.order_status = 8
     },
     autoSplit() {
       const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g

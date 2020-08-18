@@ -71,6 +71,12 @@ export const constantRoutes = [
         meta: { title: '我的购物车', icon: 'shoujijixing' }
       },
       {
+        path: 'picture',
+        name: 'picture',
+        component: () => import('@/views/manage-system/Picture'),
+        meta: { title: '图库管理', icon: 'tukuguanli' }
+      },
+      {
         path: 'norm/:goods_id',
         name: 'goodsnorm',
         hidden: true,
@@ -171,12 +177,6 @@ export const constantRoutes = [
         name: 'shop',
         component: () => import('@/views/manage-system/ShopInfo'),
         meta: { title: '账户信息', icon: 'shagnhuguanli' }
-      },
-      {
-        path: 'picture',
-        name: 'picture',
-        component: () => import('@/views/manage-system/Picture'),
-        meta: { title: '图片信息', icon: 'shagnhuguanli' }
       },
       {
         path: 'changepassword',

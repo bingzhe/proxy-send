@@ -94,19 +94,6 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item
-              v-if="goodsType === GOODS_TYPE.GIFT"
-              label="库存"
-              label-width="160px"
-              prop="inventory"
-            >
-              <el-input
-                v-model.trim="baseinfoForm.inventory"
-                v-limit-input-number="baseinfoForm.inventory"
-                data-dotrange="{0,0}"
-                placeholder="请输入"
-              />
-            </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
             <el-form-item label="单价" label-width="160px" prop="price">
@@ -119,6 +106,62 @@
                 <!-- type="number" -->
                 <span slot="suffix" class="input-suffix-text">元</span>
               </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="goodsType === GOODS_TYPE.GIFT" :span="18" :xs="20">
+            <el-form-item
+              label="库存"
+              label-width="160px"
+              prop="warehouse_inventory"
+              class="gift-warehouse-inventory"
+            >
+              <el-row
+                v-for="(item ,index) in baseinfoForm.warehouse_inventory"
+                :key="index"
+                class="gift-item"
+              >
+                <!-- :gutter="6" -->
+                <el-col :span="9">
+                  <el-form-item
+                    class="gift-inventory-form-item"
+                    :rules="{required: true, message: '请选择仓库', trigger: 'change'}"
+                    :prop="'warehouse_inventory.' + index + '.warehouse_id'"
+                  >
+                    <el-select v-model="item.warehouse_id" filterable clearable placeholder="请选择">
+                      <el-option
+                        v-for="warehouse in warehouseList"
+                        :key="warehouse.warehouse_id"
+                        :label="warehouse.warehouse_name"
+                        :value="warehouse.warehouse_id"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="9">
+                  <el-form-item
+                    class="gift-inventory-form-item"
+                    :rules="[
+                      {required: true, message: '请输入仓库库存', trigger: 'blur'},
+                      {type: 'number', message: '仓库库存必须为数组'}
+                    ]"
+                    :prop="'warehouse_inventory.' + index + '.inventory'"
+                  >
+                    <el-input v-model.number="item.inventory" placeholder="请输入" />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="4">
+                  <el-button
+                    v-if="index === 0"
+                    type="primary"
+                    @click="handleGiftWarehouseAddClick"
+                  >新增仓库</el-button>
+                  <el-button
+                    v-if="index !== 0"
+                    type="danger"
+                    @click="handleGifeWarehousedelClick(index)"
+                  >删除</el-button>
+                </el-col>
+              </el-row>
             </el-form-item>
           </el-col>
         </el-row>
@@ -446,7 +489,8 @@ export default {
         model: '', // 型号
         price: '', // 单价
         remark: '', // 备注
-        inventory: '' // 商品库存
+        inventory: '', // 商品库存
+        warehouse_inventory: [{ warehouse_id: '', inventory: '' }] // 礼品的商品库存
       },
       printinfoForm: {
         height: '', // 图像高
@@ -469,7 +513,8 @@ export default {
         brand: [{ required: true, message: '请选择品牌', trigger: 'change' }],
         model: [{ required: true, message: '请选择型号', trigger: 'change' }],
         price: [{ required: true, message: '请输入单价', trigger: 'blur' }],
-        inventory: [{ required: true, message: '请输入商品库存', trigger: 'blur' }]
+        inventory: [{ required: true, message: '请输入商品库存', trigger: 'blur' }],
+        warehouse_inventory: [{ required: true, type: 'array' }]
       },
 
       printinfoFormRules: {
@@ -620,6 +665,16 @@ export default {
         })
       }
 
+      if (this.goodsType === GOODS_TYPE.GIFT) {
+        this.baseinfoForm.warehouse_inventory = ((info.opt_color_list || [])[0] || {})
+          .warehouse_inventory || [
+          {
+            inventory: '',
+            warehouse_id: ''
+          }
+        ]
+      }
+
       this.handlerBrandChange(this.baseinfoForm.brand)
       this.baseinfoForm.model = info.model || ''
     },
@@ -684,6 +739,26 @@ export default {
         data.inventory = this.baseinfoForm.inventory
         data.price = this.baseinfoForm.price
         data.remark = this.baseinfoForm.remark
+
+        /**
+         * 修改为多库存
+         */
+        let inventory = 0
+        this.baseinfoForm.warehouse_inventory.forEach((item) => {
+          inventory += item.inventory
+        })
+        data.inventory = inventory
+
+        data.opt_color_list = [
+          {
+            color_name: '', // 颜色
+            inventory: inventory, // 库存量（各仓库库存之和）
+            color_img: '', // 底图(只是图片文件名，不是url)
+            outline_img: '', // 当前商品颜色对应的轮廓图
+            sku: '', // sku编码
+            warehouse_inventory: this.baseinfoForm.warehouse_inventory
+          }
+        ]
       }
 
       // 是否编辑
@@ -751,6 +826,12 @@ export default {
       if (resp.ret !== 0) return
 
       this.warehouseList = resp.data.list || []
+    },
+    handleGiftWarehouseAddClick() {
+      this.baseinfoForm.warehouse_inventory.push({ warehouse_id: '', inventory: '' })
+    },
+    handleGifeWarehousedelClick(i) {
+      this.baseinfoForm.warehouse_inventory.splice(i, 1)
     }
   }
 }
@@ -894,6 +975,22 @@ export default {
 
   .el-button--mini {
     padding: 7px 8px;
+  }
+}
+
+.gift-warehouse-inventory {
+  .el-button {
+    height: 38px;
+  }
+  .gift-item {
+    margin-bottom: 22px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .gift-inventory-form-item {
+    padding-right: 10px;
   }
 }
 /** 仓库库存 end */
