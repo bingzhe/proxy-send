@@ -229,10 +229,14 @@ export default {
   },
   computed: {
     ...mapState({
-      theme_list: (state) => state.user.theme_list
+      theme_list: (state) => state.user.theme_list,
+      business_info: (state) => state.user.business_info
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
+    },
+    business_id() {
+      return (this.business_info || {}).business_id
     }
   },
   mounted() {
@@ -321,7 +325,8 @@ export default {
         opr: 'save_material',
         material_name: this.pictureForm.material_name,
         theme: this.pictureForm.theme,
-        material_img: this.pictureForm.material_img
+        material_img: this.pictureForm.material_img,
+        business_id: this.business_id
         // status: 1       // 默认启用
       }
 

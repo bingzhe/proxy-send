@@ -5,7 +5,7 @@
     :confirm-text="warehouse_id ? '保存':'提交'"
     :validate="true"
     width="700px"
-    top="15vh"
+    top="8vh"
     @confirm="handleWarehouseEditConfirm"
     @close="handleWarehouseClose"
     @open="handleWarehouseOpen"
@@ -43,6 +43,80 @@
           filterable
         />
       </el-form-item>
+      <div class="add-btn-wrapper" @click="handleAddPriceClick">
+        <!-- <span class="add-btn-icon" /> -->
+        <i class="el-icon-circle-plus" />
+        <span class="add-btn-text">新增</span>
+      </div>
+      <div class="delivery-price-table default-table-change">
+        <el-table :data="warehouseForm.delivery_price_list" stripe border>
+          <el-table-column prop="num" label="序号" width="55" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.$index + 1 }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="发货数量" min-width="100" align="center">
+            <template slot-scope="scope">
+              <el-form-item
+                class="table-form-item"
+                :prop="'delivery_price_list.' + scope.$index + '.from'"
+                :rules="{
+                  required: true, trigger: 'blur'
+                }"
+              >
+                <el-input
+                  v-model.trim="scope.row.from"
+                  v-limit-input-morenum="scope.row.from"
+                  :data-expression="`warehouseForm.delivery_price_list[${scope.$index}].from`"
+                  class="delivary-input"
+                  size="mini"
+                ></el-input>
+              </el-form-item>
+              <span>-</span>
+              <el-form-item
+                class="table-form-item"
+                :prop="'delivery_price_list.' + scope.$index + '.to'"
+                :rules="{
+                  required: true, trigger: 'blur'
+                }"
+              >
+                <el-input
+                  v-model="scope.row.to"
+                  v-limit-input-morenum="scope.row.to"
+                  :data-expression="`warehouseForm.delivery_price_list[${scope.$index}].to`"
+                  class="delivary-input"
+                  size="mini"
+                ></el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="发货费用" min-width="100" align="center">
+            <template slot-scope="scope">
+              <el-form-item
+                class="table-form-item"
+                :prop="'delivery_price_list.' + scope.$index + '.price'"
+                :rules="{
+                  required: true, trigger: 'blur'
+                }"
+              >
+                <el-input
+                  v-model="scope.row.price"
+                  v-limit-input-morenum="scope.row.price"
+                  :data-expression="`warehouseForm.delivery_price_list[${scope.$index}].price`"
+                  data-dotrange="{0,2}"
+                  class="delivary-price-input"
+                  size="mini"
+                ></el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column prop="num" label="操作" width="60" align="center">
+            <template slot-scope="scope">
+              <el-button class="text-btn" type="text" @click="handleDelPriceClick(scope.$index)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </el-form>
   </SlDialog>
 </template>
@@ -77,7 +151,8 @@ export default {
         city: '', // 仓库所在位置(城市)
         address: '', // 仓库详细地址
         send_area_id_list: [], // [['1','12'], ['2', '22']]
-        send_area_list: [] // 可向哪些城市发货
+        send_area_list: [], // 可向哪些城市发货
+        delivery_price_list: [] // 发货阶梯价 {from :"", to: "", price:""}
       },
       warehouseFormRules: {
         warehouse_name: [{ required: true, message: '请输入仓库名称', trigger: 'blur' }],
@@ -118,9 +193,9 @@ export default {
         warehouse_id: this.warehouse_id // 仓库ID
       }
 
-      console.log('仓库详情 req=>', data)
+      // console.log('仓库详情 req=>', data)
       const resp = await warehouseGet(data)
-      console.log('仓库详情 res=>', resp)
+      // console.log('仓库详情 res=>', resp)
       if (resp.ret !== 0) return
 
       const info = resp.data || {}
@@ -131,6 +206,7 @@ export default {
       this.warehouseForm.send_area_id_list = (info.send_area_list || []).map((item) => {
         return (this.areaMap[item] || {}).path || []
       })
+      this.warehouseForm.delivery_price_list = info.delivery_price_list || []
     },
     async saveWarehose() {
       const citySelect = this.$refs.cityCascader.getCheckedNodes()
@@ -144,16 +220,18 @@ export default {
         warehouse_name: this.warehouseForm.warehouse_name, // 仓库名称
         address: this.warehouseForm.address, // 仓库详细地址
         city: city, // 仓库所在位置(城市)
-        send_area_list: sendCity // 可向哪些城市发货
+        send_area_list: sendCity, // 可向哪些城市发货
+        delivery_price_list: this.warehouseForm.delivery_price_list
       }
 
       if (this.warehouse_id) {
         data.warehouse_id = this.warehouse_id
       }
 
-      console.log('仓库保存 req=>', data)
+      // console.log('仓库保存 req=>', data)
       const resp = await warehouseSave(data)
-      console.log('仓库保存 res=>', resp)
+      // console.log('仓库保存 res=>', resp)
+      if (resp.ret !== 0) return
 
       this.handleWarehouseClose()
       this.$emit('on-success')
@@ -163,6 +241,16 @@ export default {
         message: this.warehouse_id ? '保存成功' : '提交成功',
         type: 'success'
       })
+    },
+    handleAddPriceClick() {
+      this.warehouseForm.delivery_price_list.push({
+        from: '',
+        to: '',
+        price: ''
+      })
+    },
+    handleDelPriceClick(i) {
+      this.warehouseForm.delivery_price_list.splice(i, 1)
     }
   }
 }
@@ -174,5 +262,45 @@ export default {
 }
 .el-cascader {
   width: 100%;
+}
+.el-form-item {
+  margin-bottom: 18px;
+}
+.delivery-price-table {
+  margin-right: -110px;
+  margin-left: 20px;
+}
+.table-form-item {
+  display: inline-block;
+  margin-bottom: 0;
+  /deep/ .el-form-item__content {
+    margin-left: 0 !important;
+    line-height: 28px;
+  }
+
+  /deep/ .el-input--mini .el-input__inner {
+    height: 28px;
+    line-height: 28px;
+  }
+
+  .delivary-input {
+    width: 100px;
+  }
+}
+.add-btn-wrapper {
+  color: #2584f9;
+  cursor: pointer;
+  text-align: right;
+  margin: 0 -110px 10px 0;
+  .el-icon-circle-plus {
+    font-size: 20px;
+  }
+  .add-btn-text {
+    font-size: 16px;
+    vertical-align: text-bottom;
+  }
+}
+.text-btn {
+  color: #e33119;
 }
 </style>

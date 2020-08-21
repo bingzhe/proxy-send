@@ -7,7 +7,7 @@
             class="goods-img-preview"
             :src="scope.row.goods_img_url"
             @click="handlePictureCardPreview(scope.row.goods_img_url_preview)"
-          >
+          />
         </template>
       </el-table-column>
       <el-table-column prop="goods_name" label="商品名称" min-width="160" align="center" />
@@ -15,6 +15,8 @@
       <el-table-column prop="desc_str" label="材质_品牌_型号_边框_商品编号" min-width="320" align="center" />
       <el-table-column prop="color" label="颜色分类" min-width="80" align="center" />
       <el-table-column prop="num" label="数量" min-width="80" align="center" />
+      <el-table-column prop="warehouse_name" label="发货仓库" min-width="80" align="center" />
+      <el-table-column prop="delivery_number" label="物流号" min-width="80" align="center" />
       <el-table-column prop="total_price" label="小计" min-width="80" align="center">
         <template slot-scope="scope">
           <span>¥ {{ scope.row.total_price }}</span>
@@ -22,7 +24,7 @@
       </el-table-column>
     </el-table>
     <el-dialog class="preview-pic-wrapper" :visible.sync="dialogVisible">
-      <img :src="dialogImageUrl" alt>
+      <img :src="dialogImageUrl" alt />
     </el-dialog>
   </div>
 </template>

@@ -233,38 +233,29 @@ export default {
 
       // 基本信息
       this.baseinfoList[0].order_id = info.order_id
-      this.baseinfoList[0].company_name =
-        (info.delivery_info || {}).company_name || '-'
+      this.baseinfoList[0].company_name = (info.delivery_info || {}).company_name || '-'
       this.baseinfoList[0].business_name = info.business_name || '-'
       this.baseinfoList[0].business_phone = info.business_phone || '-'
       this.baseinfoList[0].delivery_number = (info.delivery_info || {}).delivery_number || '-'
-      this.baseinfoList[0].order_time = moment(info.order_time * 1000).format(
-        'YYYY-MM-DD HH:mm:ss'
-      )
+      this.baseinfoList[0].order_time = moment(info.order_time * 1000).format('YYYY-MM-DD HH:mm:ss')
 
-      this.baseinfoList[1].company_name = (info.attach_list || []).map(attach => {
-        const attach_str = `${attach.goods_name}（${attach.num}）`
-        return attach_str
-      }).join('，')
+      this.baseinfoList[1].company_name = (info.attach_list || [])
+        .map((attach) => {
+          const attach_str = `${attach.goods_name}（${attach.num}）`
+          return attach_str
+        })
+        .join('，')
       this.baseinfoList[2].company_name = info.remark
 
       // 商品信息
-      this.goodsList = info.goods_list.map(goods => {
-        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${
-          goods.model_txt
-        }_${goods.color}_${goods.goods_id}`
+      this.goodsList = info.goods_list.map((goods) => {
+        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.color}_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
-        goods.goods_img_url = `${
-          process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${
-          goods.goods_img
-        }`
-        goods.goods_img_url_preview = `${
-          process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${
-          goods.goods_img
-        }`
+        goods.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${goods.goods_img}`
+        goods.goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${goods.goods_img}`
+        goods.warehouse_name = (goods.delivery_info || {}).warehouse_name || '-'
+        goods.delivery_number = (goods.delivery_info || {}).delivery_number || '-'
         return goods
       })
 
@@ -276,9 +267,7 @@ export default {
       this.consigneeinfo[0].order_id_3rd = info.consignee_info.order_id_3rd
 
       // 费用信息
-      this.orderFeeList[0].goods_fee = info.goods_fee
-        ? `¥ ${info.goods_fee.toFixed(2)}`
-        : '¥ 0.00'
+      this.orderFeeList[0].goods_fee = info.goods_fee ? `¥ ${info.goods_fee.toFixed(2)}` : '¥ 0.00'
       this.orderFeeList[0].freight_fee = info.freight_fee
         ? `¥ ${info.freight_fee.toFixed(2)}`
         : '¥ 0.00'
@@ -302,11 +291,9 @@ export default {
         : '¥ 0.00'
 
       // 操作历史信息
-      this.orderTrack = (info.order_track || []).map(track => {
+      this.orderTrack = (info.order_track || []).map((track) => {
         track.order_status_str = ORDER_STATUS.toString(track.order_status)
-        track.opr_time_str = moment(track.opr_time * 1000).format(
-          'YYYY-MM-DD HH:mm:ss'
-        )
+        track.opr_time_str = moment(track.opr_time * 1000).format('YYYY-MM-DD HH:mm:ss')
         return track
       })
     },
@@ -314,7 +301,7 @@ export default {
       this.$router.go(-1)
     },
     handlerAuditOprClick() {
-      this.$refs.auditForm.validate(valid => {
+      this.$refs.auditForm.validate((valid) => {
         if (valid) {
           this.auditOpr()
         }
@@ -343,7 +330,7 @@ export default {
       this.$router.go(-1)
     },
     handlerAuditOprAndNextClick() {
-      this.$refs.auditForm.validate(valid => {
+      this.$refs.auditForm.validate((valid) => {
         if (valid) {
           this.auditOprAndNext()
         }
