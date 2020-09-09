@@ -12,12 +12,36 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist
 
-router.beforeEach(async(to, from, next) => {
+// 订单还在编辑时候的路由
+const orderEditList = [
+  '/manage-order/tborderedit',
+  '/manage-goods/goodslist',
+  '/manage-goods/tbnorm',
+  '/manage-goods/tbdiy'
+]
+
+router.beforeEach(async (to, from, next) => {
   // start progress bar
   NProgress.start()
 
   // set page title
   document.title = getPageTitle(to.meta.title)
+
+  // 进入编辑没有用到的路由，修改订单编辑状态
+  const isEditRouter = orderEditList.some((item) => to.path.includes(item))
+  if (!isEditRouter) {
+    if (store.state.orderEdit.isEdit) {
+      store.commit('orderEdit/updateIsOrderEdit', false)
+    }
+  }
+
+  // 订单编辑过程中，页面刷新后编辑中断，商品下单页面跳回商品列表页面
+  if (
+    !store.state.orderEdit.isEdit &&
+    (to.path.includes('/manage-goods/tbnorm') || to.path.includes('/manage-goods/tbdiy'))
+  ) {
+    next({ path: '/manage-goods/goodslist' })
+  }
 
   // determine whether the user has logged in
   // const hasToken = getToken()

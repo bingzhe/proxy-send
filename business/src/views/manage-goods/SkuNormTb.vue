@@ -35,7 +35,7 @@
 
     <div class="button-group-wrapper">
       <el-button @click="handlerCancelClick">取消</el-button>
-      <el-button type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
+      <el-button type="primary" @click="handlerAddCartClick">下一步</el-button>
     </div>
   </div>
 </template>
@@ -62,6 +62,7 @@ export default {
         price: '', // 商品价格（元）
         raw_material: '', // 材质（直接使用文本，如："玻璃"、"硅胶"...）
         brand: '', // 品牌
+        brand_id: '',
         model: '', // 型号
         remark: '' // 备注
       },
@@ -109,6 +110,7 @@ export default {
       this.goodsInfo.model = info.model_name
       this.goodsInfo.price = info.price
       this.goodsInfo.remark = info.remark
+      this.goodsInfo.brand_id = info.brand
 
       this.opt_color_list = (info.opt_color_list || []).map((item) => {
         item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=120&height=180&type=7&img_name=${item.color_img}`
@@ -124,29 +126,50 @@ export default {
     handlerCancelClick() {
       this.$router.go(-1)
     },
+    // async handlerAddCartClick() {
+    //   const data = {
+    //     opr: 'put_to_buycart_standard',
+    //     goods_id: this.goodsInfo.goods_id, // 商品编号(ID)
+    //     num: this.num, // 订购数量
+    //     color: this.opt_color_list[this.curPic].color_name // 颜色分类("红色"、"绿色"...)
+    //   }
+
+    //   if (this.buycart_id) {
+    //     data.buycart_id = this.buycart_id
+    //   }
+
+    //   console.log('标品加入购物车', data)
+    //   const resp = await buycartSave(data)
+    //   console.log('标品加入购物车', resp)
+
+    //   if (resp.ret !== 0) return
+
+    //   /**
+    //    * 更新页面全局数据
+    //    */
+    //   this.$store.dispatch('user/getUserInfo')
+    //   this.$router.push('/manage-goods/shopcart')
+    // }
     async handlerAddCartClick() {
-      const data = {
-        opr: 'put_to_buycart_standard',
-        goods_id: this.goodsInfo.goods_id, // 商品编号(ID)
-        num: this.num, // 订购数量
-        color: this.opt_color_list[this.curPic].color_name // 颜色分类("红色"、"绿色"...)
+      const color = this.opt_color_list[this.curPic]
+      const goodsInfo = this.goodsInfo
+
+      const goods = {
+        goods_id: goodsInfo.goods_id,
+        num: this.num,
+        type_str: '标品',
+        color: color.color_name,
+        goods_info_str: `${goodsInfo.raw_material}_${goodsInfo.brand || goodsInfo.brand_id}_${
+          goodsInfo.model
+        }_${color.color_name}_${goodsInfo.goods_id}`,
+        goods_img_url: color.color_img_url,
+        price: goodsInfo.price,
+        goodsSumPrice: goodsInfo.price * this.num
       }
 
-      if (this.buycart_id) {
-        data.buycart_id = this.buycart_id
-      }
+      this.$store.commit('orderEdit/goodsListPush', goods)
 
-      console.log('标品加入购物车', data)
-      const resp = await buycartSave(data)
-      console.log('标品加入购物车', resp)
-
-      if (resp.ret !== 0) return
-
-      /**
-       * 更新页面全局数据
-       */
-      this.$store.dispatch('user/getUserInfo')
-      this.$router.push('/manage-goods/shopcart')
+      console.log(goods)
     }
   }
 }

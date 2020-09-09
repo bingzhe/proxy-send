@@ -135,6 +135,13 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/manage-order/edit/shopcart'),
         meta: { title: '订单编辑', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
+      },
+      {
+        path: 'tborderedit/:order_id',
+        name: 'tborderedit',
+        hidden: true,
+        component: () => import('@/views/manage-order/edit/ShopCartTB'),
+        meta: { title: '订单编辑', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
       }
     ]
   },

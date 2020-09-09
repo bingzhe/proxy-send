@@ -412,7 +412,7 @@ export default {
       this.handlerDeleteDialogClose()
     },
     handlerEditBtnClick(id) {
-      this.$router.push({ path: `/manage-order/orderedit/${id}` })
+      this.$router.push({ path: `/manage-order/tborderedit/${id}` })
     }
   }
 }

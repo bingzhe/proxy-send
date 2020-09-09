@@ -151,7 +151,8 @@ export default {
     ...mapState({
       phone_brand_list: (state) => state.user.phone_brand_list,
       model_list: (state) => state.user.model_list,
-      raw_material_list: (state) => state.user.raw_material_list
+      raw_material_list: (state) => state.user.raw_material_list,
+      orderIsEdit: (state) => state.orderEdit.isEdit
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -229,12 +230,12 @@ export default {
     handlerOrderBtnClick(row) {
       const goodsType = row.type
       const goodsId = row.goods_id
-      const source = this.$route.query.source
+      // const source = this.$route.query.source
 
       /**
        * source 区分是不是淘宝订单需要添加商品
        */
-      if (source === 'tborder') {
+      if (this.orderIsEdit) {
         if (goodsType === GOODS_TYPE.DIY) {
           this.$router.push({ path: `/manage-goods/tbdiy/${goodsId}` })
         } else if (goodsType === GOODS_TYPE.NORM) {
