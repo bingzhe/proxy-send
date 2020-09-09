@@ -19,7 +19,7 @@ function generateRequestFn(interfaceFile, options = {}) {
       http.DataEncSubmit(
         interfaceFile,
         data,
-        resp => {
+        (resp) => {
           if (resp.ret !== 0) {
             if (showErrTip) {
               Vue.prototype.$message.error(resp.msg || '')
@@ -137,3 +137,6 @@ export const buycartGet = generateRequestFn('buycart_get.php')
 
 // buycart_save
 export const buycartSave = generateRequestFn('buycart_save.php')
+
+// tshop_get
+export const tshopGet = generateRequestFn('tshop_get.php')

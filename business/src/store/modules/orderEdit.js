@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 const state = {
   isEdit: false, // 订单是否在编辑
+  editOrderId: '', // 编辑的订单
 
   // 收货人信息
   consigneeFrom: {
@@ -15,7 +16,8 @@ const state = {
     company_name: '',
     remark: '', // 留言
     telephone: '', // 固定电话
-    order_id_3rd: '' // 第三平台订单号
+    order_id_3rd: '', // 第三平台订单号
+    tshop_id: '' // 下单店铺
   },
 
   // 礼品列表
@@ -31,6 +33,10 @@ const mutations = {
   // 更新是否订单在编辑
   updateIsOrderEdit(state, payload) {
     state.isEdit = payload
+  },
+
+  updateEditOrderId(state, payload) {
+    state.editOrderId = payload
   },
 
   updateconsigneeFrom(state, payload) {

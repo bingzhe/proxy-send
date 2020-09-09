@@ -77,6 +77,16 @@
                 />
               </el-select>
             </el-form-item>
+            <el-form-item label="下单店铺" prop="tshop_id" label-width="110px">
+              <el-select v-model="consigneeFrom.tshop_id" placeholder="请选择" @change="getPrice">
+                <el-option
+                  v-for="(item,index) in tshopList"
+                  :key="index"
+                  :label="item.tshop_name"
+                  :value="item.tshop_id"
+                />
+              </el-select>
+            </el-form-item>
             <br />
             <el-form-item label="收件人" prop="person" label-width="130px">
               <el-input v-model.trim="consigneeFrom.person" placeholder="请输入" />
@@ -142,6 +152,11 @@
                 show-word-limit
               />
             </el-form-item>
+            <el-form-item label="附图" prop="attach_pic" label-width="130px">
+              <sl-upload class="outline-uploader" :type="8">
+                <i class="el-icon-plus avatar-uploader-icon" />
+              </sl-upload>
+            </el-form-item>
           </el-form>
         </div>
       </div>
@@ -159,7 +174,8 @@
 
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
-import { orderGet, orderSave } from '@/api/api'
+import SlUpload from '@/components/upload/index'
+import { orderGet, orderSave, tshopGet } from '@/api/api'
 import { mapState } from 'vuex'
 import { ORDER_STATUS } from '@/config/cfg'
 import _ from 'lodash'
@@ -183,7 +199,8 @@ export const GOODS_TYPE = {
 
 export default {
   components: {
-    BaseinfoTitle
+    BaseinfoTitle,
+    SlUpload
   },
   data() {
     return {
@@ -232,13 +249,16 @@ export default {
 
       goods_fee: 0.0, // 商品合计费用
       discount_fee: 0.0, // 折扣金额
-      actual_fee: 0.0 // 实付金额
+      actual_fee: 0.0, // 实付金额
+
+      tshopList: []
     }
   },
   computed: {
     ...mapState({
       delivery_list: (state) => state.user.delivery_list,
-      orderIsEdit: (state) => state.orderEdit.isEdit
+      orderIsEdit: (state) => state.orderEdit.isEdit,
+      business_info: (state) => state.user.business_info
     }),
     total() {
       let total = 0
@@ -246,6 +266,9 @@ export default {
         total += goods.num
       })
       return total
+    },
+    business_id() {
+      return (this.business_info || {}).business_id
     }
   },
   watch: {
@@ -283,6 +306,7 @@ export default {
         this.$refs.selectGoodsTable.toggleAllSelection()
       }, 500)
     }
+    this.getTshopList()
   },
   methods: {
     // 多选
@@ -395,6 +419,8 @@ export default {
      */
     handleGoodsEditClick(row) {
       this.$store.commit('orderEdit/updateIsOrderEdit', true)
+      this.$store.commit('orderEdit/updateEditOrderId', this.order_id)
+
       this.$router.push({
         path: '/manage-goods/goodslist'
       })
@@ -449,7 +475,8 @@ export default {
         attach_list,
         consignee_info,
         delivery_company_name: this.consigneeFrom.company_name,
-        remark: this.consigneeFrom.remark
+        remark: this.consigneeFrom.remark,
+        tshop_id: this.consigneeFrom.tshop_id
       }
 
       console.log('购物车下单 req=>', data)
@@ -469,6 +496,7 @@ export default {
     },
     goGoodsList() {
       this.$store.commit('orderEdit/updateIsOrderEdit', true)
+      this.$store.commit('orderEdit/updateEditOrderId', this.order_id)
       this.$router.push('/manage-goods/goodslist')
 
       //   if (this.order_status === ORDER_STATUS.REPLENISH_WAIT) {
@@ -481,6 +509,18 @@ export default {
       //   } else {
       //     this.$router.push('/manage-goods/goodslist')
       //   }
+    },
+    async getTshopList() {
+      const data = {
+        opr: 'get_tshop_list',
+        business_id: this.business_id // 商户账户ID
+      }
+
+      const resp = await tshopGet(data)
+      console.log('商户淘宝店铺列表 res=>', resp)
+      if (resp.ret !== 0) return
+
+      this.tshopList = resp.data.list || []
     }
   }
 }
@@ -643,6 +683,31 @@ export default {
   }
   .el-button {
     margin-left: 125px;
+  }
+}
+/deep/ .outline-uploader {
+  .el-upload {
+    border: 1px dashed #e6e6e6;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .el-upload:hover {
+    border-color: #2584f9;
+  }
+  .avatar-uploader-icon {
+    font-size: 30px;
+    color: #2584f9;
+    width: 80px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+  }
+  .upload-preview {
+    width: 117px;
+    height: 140px;
+    display: block;
   }
 }
 </style>

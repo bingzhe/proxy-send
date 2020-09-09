@@ -43,7 +43,8 @@
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import SkuBaseinfo from './components/SkuBaseinfo'
-import { goodsGet, buycartSave } from '@/api/api'
+import { goodsGet } from '@/api/api'
+// buycartSave
 import { mapState } from 'vuex'
 
 export default {
@@ -83,7 +84,8 @@ export default {
   },
   computed: {
     ...mapState({
-      buycart_id: (state) => state.user.buycart_id
+      buycart_id: (state) => state.user.buycart_id,
+      editOrderId: (state) => state.orderEdit.editOrderId
     })
   },
   mounted() {
@@ -166,10 +168,10 @@ export default {
         price: goodsInfo.price,
         goodsSumPrice: goodsInfo.price * this.num
       }
+      console.log('pushNormGoods', goods)
 
       this.$store.commit('orderEdit/goodsListPush', goods)
-
-      console.log(goods)
+      this.$router.push({ path: `/manage-order/tborderedit/${this.editOrderId}` })
     }
   }
 }

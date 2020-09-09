@@ -106,7 +106,8 @@
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import SkuBaseinfo from './components/SkuBaseinfo'
 import MaterialList from './components/MaterialList'
-import { goodsGet, buycartSave } from '@/api/api'
+import { goodsGet } from '@/api/api'
+// buycartSave
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
 import DiyDesigner from './DiyDesigner'
@@ -132,6 +133,7 @@ export default {
         price: '', // 商品价格（元）
         raw_material: '', // 材质（直接使用文本，如："玻璃"、"硅胶"...）
         brand: '', // 品牌
+        brand_id: '',
         model: '', // 型号
         remark: '' // 备注
       },
@@ -184,7 +186,8 @@ export default {
   },
   computed: {
     ...mapState({
-      buycart_id: (state) => state.user.buycart_id
+      buycart_id: (state) => state.user.buycart_id,
+      editOrderId: (state) => state.orderEdit.editOrderId
     })
   },
   mounted() {
@@ -211,6 +214,7 @@ export default {
       this.goodsInfo.model = info.model_name
       this.goodsInfo.price = info.price
       this.goodsInfo.remark = info.remark
+      this.goodsInfo.brand_id = info.brand
 
       this.picHeight = (info.img_print_param || {}).height
       this.picWidth = (info.img_print_param || {}).width
@@ -309,31 +313,55 @@ export default {
       this.preview_img = await this.imgUpload(this.preview_img_data, 5)
       this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
-      const data = {
-        opr: 'put_to_buycart_diy',
-        goods_id: this.goodsInfo.goods_id, // 商品编号(ID)
-        num: this.num, // 订购数量
-        color: this.opt_color_list[this.curPic].color_name, // 颜色分类("红色"、"绿色"...)
+      const color = this.opt_color_list[this.curPic]
+      const goodsInfo = this.goodsInfo
+
+      const goods = {
+        goods_id: goodsInfo.goods_id,
+        num: this.num,
+        type_str: 'DIY',
+        color: color.color_name,
+        goods_info_str: `${goodsInfo.raw_material}_${goodsInfo.brand || goodsInfo.brand_id}_${
+          goodsInfo.model
+        }_${color.color_name}_${goodsInfo.goods_id}`,
+        goods_img_url: `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=5&img_name=${this.preview_img}`,
+        price: goodsInfo.price,
+        goodsSumPrice: goodsInfo.price * this.num,
         preview_img: this.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
         prune_img: this.prune_img, // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
         ori_user_img: this.ori_user_img // 用户上传的未经处理的原图
       }
 
-      if (this.buycart_id) {
-        data.buycart_id = this.buycart_id
-      }
+      console.log('pushDiyGoods', goods)
 
-      console.log('diy加入购物车', data)
-      const resp = await buycartSave(data)
-      console.log('diy加入购物车', resp)
-      this.loading = false
-      if (resp.ret !== 0) return
+      this.$store.commit('orderEdit/goodsListPush', goods)
+      this.$router.push({ path: `/manage-order/tborderedit/${this.editOrderId}` })
 
-      /**
-       * 更新页面全局数据
-       */
-      this.$store.dispatch('user/getUserInfo')
-      this.$router.push('/manage-goods/shopcart')
+      // const data = {
+      //   opr: 'put_to_buycart_diy',
+      //   goods_id: this.goodsInfo.goods_id, // 商品编号(ID)
+      //   num: this.num, // 订购数量
+      //   color: this.opt_color_list[this.curPic].color_name, // 颜色分类("红色"、"绿色"...)
+      //   preview_img: this.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+      //   prune_img: this.prune_img, // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+      //   ori_user_img: this.ori_user_img // 用户上传的未经处理的原图
+      // }
+
+      // if (this.buycart_id) {
+      //   data.buycart_id = this.buycart_id
+      // }
+
+      // console.log('diy加入购物车', data)
+      // const resp = await buycartSave(data)
+      // console.log('diy加入购物车', resp)
+      // this.loading = false
+      // if (resp.ret !== 0) return
+
+      // /**
+      //  * 更新页面全局数据
+      //  */
+      // this.$store.dispatch('user/getUserInfo')
+      // this.$router.push('/manage-goods/shopcart')
     },
     handlerCancelClick() {
       this.$router.go(-1)
