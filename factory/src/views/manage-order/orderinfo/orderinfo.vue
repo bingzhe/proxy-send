@@ -150,7 +150,8 @@ export default {
           order_time: '' // 下单时间
         },
         { order_id: '配送礼品', company_name: '' }, // 配送礼品
-        { order_id: '订单留言', company_name: '' } // 订单留言
+        { order_id: '订单留言', company_name: '' }, // 订单留言
+        { order_id: '附图', company_name: [] } // 附图
       ],
 
       // 商品信息
@@ -231,11 +232,17 @@ export default {
       this.order_status = info.order_status
       this.status_remark = info.status_remark
 
+      // info.remark_img_list = [
+      //   '004900648cddfd09dbeae6d13f1503cd.jpg',
+      //   '004900648cddfd09dbeae6d13f1503cd.jpg'
+      // ]
+
       // 基本信息
       this.baseinfoList[0].order_id = info.order_id
       this.baseinfoList[0].company_name = (info.delivery_info || {}).company_name || '-'
       this.baseinfoList[0].business_name = info.business_name || '-'
       this.baseinfoList[0].business_phone = info.business_phone || '-'
+      this.baseinfoList[0].tshop_name = info.tshop_name || '-'
       this.baseinfoList[0].delivery_number = (info.delivery_info || {}).delivery_number || '-'
       this.baseinfoList[0].order_time = moment(info.order_time * 1000).format('YYYY-MM-DD HH:mm:ss')
 
@@ -246,6 +253,9 @@ export default {
         })
         .join('，')
       this.baseinfoList[2].company_name = info.remark
+      this.baseinfoList[3].company_name = (info.remark_img_list || []).map((img) => {
+        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=8&img_name=${img}&vxversion=v2`
+      })
 
       // 商品信息
       this.goodsList = info.goods_list.map((goods) => {

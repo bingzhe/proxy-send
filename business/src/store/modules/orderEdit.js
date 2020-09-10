@@ -20,6 +20,8 @@ const state = {
     tshop_id: '' // 下单店铺
   },
 
+  remark_img_list: [], // 附图列表
+
   // 礼品列表
   attachList: [],
 
@@ -49,6 +51,10 @@ const mutations = {
 
   updateGoodsList(state, payload) {
     state.goodsList = _.cloneDeep(payload)
+  },
+
+  updateRemarkImgList(state, payload) {
+    state.remark_img_list = _.cloneDeep(payload)
   },
 
   goodsListPush(state, payload) {

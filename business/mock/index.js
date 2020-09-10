@@ -4,10 +4,7 @@ import { param2Obj } from '../src/utils'
 import user from './user'
 import table from './table'
 
-const mocks = [
-  ...user,
-  ...table
-]
+const mocks = [...user, ...table]
 
 // for front mock
 // please use it cautiously, it will redefine XMLHttpRequest,
@@ -61,6 +58,6 @@ const responseFake = (url, type, respond) => {
   }
 }
 
-export default mocks.map(route => {
+export default mocks.map((route) => {
   return responseFake(route.url, route.type, route.response)
 })

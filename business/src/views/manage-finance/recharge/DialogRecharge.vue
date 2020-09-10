@@ -47,7 +47,7 @@
             v-if="rechargeForm.screenshot_img"
             :src="rechargeForm.screenshot_img_url"
             class="upload-preview"
-          >
+          />
           <i v-else class="el-icon-plus avatar-uploader-icon" />
         </sl-upload>
       </el-form-item>
@@ -77,23 +77,21 @@ export default {
     SlUpload
   },
 
-  props: {
-
-  },
+  props: {},
 
   data() {
     return {
       token: window.Store.GetGlobalData('token'),
 
       rechargeForm: {
-        channel: '',                      // 充值渠道("微信", "支付宝", "其他")
-        input_account: '',                // 工厂收款账号（收款）
-        deposit_number: '',               // 充值单号/转账订单号（外部充值订单号，对应各类充值，如微信、支付宝等）
-        output_account: '',               // 转账账户（付款）
-        amount: '',                       // 转账金额（元）
-        screenshot_img: '',               // 转账截图
+        channel: '', // 充值渠道("微信", "支付宝", "其他")
+        input_account: '', // 工厂收款账号（收款）
+        deposit_number: '', // 充值单号/转账订单号（外部充值订单号，对应各类充值，如微信、支付宝等）
+        output_account: '', // 转账账户（付款）
+        amount: '', // 转账金额（元）
+        screenshot_img: '', // 转账截图
         screenshot_img_url: '',
-        input_remark: ''                  // 充值备注（留言）
+        input_remark: '' // 充值备注（留言）
       },
       rechargeFormRules: {
         channel: [{ required: true, message: '请选择充值渠道', trigger: 'change' }],
@@ -107,7 +105,7 @@ export default {
   },
   computed: {
     ...mapState({
-      input_account_list: state => state.user.input_account_list
+      input_account_list: (state) => state.user.input_account_list
     })
   },
   methods: {
@@ -115,7 +113,7 @@ export default {
       this.$refs.rechargeDialog.show()
     },
     handlerDialogConfirm() {
-      this.$refs.rechargeForm.validate(valid => {
+      this.$refs.rechargeForm.validate((valid) => {
         if (valid) {
           this.rechargeOpr()
         }
@@ -124,13 +122,13 @@ export default {
     async rechargeOpr() {
       const data = {
         opr: 'save_recharge',
-        deposit_number: this.rechargeForm.deposit_number,           // 充值单号/转账订单号（外部充值订单号，对应各类充值，如微信、支付宝等）
-        channel: this.rechargeForm.channel,                         // 充值渠道("微信", "支付宝", "其他")
-        input_account: this.rechargeForm.input_account,             // 工厂收款账号（收款）
-        output_account: this.rechargeForm.output_account,           // 转账账户（付款）
-        amount: this.rechargeForm.amount,                           // 转账金额（元）
-        input_remark: this.rechargeForm.input_remark,               // 充值备注（留言）
-        screenshot_img: this.rechargeForm.screenshot_img            // 转账截图
+        deposit_number: this.rechargeForm.deposit_number, // 充值单号/转账订单号（外部充值订单号，对应各类充值，如微信、支付宝等）
+        channel: this.rechargeForm.channel, // 充值渠道("微信", "支付宝", "其他")
+        input_account: this.rechargeForm.input_account, // 工厂收款账号（收款）
+        output_account: this.rechargeForm.output_account, // 转账账户（付款）
+        amount: this.rechargeForm.amount, // 转账金额（元）
+        input_remark: this.rechargeForm.input_remark, // 充值备注（留言）
+        screenshot_img: this.rechargeForm.screenshot_img // 转账截图
       }
 
       console.log('账户充值 req=>', data)
@@ -152,18 +150,15 @@ export default {
     },
     handlerScreenshotSuc({ img_name }) {
       this.rechargeForm.screenshot_img = img_name
-      this.rechargeForm.screenshot_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&type=2&width=117&height=140&img_name=${img_name}`
+      this.rechargeForm.screenshot_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=2&width=117&height=140&img_name=${img_name}`
     },
     handlerChannelChange(val) {
-      const select = this.input_account_list.filter(item => {
+      const select = this.input_account_list.filter((item) => {
         return item.type === val
       })
       this.rechargeForm.input_account = (select[0] || {}).account
     }
   }
-
 }
 </script>
 

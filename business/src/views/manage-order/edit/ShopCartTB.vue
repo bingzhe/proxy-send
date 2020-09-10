@@ -114,6 +114,7 @@
                 v-model.trim="consigneeFrom.city"
                 v-trim="consigneeFrom.city"
                 placeholder="请输入"
+                @change="getPrice"
               />
             </el-form-item>
             <br />
@@ -152,8 +153,18 @@
                 show-word-limit
               />
             </el-form-item>
-            <el-form-item label="附图" prop="attach_pic" label-width="130px">
-              <sl-upload class="outline-uploader" :type="8">
+            <el-form-item label="附图" prop="remark_img_list" label-width="130px">
+              <div class="remark-img-wrapper">
+                <div
+                  v-for="(item, index) in remarkImgPreviewList"
+                  :key="index"
+                  class="remark-img-item"
+                >
+                  <img :src="item" @click="handleRemarkImgClick(item)" />
+                  <i class="el-icon-error" @click="handleRemarkImgRemoveClick(index)"></i>
+                </div>
+              </div>
+              <sl-upload class="outline-uploader" :type="8" @on-success="handleUploadSuccess">
                 <i class="el-icon-plus avatar-uploader-icon" />
               </sl-upload>
             </el-form-item>
@@ -169,6 +180,10 @@
         <el-button type="primary" @click="handlerSaveOrderClick">下单</el-button>
       </div>
     </div>
+
+    <el-dialog class="preview-pic-wrapper" :visible.sync="dialogVisible">
+      <img :src="dialogImageUrl" alt />
+    </el-dialog>
   </div>
 </template>
 
@@ -215,12 +230,8 @@ export default {
 
       //   goodsList: [],
       goodsList: _.cloneDeep(this.$store.state.orderEdit.goodsList),
-
       //   attachList: [],
       attachList: _.cloneDeep(this.$store.state.orderEdit.attachList),
-
-      multipleSelection: [],
-
       //   收货人信息
       //   consigneeFrom: {
       //     person: '', // 收货人名
@@ -233,9 +244,14 @@ export default {
       //     company_name: '',
       //     remark: '', // 留言
       //     telephone: '', // 固定电话
-      //     order_id_3rd: '' // 第三平台订单号
+      //     order_id_3rd: '', // 第三平台订单号
+      //     tshop_id: '' // 下单店铺
       //   },
       consigneeFrom: _.cloneDeep(this.$store.state.orderEdit.consigneeFrom),
+      // remark_img_list: [],
+      remark_img_list: _.cloneDeep(this.$store.state.orderEdit.remark_img_list),
+
+      multipleSelection: [],
 
       consigeneeFromRules: {
         person: [{ required: true, message: '请输入收件人', trigger: 'blur' }],
@@ -251,7 +267,11 @@ export default {
       discount_fee: 0.0, // 折扣金额
       actual_fee: 0.0, // 实付金额
 
-      tshopList: []
+      tshopList: [],
+
+      // 图片预览
+      dialogImageUrl: '',
+      dialogVisible: false
     }
   },
   computed: {
@@ -269,6 +289,11 @@ export default {
     },
     business_id() {
       return (this.business_info || {}).business_id
+    },
+    remarkImgPreviewList() {
+      return this.remark_img_list.map((img) => {
+        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=8&img_name=${img}`
+      })
     }
   },
   watch: {
@@ -290,6 +315,12 @@ export default {
     attachList: {
       handler: function (val) {
         this.$store.commit('orderEdit/updateAttachlist', val)
+      },
+      deep: true
+    },
+    remark_img_list: {
+      handler: function (val) {
+        this.$store.commit('orderEdit/updateRemarkImgList', val)
       },
       deep: true
     }
@@ -352,6 +383,9 @@ export default {
       this.consigneeFrom.telephone = consignee_info.telephone
       this.consigneeFrom.order_id_3rd = consignee_info.order_id_3rd
 
+      this.consigneeFrom.tshop_id = info.tshop_id
+      this.remark_img_list = info.remark_img_list || []
+
       this.goods_fee = info.goods_fee
       this.discount_fee = info.discount_fee
       this.actual_fee = info.actual_fee
@@ -389,15 +423,18 @@ export default {
         opr: 'cal_order_fee',
         goods_list: goods_list,
         attach_list: attach_list,
-        delivery_company_name: this.consigneeFrom.company_name
+        delivery_company_name: this.consigneeFrom.company_name,
+        tshop_id: this.consigneeFrom.tshop_id, // 淘宝店id（即当前订单的来源，一般是从旺店通同步过来的订单，如果是直接从商户端下单，则为空）
+        order_id: this.order_id, // 订单id [可为空]
+        consignee_city: this.consigneeFrom.city // 订单收货城市 [必填]
       }
 
-      // console.log('计算订单费用 req=>', data)
+      console.log('计算订单费用 req=>', data)
       const resp = await orderGet(data)
       // console.log('计算订单费用 res=>', resp)
 
       // <<<<<<<<<<<<<<<<<<<<<<<<<<
-      // if (resp.ret !== 0) return
+      if (resp.ret !== 0) return
 
       const feeInfo = resp.data || {}
       this.goods_fee = feeInfo.goods_fee
@@ -476,7 +513,8 @@ export default {
         consignee_info,
         delivery_company_name: this.consigneeFrom.company_name,
         remark: this.consigneeFrom.remark,
-        tshop_id: this.consigneeFrom.tshop_id
+        tshop_id: this.consigneeFrom.tshop_id,
+        remark_img_list: this.remark_img_list
       }
 
       console.log('购物车下单 req=>', data)
@@ -521,6 +559,16 @@ export default {
       if (resp.ret !== 0) return
 
       this.tshopList = resp.data.list || []
+    },
+    handleRemarkImgClick(url) {
+      this.dialogImageUrl = url
+      this.dialogVisible = true
+    },
+    handleRemarkImgRemoveClick(i) {
+      this.remark_img_list.splice(i, 1)
+    },
+    handleUploadSuccess({ img_name }) {
+      this.remark_img_list.push(img_name)
     }
   }
 }
@@ -685,7 +733,40 @@ export default {
     margin-left: 125px;
   }
 }
+.remark-img-wrapper {
+  display: inline-block;
+  .remark-img-item {
+    position: relative;
+    border: 1px solid #eaeaea;
+    display: inline-block;
+    width: 82px;
+    height: 102px;
+    margin-right: 10px;
+
+    &:hover {
+      .el-icon-error {
+        opacity: 1;
+      }
+    }
+
+    img {
+      cursor: pointer;
+      width: 80px;
+      height: 100px;
+    }
+    .el-icon-error {
+      position: absolute;
+      right: -7px;
+      top: -8px;
+      color: #b9aeae;
+      font-size: 20px;
+      opacity: 0;
+      cursor: pointer;
+    }
+  }
+}
 /deep/ .outline-uploader {
+  display: inline-block;
   .el-upload {
     border: 1px dashed #e6e6e6;
     border-radius: 6px;
@@ -708,6 +789,17 @@ export default {
     width: 117px;
     height: 140px;
     display: block;
+  }
+}
+/deep/ .preview-pic-wrapper {
+  .el-dialog__body {
+    max-height: 80vh;
+    text-align: center;
+    padding: 0;
+    img {
+      max-height: 80vh;
+      max-width: 70vh;
+    }
   }
 }
 </style>

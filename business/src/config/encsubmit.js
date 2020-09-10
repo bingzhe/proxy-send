@@ -18,11 +18,11 @@ const Http = new function() {
   THIS.data_key = window.Store.GetGlobalData('key', '')
 
   // 监控，当本地存储有变化时，更新到当前对象中。
-  window.Store.GlobalWatch('key', v => {
+  window.Store.GlobalWatch('key', (v) => {
     console.log(v)
     THIS.data_key = v.new_value
   })
-  window.Store.GlobalWatch('token', v => {
+  window.Store.GlobalWatch('token', (v) => {
     // console.log(v);
     THIS.token = v.new_value
   })
@@ -50,24 +50,26 @@ const Http = new function() {
   }
 
   axios.defaults.timeout = 30000 // 设置超时时间(毫秒)
+  // axios.defaults.withCredentials = true // 设置超时时间(毫秒)
+
   // axios.defaults.responseType = 'json';
   const Post = function(url, param, callback, opt) {
     opt = opt || {}
-    const UploadProgress = opt.UploadProgress || function() { }      // 文件上传回调
+    const UploadProgress = opt.UploadProgress || function() {} // 文件上传回调
     // eslint-disable-next-line no-unused-vars
-    const DownloadProgress = opt.DownloadProgress || function() { }  // 文件下载回调
+    const DownloadProgress = opt.DownloadProgress || function() {} // 文件下载回调
     const config = {
       onUploadProgress: (v) => {
         UploadProgress({
-          complete: (v.loaded / v.total * 100 | 0),
+          complete: ((v.loaded / v.total) * 100) | 0,
           loaded: v.loaded,
           total: v.total
         })
       },
-      onDownloadProgress: (v) => {
-      }
+      onDownloadProgress: (v) => {}
     }
-    axios.post(url, param, config)
+    axios
+      .post(url, param, config)
       .then((resp) => {
         resp = resp || {}
         resp = resp.data || {}
@@ -77,7 +79,8 @@ const Http = new function() {
         }
         resp.data = resp.data || {}
         callback(resp)
-      }).catch(function(e) {
+      })
+      .catch(function(e) {
         let msg = ''
         if (e.response) {
           msg = e.response.status + ', ' + e.response.statusText
@@ -105,13 +108,13 @@ const Http = new function() {
     rsa.setPublicKey(publickey)
     var key_enc = rsa.encrypt(key)
     const p = {
-      'save_key': 1,
-      'is_plain': 1,
-      'key_enc': key_enc,
-      'token': THIS.token
+      save_key: 1,
+      is_plain: 1,
+      key_enc: key_enc,
+      token: THIS.token
     }
     const param = JsonToUrlParam(p)
-    Post(RSA_SVC_PATH, param, resp => {
+    Post(RSA_SVC_PATH, param, (resp) => {
       THIS.data_key = key
       window.Store.SetGlobalData('key', key)
       callback(resp)
@@ -131,14 +134,14 @@ const Http = new function() {
       if (Object.is(data[i].constructor, File)) {
         continue
       }
-      if (typeof (data[i]) === 'object') {
+      if (typeof data[i] === 'object') {
         data[i] = JSON.stringify(data[i])
       }
     }
     opt = opt || {}
     opt.is_get_param = opt.is_get_param || false
     opt.encmode = opt.encmode || ''
-    resp_callback = resp_callback || function(v) { }
+    resp_callback = resp_callback || function(v) {}
 
     // 当前终端的标识
     if (!THIS.token) {
@@ -171,9 +174,9 @@ const Http = new function() {
         return param
       }
       Post(
-        url + '?' + (new Date()).getTime(),
+        url + '?' + new Date().getTime(),
         param,
-        resp => {
+        (resp) => {
           if (errcode.USER_NOLOGIN === resp.ret) {
             resp_callback(resp)
           } else if (errcode.DATA_KEY_NOT_EXIST === resp.ret) {
@@ -192,13 +195,13 @@ const Http = new function() {
 
     // 前后台数据加密（验证）用随机密码
     if (!THIS.data_key) {
-      GetPublicKey(resp => {
+      GetPublicKey((resp) => {
         console.log(resp.data.publickey)
         if (resp.ret !== 0) {
           resp_callback(resp)
           return
         }
-        SubmitDataKey(resp.data.publickey, v => {
+        SubmitDataKey(resp.data.publickey, (v) => {
           if (resp.ret !== 0) {
             resp_callback(resp)
             return
@@ -210,7 +213,7 @@ const Http = new function() {
     } else {
       ToServer()
     }
-  }// end of EncSubmit : function(...
+  } // end of EncSubmit : function(...
 
   THIS.DataEncSubmit = function(url, data, resp_callback, opt) {
     // for (const item in data) {

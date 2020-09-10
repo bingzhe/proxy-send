@@ -55,9 +55,10 @@ export default {
         opr: 'save_img_file',
         type: this.type,
         imgfile: file
+        // version: 'v2'
       }
 
-      Http.EncSubmit(this.url, data, resp => {
+      Http.EncSubmit(this.url, data, (resp) => {
         if (resp.ret !== 0) {
           return this.$message.error(resp.msg)
         }

@@ -17,7 +17,7 @@
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
               <template slot-scope="scope">
-                <img class="table-img" :src="scope.row.goods_img_url">
+                <img class="table-img" :src="scope.row.goods_img_url" />
               </template>
             </el-table-column>
             <el-table-column prop="type_str" label="商品类型" min-width="50" />
@@ -85,7 +85,17 @@
                 />
               </el-select>
             </el-form-item>
-            <br>
+            <el-form-item label="下单店铺" prop="tshop_id" label-width="110px">
+              <el-select v-model="consigneeFrom.tshop_id" placeholder="请选择" @change="getPriceSave">
+                <el-option
+                  v-for="(item,index) in tshopList"
+                  :key="index"
+                  :label="item.tshop_name"
+                  :value="item.tshop_id"
+                />
+              </el-select>
+            </el-form-item>
+            <br />
             <el-form-item label="收件人" prop="person" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.person"
@@ -100,7 +110,7 @@
                 @change="getPriceSave"
               />
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="第三方平台订单号" prop="order_id_3rd" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.order_id_3rd"
@@ -115,7 +125,7 @@
                 @change="getPriceSave"
               />
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="省/直辖市" prop="province" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.province"
@@ -132,7 +142,7 @@
                 @change="getPriceSave"
               />
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="区/县" prop="area" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.area"
@@ -149,7 +159,7 @@
                 @change="getPriceSave"
               />
             </el-form-item>
-            <br>
+            <br />
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.address"
@@ -161,7 +171,7 @@
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
               <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
-            <br>
+            <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
               <el-input
                 v-model.trim="consigneeFrom.remark"
@@ -171,6 +181,21 @@
                 show-word-limit
                 @change="getPriceSave"
               />
+            </el-form-item>
+            <el-form-item label="附图" prop="remark_img_list" label-width="130px">
+              <div class="remark-img-wrapper">
+                <div
+                  v-for="(item, index) in remarkImgPreviewList"
+                  :key="index"
+                  class="remark-img-item"
+                >
+                  <img :src="item" @click="handleRemarkImgClick(item)" />
+                  <i class="el-icon-error" @click="handleRemarkImgRemoveClick(index)"></i>
+                </div>
+              </div>
+              <sl-upload class="outline-uploader" :type="8" @on-success="handleUploadSuccess">
+                <i class="el-icon-plus avatar-uploader-icon" />
+              </sl-upload>
             </el-form-item>
           </el-form>
         </div>
@@ -186,13 +211,18 @@
     </div>
 
     <shopcart-empty v-if="!buycart_id || goodsList.length === 0" />
+
+    <el-dialog class="preview-pic-wrapper" :visible.sync="dialogVisible">
+      <img :src="dialogImageUrl" alt />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import ShopcartEmpty from './ShopcartEmpty'
-import { orderSave, buycartGet, buycartSave } from '@/api/api'
+import SlUpload from '@/components/upload/index'
+import { orderSave, buycartGet, buycartSave, tshopGet } from '@/api/api'
 import { mapState } from 'vuex'
 import { setTimeout } from 'timers'
 // import { GOODS_TYPE } from '@/config/cfg'
@@ -208,7 +238,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function(code) {
+  toString: function (code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -217,7 +247,8 @@ export const GOODS_TYPE = {
 export default {
   components: {
     BaseinfoTitle,
-    ShopcartEmpty
+    ShopcartEmpty,
+    SlUpload
   },
   data() {
     return {
@@ -228,19 +259,22 @@ export default {
 
       multipleSelection: [],
 
+      remark_img_list: [], // 附图
+
       // 收货人信息
       consigneeFrom: {
-        person: '',      // 收货人名
-        phone: '',       // 手机号码
-        address: '',     // 收货地址
-        province: '',    // 省
-        city: '',        // 市
-        area: '',        // 区县
-        street: '',      // 街道
+        person: '', // 收货人名
+        phone: '', // 手机号码
+        address: '', // 收货地址
+        province: '', // 省
+        city: '', // 市
+        area: '', // 区县
+        street: '', // 街道
         company_name: '',
-        remark: '',      // 留言
-        telephone: '',   // 固定电话
-        order_id_3rd: '' // 第三平台订单号
+        remark: '', // 留言
+        telephone: '', // 固定电话
+        order_id_3rd: '', // 第三平台订单号
+        tshop_id: '' // 下单店铺
       },
       consigeneeFromRules: {
         person: [{ required: true, message: '请输入收件人', trigger: 'blur' }],
@@ -252,28 +286,42 @@ export default {
         company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }]
       },
 
-      goods_fee: 0.00,        // 商品合计费用
-      discount_fee: 0.00,      // 折扣金额
-      actual_fee: 0.00        // 实付金额
+      goods_fee: 0.0, // 商品合计费用
+      discount_fee: 0.0, // 折扣金额
+      actual_fee: 0.0, // 实付金额
+
+      tshopList: [],
+      // 图片预览
+      dialogImageUrl: '',
+      dialogVisible: false
     }
   },
   computed: {
     ...mapState({
-      buycart_id: state => state.user.buycart_id,
-      delivery_list: state => state.user.delivery_list
+      buycart_id: (state) => state.user.buycart_id,
+      delivery_list: (state) => state.user.delivery_list,
+      business_info: (state) => state.user.business_info
     }),
     total() {
       let total = 0
-      this.goodsList.forEach(goods => {
+      this.goodsList.forEach((goods) => {
         total += goods.num
       })
       return total
+    },
+    business_id() {
+      return (this.business_info || {}).business_id
+    },
+    remarkImgPreviewList() {
+      return this.remark_img_list.map((img) => {
+        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=8&img_name=${img}`
+      })
     }
   },
   watch: {
     goodsList: {
-      handler: function() {
-        this.goodsList.forEach(item => {
+      handler: function () {
+        this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
       },
@@ -289,6 +337,7 @@ export default {
       //   this.$refs.selectGoodsTable.toggleAllSelection()
       // }, 500)
     }
+    this.getTshopList()
   },
   methods: {
     // 多选
@@ -310,12 +359,12 @@ export default {
 
       const info = resp.data
       const consignee_info = info.consignee_info || {}
-      this.attachList = (info.attach_list || []).filter(attach => { return attach.inventory })
+      this.attachList = (info.attach_list || []).filter((attach) => {
+        return attach.inventory
+      })
 
-      this.goodsList = (info.goods_list || []).map(item => {
-        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
+      this.goodsList = (info.goods_list || []).map((item) => {
+        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
 
         item.type_str = GOODS_TYPE.toString(item.type)
         item.goods_info_str = `${item.raw_material}_${item.brand_name}_${item.model_name}_${item.color}_${item.goods_id}`
@@ -335,12 +384,15 @@ export default {
       this.consigneeFrom.telephone = consignee_info.telephone
       this.consigneeFrom.order_id_3rd = consignee_info.order_id_3rd
 
+      this.consigneeFrom.tshop_id = info.tshop_id
+      this.remark_img_list = info.remark_img_list || []
+
       this.goods_fee = info.goods_fee
       this.discount_fee = info.discount_fee
       this.actual_fee = info.actual_fee
 
       setTimeout(() => {
-        this.goodsList.forEach(goods => {
+        this.goodsList.forEach((goods) => {
           if (goods.checked) {
             this.$refs.selectGoodsTable.toggleRowSelection(goods, true)
           }
@@ -357,7 +409,7 @@ export default {
       this.consigneeFrom.street = res[3] || ''
     },
     async getPriceSave() {
-      const goods_list = this.goodsList.map(goods => {
+      const goods_list = this.goodsList.map((goods) => {
         let checked = 0
         if (this.multipleSelection.indexOf(goods) >= 0) {
           checked = 1
@@ -374,7 +426,7 @@ export default {
         }
       })
 
-      const attach_list = this.attachList.map(attach => {
+      const attach_list = this.attachList.map((attach) => {
         return {
           goods_id: attach.goods_id,
           num: attach.num
@@ -382,12 +434,12 @@ export default {
       })
 
       const consignee_info = {
-        person: this.consigneeFrom.person,               // 收货人名
-        phone: this.consigneeFrom.phone,                 // 手机号码
-        telephone: this.consigneeFrom.telephone,         // 固定电话
-        province: this.consigneeFrom.province,           // 省
-        city: this.consigneeFrom.city,                   // 市
-        area: this.consigneeFrom.area,                   // 区县
+        person: this.consigneeFrom.person, // 收货人名
+        phone: this.consigneeFrom.phone, // 手机号码
+        telephone: this.consigneeFrom.telephone, // 固定电话
+        province: this.consigneeFrom.province, // 省
+        city: this.consigneeFrom.city, // 市
+        area: this.consigneeFrom.area, // 区县
         street: this.consigneeFrom.street,
         address: this.consigneeFrom.address,
         order_id_3rd: this.consigneeFrom.order_id_3rd
@@ -400,7 +452,10 @@ export default {
         attach_list: attach_list,
         consignee_info,
         delivery_company_name: this.consigneeFrom.company_name,
-        remark: this.consigneeFrom.remark
+        remark: this.consigneeFrom.remark,
+        tshop_id: this.consigneeFrom.tshop_id, // 淘宝店id（即当前订单的来源，一般是从旺店通同步过来的订单，如果是直接从商户端下单，则为空）
+        // order_id: this.order_id, // 订单id [可为空]
+        consignee_city: this.consigneeFrom.city // 订单收货城市 [必填]
       }
 
       console.log('计算订单费用 req=>', data)
@@ -425,7 +480,7 @@ export default {
       if (this.multipleSelection.length === 0) {
         this.$slnotify({ message: '您还没有选择任何商品' })
       }
-      this.$refs.consigneeFrom.validate(valid => {
+      this.$refs.consigneeFrom.validate((valid) => {
         if (valid && this.multipleSelection.length !== 0) {
           this.saveOrderOpr()
         }
@@ -434,7 +489,7 @@ export default {
     async saveOrderOpr() {
       console.log('save')
 
-      const goods_list = this.multipleSelection.map(goods => {
+      const goods_list = this.multipleSelection.map((goods) => {
         return {
           goods_id: goods.goods_id,
           color: goods.color,
@@ -443,7 +498,7 @@ export default {
         }
       })
 
-      const attach_list = this.attachList.map(attach => {
+      const attach_list = this.attachList.map((attach) => {
         return {
           goods_id: attach.goods_id,
           num: attach.num
@@ -451,12 +506,12 @@ export default {
       })
 
       const consignee_info = {
-        person: this.consigneeFrom.person,                // 收货人名
-        phone: this.consigneeFrom.phone,                  // 手机号码
-        telephone: this.consigneeFrom.telephone,          // 固定电话
-        province: this.consigneeFrom.province,            // 省
-        city: this.consigneeFrom.city,                    // 市
-        area: this.consigneeFrom.area,                    // 区县
+        person: this.consigneeFrom.person, // 收货人名
+        phone: this.consigneeFrom.phone, // 手机号码
+        telephone: this.consigneeFrom.telephone, // 固定电话
+        province: this.consigneeFrom.province, // 省
+        city: this.consigneeFrom.city, // 市
+        area: this.consigneeFrom.area, // 区县
         street: this.consigneeFrom.street,
         address: this.consigneeFrom.address,
         order_id_3rd: this.consigneeFrom.order_id_3rd
@@ -464,13 +519,15 @@ export default {
       // consignee_info.address = `${consignee_info.province}${consignee_info.city}${consignee_info.area}${consignee_info.street}`
 
       const data = {
-        opr: 'save_order',             // 由后把购物车中商品转为订单
+        opr: 'save_order', // 由后把购物车中商品转为订单
         buycart_id: this.buycart_id,
         goods_list,
         attach_list,
         consignee_info,
         delivery_company_name: this.consigneeFrom.company_name,
-        remark: this.consigneeFrom.remark
+        remark: this.consigneeFrom.remark,
+        tshop_id: this.consigneeFrom.tshop_id,
+        remark_img_list: this.remark_img_list
       }
 
       console.log('购物车下单 req=>', data)
@@ -495,6 +552,28 @@ export default {
     },
     goGoodsList() {
       this.$router.push('/manage-goods/goodslist')
+    },
+    async getTshopList() {
+      const data = {
+        opr: 'get_tshop_list',
+        business_id: this.business_id // 商户账户ID
+      }
+
+      const resp = await tshopGet(data)
+      console.log('商户淘宝店铺列表 res=>', resp)
+      if (resp.ret !== 0) return
+
+      this.tshopList = resp.data.list || []
+    },
+    handleRemarkImgClick(url) {
+      this.dialogImageUrl = url
+      this.dialogVisible = true
+    },
+    handleRemarkImgRemoveClick(i) {
+      this.remark_img_list.splice(i, 1)
+    },
+    handleUploadSuccess({ img_name }) {
+      this.remark_img_list.push(img_name)
     }
   }
 }
@@ -653,6 +732,75 @@ export default {
   }
   .el-button {
     margin-left: 125px;
+  }
+}
+.remark-img-wrapper {
+  display: inline-block;
+  .remark-img-item {
+    position: relative;
+    border: 1px solid #eaeaea;
+    display: inline-block;
+    width: 82px;
+    height: 102px;
+    margin-right: 10px;
+
+    &:hover {
+      .el-icon-error {
+        opacity: 1;
+      }
+    }
+
+    img {
+      cursor: pointer;
+      width: 80px;
+      height: 100px;
+    }
+    .el-icon-error {
+      position: absolute;
+      right: -7px;
+      top: -8px;
+      color: #b9aeae;
+      font-size: 20px;
+      opacity: 0;
+      cursor: pointer;
+    }
+  }
+}
+/deep/ .outline-uploader {
+  display: inline-block;
+  .el-upload {
+    border: 1px dashed #e6e6e6;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .el-upload:hover {
+    border-color: #2584f9;
+  }
+  .avatar-uploader-icon {
+    font-size: 30px;
+    color: #2584f9;
+    width: 80px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+  }
+  .upload-preview {
+    width: 117px;
+    height: 140px;
+    display: block;
+  }
+}
+/deep/ .preview-pic-wrapper {
+  .el-dialog__body {
+    max-height: 80vh;
+    text-align: center;
+    padding: 0;
+    img {
+      max-height: 80vh;
+      max-width: 70vh;
+    }
   }
 }
 </style>
