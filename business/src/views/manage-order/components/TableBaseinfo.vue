@@ -13,13 +13,14 @@
           <div v-if="[0,1,2].includes(scope.$index)">{{ scope.row.company_name }}</div>
           <div v-else>
             <div class="remark-img-list">
-              <img
-                v-for="(img, i) in scope.row.company_name"
-                :key="i"
-                :src="img"
-                @click="handleRemarkImgClick(img)"
-              />
+              <div v-for="(img, i) in scope.row.company_name" :key="i" class="remark-img-item">
+                <img :src="img" @click="handleRemarkImgClick(img)" />
+                <i class="el-icon-error" @click="handleRemarkImgRemoveClick(i)"></i>
+              </div>
             </div>
+            <sl-upload class="outline-uploader" :type="8" @on-success="handleUploadSuccess">
+              <i class="el-icon-plus avatar-uploader-icon" />
+            </sl-upload>
           </div>
         </template>
       </el-table-column>
@@ -36,7 +37,12 @@
 </template>
 
 <script>
+import SlUpload from '@/components/upload/index'
+
 export default {
+  components: {
+    SlUpload
+  },
   props: {
     baseinfoList: {
       type: Array,
@@ -73,6 +79,12 @@ export default {
     handleRemarkImgClick(url) {
       this.dialogImageUrl = url
       this.dialogVisible = true
+    },
+    handleUploadSuccess({ img_name }) {
+      this.$emit('imgupload-success', img_name)
+    },
+    handleRemarkImgRemoveClick() {
+      console.log('del')
     }
   }
 }
@@ -80,12 +92,36 @@ export default {
 
 <style lang="scss" scoped>
 .remark-img-list {
-  img {
+  display: inline-block;
+
+  .remark-img-item {
+    position: relative;
     border: 1px solid #eaeaea;
-    height: 100px;
-    width: 80px;
+    display: inline-block;
+    width: 82px;
+    height: 102px;
     margin-right: 10px;
-    cursor: pointer;
+
+    &:hover {
+      .el-icon-error {
+        opacity: 1;
+      }
+    }
+
+    img {
+      cursor: pointer;
+      width: 80px;
+      height: 100px;
+    }
+    .el-icon-error {
+      position: absolute;
+      right: 0;
+      top: 0;
+      color: #b9aeae;
+      font-size: 20px;
+      opacity: 0;
+      cursor: pointer;
+    }
   }
 }
 /deep/ .preview-pic-wrapper {
@@ -97,6 +133,32 @@ export default {
       max-height: 80vh;
       max-width: 70vh;
     }
+  }
+}
+/deep/ .outline-uploader {
+  display: inline-block;
+  .el-upload {
+    border: 1px dashed #e6e6e6;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .el-upload:hover {
+    border-color: #2584f9;
+  }
+  .avatar-uploader-icon {
+    font-size: 30px;
+    color: #2584f9;
+    width: 80px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+  }
+  .upload-preview {
+    width: 117px;
+    height: 140px;
+    display: block;
   }
 }
 </style>
