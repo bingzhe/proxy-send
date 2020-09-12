@@ -15,7 +15,9 @@
             <div class="remark-img-list">
               <div v-for="(img, i) in scope.row.company_name" :key="i" class="remark-img-item">
                 <img :src="img" @click="handleRemarkImgClick(img)" />
-                <i class="el-icon-error" @click="handleRemarkImgRemoveClick(i)"></i>
+                <el-popover placement="top" width="240" trigger="hover" content="请注意，点击后直接删除图片">
+                  <i slot="reference" class="el-icon-error" @click="handleRemarkImgRemoveClick(i)"></i>
+                </el-popover>
               </div>
             </div>
             <sl-upload class="outline-uploader" :type="8" @on-success="handleUploadSuccess">
@@ -83,8 +85,8 @@ export default {
     handleUploadSuccess({ img_name }) {
       this.$emit('imgupload-success', img_name)
     },
-    handleRemarkImgRemoveClick() {
-      console.log('del')
+    handleRemarkImgRemoveClick(i) {
+      this.$emit('imgdelete', i)
     }
   }
 }

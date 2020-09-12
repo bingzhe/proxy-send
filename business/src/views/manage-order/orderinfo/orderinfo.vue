@@ -39,7 +39,11 @@
         <baseinfo-title color="#FB7474" text="基本信息" />
       </div>
       <div class="info-content-wrapper">
-        <table-baseinfo :baseinfo-list="baseinfoList" />
+        <table-baseinfo
+          :baseinfo-list="baseinfoList"
+          @imgupload-success="handleBaseInfoimgUpload"
+          @imgdelete="handleBaseInfoimgdel"
+        />
       </div>
     </div>
     <!-- 商品信息 -->
@@ -187,7 +191,9 @@ export default {
       // 操作历史
       orderTrack: [],
 
-      ORDER_STATUS
+      ORDER_STATUS,
+
+      remark_img_list: [] // 附图名称
     }
   },
   created() {
@@ -216,10 +222,7 @@ export default {
       this.order_status = info.order_status
       this.status_remark = info.status_remark
 
-      // info.remark_img_list = [
-      //   '004900648cddfd09dbeae6d13f1503cd.jpg',
-      //   '004900648cddfd09dbeae6d13f1503cd.jpg'
-      // ]
+      // info.remark_img_list = ['004900648cddfd09dbeae6d13f1503cd.jpg']
 
       // 基本信息
       this.baseinfoList[0].order_id = info.order_id
@@ -239,6 +242,8 @@ export default {
       this.baseinfoList[3].company_name = (info.remark_img_list || []).map((img) => {
         return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=8&img_name=${img}&vxversion=v2`
       })
+
+      this.remark_img_list = info.remark_img_list || []
 
       // 商品信息
       this.goodsList = info.goods_list.map((goods) => {
@@ -326,6 +331,27 @@ export default {
     },
     handlerEditBtnClick() {
       this.$router.push({ path: `/manage-order/tborderedit/${this.order_id}` })
+    },
+    handleBaseInfoimgUpload(imgname) {
+      this.remark_img_list.push(imgname)
+      this.saveRemarkImg(this.remark_img_list)
+    },
+    handleBaseInfoimgdel(i) {
+      this.remark_img_list.splice(i, 1)
+      this.saveRemarkImg(this.remark_img_list)
+    },
+    async saveRemarkImg(remarkList) {
+      const data = {
+        opr: 'save_order_remark_img',
+        order_id: this.order_id,
+        remark_img_list: remarkList
+      }
+
+      const resp = await orderSave(data)
+      if (resp.ret !== 0) return
+
+      this.$slnotify({ message: '操作成功' })
+      this.getOrderinfo()
     }
   }
 }
