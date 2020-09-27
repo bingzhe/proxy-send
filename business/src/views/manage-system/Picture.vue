@@ -139,6 +139,9 @@
           <el-form-item label="图片名称" prop="material_name">
             <el-input v-model="pictureForm.material_name" placeholder="请输入" />
           </el-form-item>
+          <el-form-item label="图片编码" prop="material_code">
+            <el-input v-model="pictureForm.material_code" placeholder="请输入" />
+          </el-form-item>
           <el-form-item label="主题分类" prop="theme">
             <el-select v-model="pictureForm.theme" placeholder="请选择">
               <el-option v-for="item in theme_list" :key="item" :label="item" :value="item" />
@@ -207,6 +210,7 @@ export default {
       editPictureId: '',
       pictureForm: {
         material_name: '',
+        material_code: '',
         theme: '',
         // status: '',
         material_img: '',
@@ -214,6 +218,7 @@ export default {
       },
       pictureFormRules: {
         material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
+        material_code: [{ required: true, message: '请输入图片编码', trigger: 'blur' }],
         theme: [{ required: true, message: '请选择主题分类', trigger: 'change' }],
         // status: [{ required: true, message: '请选择状态', trigger: 'change' }],
         material_img: [{ required: true, message: '请上传轮廓图' }]
@@ -324,6 +329,7 @@ export default {
       const data = {
         opr: 'save_material',
         material_name: this.pictureForm.material_name,
+        material_code: this.pictureForm.material_code,
         theme: this.pictureForm.theme,
         material_img: this.pictureForm.material_img,
         business_id: this.business_id
@@ -353,6 +359,7 @@ export default {
     handlerMaterialEditClick(row) {
       this.editPictureId = row.material_id
       this.pictureForm.material_name = row.material_name
+      this.pictureForm.material_code = row.material_code
       this.pictureForm.theme = row.theme
       // this.pictureForm.status = row.status
       this.pictureForm.material_img = row.material_img
@@ -363,6 +370,7 @@ export default {
       this.$refs.pictureForm.resetFields()
       this.editPictureId = ''
       this.pictureForm.material_name = ''
+      this.pictureForm.material_code = ''
       this.pictureForm.theme = ''
       // this.pictureForm.status = ''
       this.pictureForm.material_img = ''
