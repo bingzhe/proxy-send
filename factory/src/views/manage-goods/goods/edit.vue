@@ -108,6 +108,11 @@
               </el-input>
             </el-form-item>
           </el-col>
+          <el-col v-if="goodsType === GOODS_TYPE.GIFT" :span="11" :xs="20">
+            <el-form-item label="sku编码" label-width="160px" prop="sku">
+              <el-input v-model.trim="baseinfoForm.sku" placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
           <el-col v-if="goodsType === GOODS_TYPE.GIFT" :span="18" :xs="20">
             <el-form-item
               label="库存"
@@ -489,7 +494,8 @@ export default {
         model: '', // 型号
         price: '', // 单价
         remark: '', // 备注
-        inventory: '', // 商品库存
+        inventory: '', // 商品库存  礼品
+        sku: '', // sku  礼品
         warehouse_inventory: [{ warehouse_id: '', inventory: '' }] // 礼品的商品库存
       },
       printinfoForm: {
@@ -514,6 +520,7 @@ export default {
         model: [{ required: true, message: '请选择型号', trigger: 'change' }],
         price: [{ required: true, message: '请输入单价', trigger: 'blur' }],
         inventory: [{ required: true, message: '请输入商品库存', trigger: 'blur' }],
+        sku: [{ required: true, message: '请输入商品sku编码', trigger: 'blur' }],
         warehouse_inventory: [{ required: true, type: 'array' }]
       },
 
@@ -673,6 +680,7 @@ export default {
             warehouse_id: ''
           }
         ]
+        this.baseinfoForm.sku = ((info.opt_color_list || [])[0] || {}).sku
       }
 
       this.handlerBrandChange(this.baseinfoForm.brand)
@@ -755,7 +763,7 @@ export default {
             inventory: inventory, // 库存量（各仓库库存之和）
             color_img: '', // 底图(只是图片文件名，不是url)
             outline_img: '', // 当前商品颜色对应的轮廓图
-            sku: '', // sku编码
+            sku: this.baseinfoForm.sku, // sku编码
             warehouse_inventory: this.baseinfoForm.warehouse_inventory
           }
         ]
