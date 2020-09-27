@@ -3,6 +3,8 @@ import _ from 'lodash'
 const state = {
   isEdit: false, // 订单是否在编辑
   editOrderId: '', // 编辑的订单
+  editDiyGoodsId: '', // 直接编辑diy商品的id
+  editIndexId: '', // 订单中的商品id
 
   // 收货人信息
   consigneeFrom: {
@@ -39,6 +41,14 @@ const mutations = {
 
   updateEditOrderId(state, payload) {
     state.editOrderId = payload
+  },
+
+  updateEditDiyGoodsId(state, payload) {
+    state.editDiyGoodsId = payload
+  },
+
+  updateEditIndexId(state, payload) {
+    state.editIndexId = payload
   },
 
   updateconsigneeFrom(state, payload) {

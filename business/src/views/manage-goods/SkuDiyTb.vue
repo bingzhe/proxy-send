@@ -181,18 +181,39 @@ export default {
       // 图片base64数据
       ori_user_img_data: '',
       prune_img_data: '',
-      preview_img_data: ''
+      preview_img_data: '',
+
+      /**
+       * "" 列表过来，商品新增，
+       * shopcartTb 编辑订单页面商品编辑
+       * */
+
+      source: ''
     }
   },
   computed: {
     ...mapState({
       buycart_id: (state) => state.user.buycart_id,
-      editOrderId: (state) => state.orderEdit.editOrderId
+      editOrderId: (state) => state.orderEdit.editOrderId,
+      goodsList: (state) => state.orderEdit.goodsList,
+      editIndexId: (state) => state.orderEdit.editIndexId
     })
   },
   mounted() {
     this.goodsInfo.goods_id = this.$route.params.goods_id
     this.getGoodsInfo()
+
+    /**
+     * 直接是商品编辑的时候，从vuex中同步下数据。
+     */
+    const source = this.$route.query.source
+    if (source) {
+      this.source = source
+      const goods = this.goodsList.filter((goods) => this.editIndexId === goods.index_id)[0] || {}
+
+      this.num = goods.num
+      console.log('edit_goods', goods)
+    }
   },
   methods: {
     async getGoodsInfo() {

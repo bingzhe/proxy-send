@@ -31,7 +31,11 @@
             <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
             <el-table-column prop="opr" label="操作" width="85" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="handleGoodsEditClick(scope.row)">编辑</el-button>
+                <el-button
+                  v-if="scope.row.type === GOODS_TYPE.DIY"
+                  type="text"
+                  @click="handleGoodsEditClick(scope.row)"
+                >编辑</el-button>
                 <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
               </template>
             </el-table-column>
@@ -271,7 +275,9 @@ export default {
 
       // 图片预览
       dialogImageUrl: '',
-      dialogVisible: false
+      dialogVisible: false,
+
+      GOODS_TYPE
     }
   },
   computed: {
@@ -453,14 +459,26 @@ export default {
     },
     /**
      * 订单中商品编辑淘宝订单直接补在后面
+     *
+     * ---- 2020.9.27
+     * 编辑商品直接进diy商品页面,goodsList后面
      */
     handleGoodsEditClick(row) {
       this.$store.commit('orderEdit/updateIsOrderEdit', true)
       this.$store.commit('orderEdit/updateEditOrderId', this.order_id)
+      this.$store.commit('orderEdit/updateEditOrderId', row.goods_id)
+      this.$store.commit('orderEdit/updateEditIndexId', row.index_id)
 
       this.$router.push({
-        path: '/manage-goods/goodslist'
+        path: `/manage-goods/tbdiy/${row.goods_id}`,
+        query: {
+          source: 'shopcartTb'
+        }
       })
+
+      // this.$router.push({
+      //   path: '/manage-goods/goodslist'
+      // })
     },
     handlerSaveOrderClick() {
       if (this.multipleSelection.length === 0) {
