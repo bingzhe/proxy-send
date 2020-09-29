@@ -326,6 +326,12 @@ export default {
         })
       },
       deep: true
+    },
+    remark_img_list: {
+      handler: function () {
+        this.getPriceSave()
+      },
+      deep: true
     }
   },
   mounted() {
@@ -455,7 +461,8 @@ export default {
         remark: this.consigneeFrom.remark,
         tshop_id: this.consigneeFrom.tshop_id, // 淘宝店id（即当前订单的来源，一般是从旺店通同步过来的订单，如果是直接从商户端下单，则为空）
         // order_id: this.order_id, // 订单id [可为空]
-        consignee_city: this.consigneeFrom.city // 订单收货城市 [必填]
+        consignee_city: this.consigneeFrom.city, // 订单收货城市 [必填]
+        remark_img_list: this.remark_img_list
       }
 
       console.log('计算订单费用 req=>', data)

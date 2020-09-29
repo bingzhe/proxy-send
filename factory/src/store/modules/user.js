@@ -63,7 +63,7 @@ const mutations = {
 
     state.delivery_list = delivery_list
 
-    state.icp_txt = (siteInfo.icp || {}).text || ''
+    state.icp_txt = (siteInfo.icp || {}).txt || ''
     state.icp_url = (siteInfo.icp || {}).url || ''
   }
 }

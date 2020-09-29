@@ -84,6 +84,20 @@ const mutations = {
     if (i >= 0) {
       state.goodsList.splice(i, 1, payload.goods)
     }
+  },
+  editGoods(state, payload) {
+    const index = state.goodsList.findIndex((item) => item.index_id === state.editIndexId)
+
+    console.log('goodsList index_id', index)
+
+    state.goodsList[index].ori_user_img = payload.ori_user_img
+    state.goodsList[index].preview_img = payload.preview_img
+    state.goodsList[index].prune_img = payload.prune_img
+    state.goodsList[index].num = payload.num
+    state.goodsList[index].goodsSumPrice = payload.goodsSumPrice
+    state.goodsList[index].goods_img_url = payload.goods_img_url
+    state.goodsList[index].color = payload.color
+    state.goodsList[index].goods_info_str = payload.goods_info_str
   }
 }
 

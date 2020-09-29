@@ -209,11 +209,16 @@ export default {
     const source = this.$route.query.source
     if (source) {
       this.source = source
-      const goods = this.goodsList.filter((goods) => this.editIndexId === goods.index_id)[0] || {}
-
-      this.num = goods.num
-      console.log('edit_goods', goods)
     }
+
+    /**
+     * 编辑页面刷新离开页面给提醒
+     */
+
+    window.addEventListener('beforeunload', this.handleBeforeunload, false)
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.handleBeforeunload, false)
   },
   methods: {
     async getGoodsInfo() {
@@ -240,6 +245,25 @@ export default {
       this.picHeight = (info.img_print_param || {}).height
       this.picWidth = (info.img_print_param || {}).width
       this.picRadius = (info.img_print_param || {}).radius_adjius
+
+      /**
+       * diy商品编辑的时候,color的回显
+       */
+
+      if (this.source) {
+        const goods = this.goodsList.filter((goods) => this.editIndexId === goods.index_id)[0] || {}
+        const ori_user_img = goods.ori_user_img
+
+        this.ori_user_img = ori_user_img
+        this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${ori_user_img}`
+
+        this.num = goods.num
+        this.curPic = (info.opt_color_list || []).findIndex(
+          (item) => item.color_name === goods.color
+        )
+
+        console.log('goods', goods)
+      }
 
       this.opt_color_list = (info.opt_color_list || []).map((item, index) => {
         item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${item.color_img}`
@@ -270,6 +294,13 @@ export default {
         await this.$refs.diyDesigner.addColorImg(this.color_img_url)
         // console.log(this.outline_img_url)
         await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+
+        /**
+         * 回显ori_user_img
+         */
+        if (this.source && this.ori_user_img_url) {
+          this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
+        }
       })
     },
     handlerGetUploadFile({ file }) {
@@ -328,7 +359,7 @@ export default {
       /**
        * 本地选择的图片需要先上传
        */
-      if (this.picSource === 1) {
+      if (this.picSource === 1 && !this.source) {
         this.ori_user_img = await this.imgUpload(this.ori_user_img_data, 4)
       }
       this.preview_img = await this.imgUpload(this.preview_img_data, 5)
@@ -355,8 +386,13 @@ export default {
 
       console.log('pushDiyGoods', goods)
 
-      this.$store.commit('orderEdit/goodsListPush', goods)
-      this.$router.push({ path: `/manage-order/tborderedit/${this.editOrderId}` })
+      if (this.source) {
+        this.$store.commit('orderEdit/editGoods', goods)
+        this.$router.push({ path: `/manage-order/tborderedit/${this.editOrderId}` })
+      } else {
+        this.$store.commit('orderEdit/goodsListPush', goods)
+        this.$router.push({ path: `/manage-order/tborderedit/${this.editOrderId}` })
+      }
 
       // const data = {
       //   opr: 'put_to_buycart_diy',
@@ -456,6 +492,12 @@ export default {
           resolve(resp.data.img_name)
         })
       })
+    },
+    handleBeforeunload(e) {
+      if (e) {
+        e.returnValue = '关闭提示'
+      }
+      return '关闭提示'
     }
   }
 }

@@ -344,6 +344,11 @@ export default {
       }, 500)
     }
     this.getTshopList()
+
+    window.addEventListener('beforeunload', this.handleBeforeunload, false)
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.handleBeforeunload, false)
   },
   methods: {
     // 多选
@@ -466,7 +471,7 @@ export default {
     handleGoodsEditClick(row) {
       this.$store.commit('orderEdit/updateIsOrderEdit', true)
       this.$store.commit('orderEdit/updateEditOrderId', this.order_id)
-      this.$store.commit('orderEdit/updateEditOrderId', row.goods_id)
+      this.$store.commit('orderEdit/updateEditDiyGoodsId', row.goods_id)
       this.$store.commit('orderEdit/updateEditIndexId', row.index_id)
 
       this.$router.push({
@@ -547,7 +552,8 @@ export default {
       this.$store.dispatch('user/getUserInfo')
 
       setTimeout(() => {
-        this.$router.go(-1)
+        // this.$router.go(-1)
+        this.$router.push('/manage-order/list')
       }, 2000)
     },
     goGoodsList() {
@@ -587,6 +593,12 @@ export default {
     },
     handleUploadSuccess({ img_name }) {
       this.remark_img_list.push(img_name)
+    },
+    handleBeforeunload(e) {
+      if (e) {
+        e.returnValue = '关闭提示'
+      }
+      return '关闭提示'
     }
   }
 }
