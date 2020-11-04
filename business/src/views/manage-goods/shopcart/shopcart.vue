@@ -4,7 +4,9 @@
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
-          <el-button class="continue-shop" type="primary" plain @click="goGoodsList">继续选购</el-button>
+          <el-button class="continue-shop" type="primary" plain @click="goGoodsList"
+            >继续选购</el-button
+          >
         </div>
         <div class="select-goods-table-wrapper">
           <el-table
@@ -21,7 +23,11 @@
               </template>
             </el-table-column>
             <el-table-column prop="type_str" label="商品类型" min-width="50" />
-            <el-table-column prop="goods_info_str" label="材质_品牌_型号_边框_商品编号" width="300" />
+            <el-table-column
+              prop="goods_info_str"
+              label="材质_品牌_型号_边框_商品编号"
+              width="300"
+            />
             <el-table-column prop="num" label="数量" width="150">
               <template slot-scope="scope">
                 <el-input-number
@@ -36,7 +42,9 @@
             <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
             <el-table-column prop="opr" label="操作" min-width="50">
               <template slot-scope="scope">
-                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
+                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -71,7 +79,7 @@
             :inline="true"
             label-width="80px"
           >
-            <el-form-item label="物流选择" prop="company_name" label-width="130px">
+            <!-- <el-form-item label="物流选择" prop="company_name" label-width="130px">
               <el-select
                 v-model="consigneeFrom.company_name"
                 placeholder="请选择"
@@ -84,11 +92,16 @@
                   :value="item.name"
                 />
               </el-select>
-            </el-form-item>
-            <el-form-item label="下单店铺" prop="tshop_id" label-width="110px">
-              <el-select v-model="consigneeFrom.tshop_id" placeholder="请选择" @change="getPriceSave">
+            </el-form-item> -->
+            <el-form-item label="下单店铺" prop="tshop_id" label-width="130px">
+              <el-select
+                v-model="consigneeFrom.tshop_id"
+                class="full-width"
+                placeholder="请选择"
+                @change="getPriceSave"
+              >
                 <el-option
-                  v-for="(item,index) in tshopList"
+                  v-for="(item, index) in tshopList"
                   :key="index"
                   :label="item.tshop_name"
                   :value="item.tshop_id"
@@ -282,8 +295,8 @@ export default {
         province: [{ required: true, message: '请输入省份', trigger: 'blur' }],
         city: [{ required: true, message: '请输入市区', trigger: 'blur' }],
         area: [{ required: true, message: '请输入区县', trigger: 'blur' }],
-        street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }],
-        company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }]
+        street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }]
+        // company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }]
       },
 
       goods_fee: 0.0, // 商品合计费用
@@ -385,7 +398,8 @@ export default {
       this.consigneeFrom.city = consignee_info.city
       this.consigneeFrom.area = consignee_info.area
       this.consigneeFrom.street = consignee_info.street
-      this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
+      // this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
+      this.consigneeFrom.company_name = ''
       this.consigneeFrom.remark = info.remark || ''
       this.consigneeFrom.telephone = consignee_info.telephone
       this.consigneeFrom.order_id_3rd = consignee_info.order_id_3rd
@@ -695,6 +709,10 @@ export default {
     width: 300px;
   }
   .el-textarea {
+    width: 725px;
+  }
+
+  .full-width.el-select {
     width: 725px;
   }
   .el-form-item.address {

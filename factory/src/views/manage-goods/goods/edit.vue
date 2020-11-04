@@ -45,7 +45,7 @@
               label-width="160px"
               prop="raw_material"
             >
-              <el-select v-model="baseinfoForm.raw_material" placeholder="请选择">
+              <el-select v-model="baseinfoForm.raw_material" placeholder="请选择" filterable>
                 <el-option
                   v-for="item in raw_material_list"
                   :key="item"
@@ -65,6 +65,7 @@
               <el-select
                 v-model="baseinfoForm.brand"
                 placeholder="请选择"
+                filterable
                 @change="handlerBrandChange"
               >
                 <el-option
@@ -85,7 +86,7 @@
               label-width="160px"
               prop="model"
             >
-              <el-select v-model="baseinfoForm.model" placeholder="请选择">
+              <el-select v-model="baseinfoForm.model" placeholder="请选择" filterable>
                 <el-option
                   v-for="item in model_list"
                   :key="item.model_id"
@@ -121,7 +122,7 @@
               class="gift-warehouse-inventory"
             >
               <el-row
-                v-for="(item ,index) in baseinfoForm.warehouse_inventory"
+                v-for="(item, index) in baseinfoForm.warehouse_inventory"
                 :key="index"
                 class="gift-item"
               >
@@ -129,10 +130,15 @@
                 <el-col :span="9">
                   <el-form-item
                     class="gift-inventory-form-item"
-                    :rules="{required: true, message: '请选择仓库', trigger: 'change'}"
+                    :rules="{ required: true, message: '请选择仓库', trigger: 'change' }"
                     :prop="'warehouse_inventory.' + index + '.warehouse_id'"
                   >
-                    <el-select v-model="item.warehouse_id" filterable clearable placeholder="请选择">
+                    <el-select
+                      v-model="item.warehouse_id"
+                      filterable
+                      clearable
+                      placeholder="请选择"
+                    >
                       <el-option
                         v-for="warehouse in warehouseList"
                         :key="warehouse.warehouse_id"
@@ -146,8 +152,8 @@
                   <el-form-item
                     class="gift-inventory-form-item"
                     :rules="[
-                      {required: true, message: '请输入仓库库存', trigger: 'blur'},
-                      {type: 'number', message: '仓库库存必须为数组'}
+                      { required: true, message: '请输入仓库库存', trigger: 'blur' },
+                      { type: 'number', message: '仓库库存必须为数组' }
                     ]"
                     :prop="'warehouse_inventory.' + index + '.inventory'"
                   >
@@ -155,16 +161,15 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="4">
-                  <el-button
-                    v-if="index === 0"
-                    type="primary"
-                    @click="handleGiftWarehouseAddClick"
-                  >新增仓库</el-button>
+                  <el-button v-if="index === 0" type="primary" @click="handleGiftWarehouseAddClick"
+                    >新增仓库</el-button
+                  >
                   <el-button
                     v-if="index !== 0"
                     type="danger"
                     @click="handleGifeWarehousedelClick(index)"
-                  >删除</el-button>
+                    >删除</el-button
+                  >
                 </el-col>
               </el-row>
             </el-form-item>
@@ -176,7 +181,7 @@
             <el-form-item label="备注" label-width="160px">
               <el-input
                 v-model="baseinfoForm.remark"
-                :rows="3"
+                :rows="5"
                 type="textarea"
                 placeholder="请输入"
                 maxlength="100"
@@ -187,6 +192,30 @@
         </el-row>
       </el-form>
     </div>
+    <!-- 赠品 -->
+    <div
+      v-show="goodsType === GOODS_TYPE.DIY || goodsType === GOODS_TYPE.NORM"
+      class="attach-list-form-wrapper"
+    >
+      <div class="baseinfo-title-wrapper">
+        <baseinfo-title color="#7d33ff" text="赠品" />
+      </div>
+      <el-form :modle="attachListForm">
+        <el-row>
+          <el-col :span="22">
+            <el-form-item label="礼品名称" label-width="160px">
+              <el-input
+                v-model="attachListForm.attach_list_str"
+                :rows="3"
+                type="textarea"
+                placeholder="请输入"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+
     <div v-show="goodsType === GOODS_TYPE.DIY" class="printinfo-form-wrapper">
       <div class="baseinfo-title-wrapper">
         <baseinfo-title color="#F348A1" text="打印参数" />
@@ -239,8 +268,8 @@
           <el-col :span="11" :xs="20">
             <el-form-item label="与横边距离" label-width="160px" prop="x_offset ">
               <el-input
-                v-model.trim="printinfoForm.x_offset "
-                v-limit-input-number="printinfoForm.x_offset "
+                v-model.trim="printinfoForm.x_offset"
+                v-limit-input-number="printinfoForm.x_offset"
                 placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
@@ -250,8 +279,8 @@
           <el-col :span="11" :xs="20">
             <el-form-item label="与纵边距离" label-width="160px" prop="y_offset ">
               <el-input
-                v-model.trim="printinfoForm.y_offset "
-                v-limit-input-number="printinfoForm.y_offset "
+                v-model.trim="printinfoForm.y_offset"
+                v-limit-input-number="printinfoForm.y_offset"
                 placeholder="请输入"
               >
                 <span slot="suffix" class="input-suffix-text">像素</span>
@@ -287,7 +316,9 @@
                 <el-form-item
                   class="pictable-form-item"
                   :rules="{
-                    required: true, message: '颜色不能为空', trigger: 'blur'
+                    required: true,
+                    message: '颜色不能为空',
+                    trigger: 'blur'
                   }"
                   :prop="'opt_color_list.' + scope.$index + '.color_name'"
                 >
@@ -300,7 +331,9 @@
                 <el-form-item
                   class="pictable-form-item"
                   :rules="{
-                    required: true, message: 'sku编码不能为空', trigger: 'blur'
+                    required: true,
+                    message: 'sku编码不能为空',
+                    trigger: 'blur'
                   }"
                   :prop="'opt_color_list.' + scope.$index + '.sku'"
                 >
@@ -311,22 +344,26 @@
             <el-table-column prop="warehouse_inventory" label="库存" min-width="240" align="center">
               <template slot-scope="scope">
                 <div class="warehouse-addbtn-wrapper">
-                  <el-button
-                    type="primary"
-                    size="mini"
-                    @click="handleAddWarehouseClick(scope.row)"
-                  >新增仓库</el-button>
+                  <el-button type="primary" size="mini" @click="handleAddWarehouseClick(scope.row)"
+                    >新增仓库</el-button
+                  >
                 </div>
                 <el-row
-                  v-for="(item ,index) in scope.row.warehouse_inventory"
+                  v-for="(item, index) in scope.row.warehouse_inventory"
                   :key="index"
                   :gutter="6"
                 >
                   <el-col :span="10">
                     <el-form-item
                       class="warehouse-form-item"
-                      :rules="{required: true, message: '请选择仓库', trigger: 'change'}"
-                      :prop="'opt_color_list.' + scope.$index + '.warehouse_inventory.' + index + '.warehouse_id'"
+                      :rules="{ required: true, message: '请选择仓库', trigger: 'change' }"
+                      :prop="
+                        'opt_color_list.' +
+                        scope.$index +
+                        '.warehouse_inventory.' +
+                        index +
+                        '.warehouse_id'
+                      "
                     >
                       <el-select
                         v-model="item.warehouse_id"
@@ -348,10 +385,16 @@
                     <el-form-item
                       class="warehouse-form-item"
                       :rules="[
-                        {required: true, message: '请输入仓库库存', trigger: 'blur'},
-                        {type: 'number', message: '仓库库存必须为数组'}
+                        { required: true, message: '请输入仓库库存', trigger: 'blur' },
+                        { type: 'number', message: '仓库库存必须为数组' }
                       ]"
-                      :prop="'opt_color_list.' + scope.$index + '.warehouse_inventory.' + index + '.inventory'"
+                      :prop="
+                        'opt_color_list.' +
+                        scope.$index +
+                        '.warehouse_inventory.' +
+                        index +
+                        '.inventory'
+                      "
                     >
                       <el-input v-model.number="item.inventory" size="mini" placeholder="请输入" />
                     </el-form-item>
@@ -362,7 +405,8 @@
                       type="danger"
                       size="mini"
                       @click="handleDelWarehouseClick(scope.row, index)"
-                    >删除</el-button>
+                      >删除</el-button
+                    >
                   </el-col>
                 </el-row>
               </template>
@@ -380,20 +424,27 @@
             </el-table-column>-->
             <el-table-column
               prop="color_img"
-              :label="goodsType === GOODS_TYPE.DIY ? '底图' : '图片' "
+              :label="goodsType === GOODS_TYPE.DIY ? '底图' : '图片'"
               min-width="80"
               align="center"
             >
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
-                  :rules="{required: true, message: `${goodsType === GOODS_TYPE.DIY ? '底图' : '图片'}不能为空`}"
+                  :rules="{
+                    required: true,
+                    message: `${goodsType === GOODS_TYPE.DIY ? '底图' : '图片'}不能为空`
+                  }"
                   :prop="'opt_color_list.' + scope.$index + '.color_img'"
                 >
                   <sl-upload
                     class="outline-uploader"
                     :type="7"
-                    @on-success="(res) => {return handlerOutlineImgSuccess(res,scope.row)}"
+                    @on-success="
+                      (res) => {
+                        return handlerOutlineImgSuccess(res, scope.row)
+                      }
+                    "
                   >
                     <img
                       v-if="scope.row.color_img"
@@ -415,13 +466,17 @@
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
-                  :rules="{required: true, message: '轮廓图不能为空'}"
+                  :rules="{ required: true, message: '轮廓图不能为空' }"
                   :prop="'opt_color_list.' + scope.$index + '.outline_img'"
                 >
                   <sl-upload
                     class="outline-uploader"
                     :type="3"
-                    @on-success="(res) => {return handlerOutlineImgSuc(res,scope.row)}"
+                    @on-success="
+                      (res) => {
+                        return handlerOutlineImgSuc(res, scope.row)
+                      }
+                    "
                   >
                     <img
                       v-if="scope.row.outline_img"
@@ -435,7 +490,9 @@
             </el-table-column>
             <el-table-column prop="opr" label="操作" min-width="45" align="center">
               <template slot-scope="scope">
-                <el-button class="text-btn" type="text" @click="handlerDeletePicClick(scope.row)">删除</el-button>
+                <el-button class="text-btn" type="text" @click="handlerDeletePicClick(scope.row)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -447,11 +504,9 @@
 
     <div class="button-group-wrapper">
       <el-button class="btn-h-44-w-100 btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
-      <el-button
-        class="btn-h-44-w-100"
-        type="primary"
-        @click="handlerSaveBtnClick"
-      >{{ goods_id ? '保存' : '提交' }}</el-button>
+      <el-button class="btn-h-44-w-100" type="primary" @click="handlerSaveBtnClick">{{
+        goods_id ? '保存' : '提交'
+      }}</el-button>
     </div>
   </div>
 </template>
@@ -497,6 +552,10 @@ export default {
         inventory: '', // 商品库存  礼品
         sku: '', // sku  礼品
         warehouse_inventory: [{ warehouse_id: '', inventory: '' }] // 礼品的商品库存
+      },
+      // 赠送的礼品
+      attachListForm: {
+        attach_list_str: ''
       },
       printinfoForm: {
         height: '', // 图像高
@@ -655,6 +714,7 @@ export default {
 
       if (this.goodsType === GOODS_TYPE.DIY || this.goodsType === GOODS_TYPE.NORM) {
         this.basePicForm.opt_color_list = info.opt_color_list || []
+        this.attachListForm.attach_list_str = info.attach_list_str
 
         this.basePicForm.opt_color_list.forEach((item) => {
           item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=7&img_name=${item.color_img}`
@@ -715,6 +775,7 @@ export default {
           item.inventory = inventory
         })
         data.opt_color_list = this.basePicForm.opt_color_list
+        data.attach_list_str = this.attachListForm.attach_list_str
       } else if (this.goodsType === GOODS_TYPE.NORM) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
         const basePicValidate = await this.validateForm('basePicForm')
@@ -737,6 +798,7 @@ export default {
           item.inventory = inventory
         })
         data.opt_color_list = this.basePicForm.opt_color_list
+        data.attach_list_str = this.attachListForm.attach_list_str
       } else if (this.goodsType === GOODS_TYPE.GIFT) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
 
@@ -864,6 +926,12 @@ export default {
 }
 
 .baseinfo-form-wrapper {
+  max-width: 1035px;
+  .baseinfo-title-wrapper {
+    padding: 24px 30px;
+  }
+}
+.attach-list-form-wrapper {
   max-width: 1035px;
   .baseinfo-title-wrapper {
     padding: 24px 30px;

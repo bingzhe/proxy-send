@@ -43,7 +43,9 @@
           <span>图库列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddPicClick">新增</el-button>
+          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddPicClick"
+            >新增</el-button
+          >
         </div>
       </div>
 
@@ -91,7 +93,9 @@
                 type="text"
               >停用</el-button>-->
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)">删除</el-button>
+              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -102,14 +106,15 @@
           <div class="pagination-total">
             <span>
               共
-              <span class="num-text">{{ pageTotal }}</span>页/
-              <span class="num-text">{{ total }}</span>条数据
+              <span class="num-text">{{ pageTotal }}</span
+              >页/ <span class="num-text">{{ total }}</span
+              >条数据
             </span>
           </div>
           <el-pagination
             class="sl-pagination"
             :current-page.sync="listQuery.page"
-            :page-sizes="[10,20,40]"
+            :page-sizes="[10, 20, 40]"
             :page-size="listQuery.limit"
             layout="prev, pager, next, jumper"
             :total="total"
@@ -124,7 +129,7 @@
       <sl-dialog
         ref="pictureEditDialog"
         :title="editPictureId ? '编辑图片' : '新增图片'"
-        :confirm-text="editPictureId ? '保存': '提交'"
+        :confirm-text="editPictureId ? '保存' : '提交'"
         :validate="true"
         @confirm="handlerPicEditDialogConfirm"
         @close="handlerPicEditDialogClose"
@@ -157,6 +162,14 @@
               />
             </el-select>
           </el-form-item>-->
+          <el-form-item v-model="pictureForm" label="组合sku" prop="sku_list_str">
+            <el-input
+              v-model="pictureForm.sku_list_str"
+              :rows="5"
+              type="textarea"
+              placeholder="请输入"
+            />
+          </el-form-item>
           <el-form-item label="图片" prop="material_img">
             <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
               <img
@@ -214,7 +227,8 @@ export default {
         theme: '',
         // status: '',
         material_img: '',
-        material_img_url: ''
+        material_img_url: '',
+        sku_list_str: ''
       },
       pictureFormRules: {
         material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
@@ -330,6 +344,7 @@ export default {
         opr: 'save_material',
         material_name: this.pictureForm.material_name,
         material_code: this.pictureForm.material_code,
+        sku_list_str: this.pictureForm.sku_list_str,
         theme: this.pictureForm.theme,
         material_img: this.pictureForm.material_img,
         business_id: this.business_id
@@ -364,6 +379,7 @@ export default {
       // this.pictureForm.status = row.status
       this.pictureForm.material_img = row.material_img
       this.pictureForm.material_img_url = row.material_img_url
+      this.pictureForm.sku_list_str = row.sku_list_str
       this.$refs.pictureEditDialog.show()
     },
     handlerPicEditDialogClose() {
@@ -375,6 +391,7 @@ export default {
       // this.pictureForm.status = ''
       this.pictureForm.material_img = ''
       this.pictureForm.material_img_url = ''
+      this.pictureForm.sku_list_str = ''
     },
     handlerDelClick(row) {
       const material_id = row.material_id
@@ -437,7 +454,7 @@ export default {
   }
 }
 .picture-form {
-  width: 430px;
+  width: 530px;
 }
 /deep/ .outline-uploader {
   .el-upload {

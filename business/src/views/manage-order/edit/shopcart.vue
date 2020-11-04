@@ -4,7 +4,9 @@
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
-          <el-button class="continue-shop" type="primary" plain @click="goGoodsList">继续选购</el-button>
+          <el-button class="continue-shop" type="primary" plain @click="goGoodsList"
+            >继续选购</el-button
+          >
         </div>
         <div class="select-goods-table-wrapper">
           <el-table
@@ -21,7 +23,11 @@
               </template>
             </el-table-column>
             <el-table-column prop="type_str" label="商品类型" min-width="50" />
-            <el-table-column prop="goods_info_str" label="材质_品牌_型号_边框_商品编号" width="300" />
+            <el-table-column
+              prop="goods_info_str"
+              label="材质_品牌_型号_边框_商品编号"
+              width="300"
+            />
             <el-table-column prop="num" label="数量" width="150">
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.num" :min="1" size="small" @change="getPrice" />
@@ -35,8 +41,11 @@
                   v-if="ORDER_STATUS.REPLENISH_WAIT === order_status"
                   type="text"
                   @click="handleGoodsEditClick(scope.row)"
-                >编辑</el-button>
-                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
+                  >编辑</el-button
+                >
+                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)"
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -71,7 +80,7 @@
             :inline="true"
             label-width="80px"
           >
-            <el-form-item label="物流选择" prop="company_name" label-width="130px">
+            <!-- <el-form-item label="物流选择" prop="company_name" label-width="130px">
               <el-select v-model="consigneeFrom.company_name" placeholder="请选择" @change="getPrice">
                 <el-option
                   v-for="(item,index) in delivery_list"
@@ -80,7 +89,7 @@
                   :value="item.name"
                 />
               </el-select>
-            </el-form-item>
+            </el-form-item> -->
             <br />
             <el-form-item label="收件人" prop="person" label-width="130px">
               <el-input v-model.trim="consigneeFrom.person" placeholder="请输入" />
@@ -305,7 +314,8 @@ export default {
       this.consigneeFrom.city = consignee_info.city
       this.consigneeFrom.area = consignee_info.area
       this.consigneeFrom.street = consignee_info.street
-      this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
+      // this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
+      this.consigneeFrom.company_name = ''
       this.consigneeFrom.remark = info.remark || ''
       this.consigneeFrom.telephone = consignee_info.telephone
       this.consigneeFrom.order_id_3rd = consignee_info.order_id_3rd
