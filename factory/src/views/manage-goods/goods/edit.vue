@@ -17,7 +17,11 @@
         <el-row>
           <el-col :span="11" :xs="20">
             <el-form-item label="商品名称" label-width="160px" prop="goods_name">
-              <el-input v-model="baseinfoForm.goods_name" placeholder="请输入" />
+              <el-input
+                v-model="baseinfoForm.goods_name"
+                placeholder="请输入"
+                @change="getSkuType"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
@@ -45,7 +49,12 @@
               label-width="160px"
               prop="raw_material"
             >
-              <el-select v-model="baseinfoForm.raw_material" placeholder="请选择" filterable>
+              <el-select
+                v-model="baseinfoForm.raw_material"
+                placeholder="请选择"
+                filterable
+                @change="getSku"
+              >
                 <el-option
                   v-for="item in raw_material_list"
                   :key="item"
@@ -86,7 +95,12 @@
               label-width="160px"
               prop="model"
             >
-              <el-select v-model="baseinfoForm.model" placeholder="请选择" filterable>
+              <el-select
+                v-model="baseinfoForm.model"
+                placeholder="请选择"
+                filterable
+                @change="getSku"
+              >
                 <el-option
                   v-for="item in model_list"
                   :key="item.model_id"
@@ -111,7 +125,9 @@
           </el-col>
           <el-col v-if="goodsType === GOODS_TYPE.GIFT" :span="11" :xs="20">
             <el-form-item label="sku编码" label-width="160px" prop="sku">
-              <el-input v-model.trim="baseinfoForm.sku" placeholder="请输入"></el-input>
+              <el-tooltip effect="dark" :content="baseinfoForm.sku" placement="top">
+                <el-input v-model.trim="baseinfoForm.sku" placeholder="请输入" readonly></el-input>
+              </el-tooltip>
             </el-form-item>
           </el-col>
           <el-col v-if="goodsType === GOODS_TYPE.GIFT" :span="18" :xs="20">
@@ -322,7 +338,7 @@
                   }"
                   :prop="'opt_color_list.' + scope.$index + '.color_name'"
                 >
-                  <el-input v-model="scope.row.color_name" placeholder="请输入" />
+                  <el-input v-model="scope.row.color_name" placeholder="请输入" @change="getSku" />
                 </el-form-item>
               </template>
             </el-table-column>
@@ -337,7 +353,9 @@
                   }"
                   :prop="'opt_color_list.' + scope.$index + '.sku'"
                 >
-                  <el-input v-model="scope.row.sku" placeholder="请输入" />
+                  <el-tooltip effect="dark" :content="scope.row.sku" placement="top">
+                    <el-input v-model="scope.row.sku" placeholder="请输入" readonly />
+                  </el-tooltip>
                 </el-form-item>
               </template>
             </el-table-column>
@@ -671,6 +689,7 @@ export default {
     },
     handlerGoodsTypeChagne(val) {
       this.goodsType = val
+      this.getSkuType()
     },
     validateForm(formName) {
       return new Promise((resolve, reject) => {
@@ -679,6 +698,7 @@ export default {
         })
       })
     },
+
     async getGoodsInfo() {
       const data = {
         opr: 'get_goods_info',
@@ -852,7 +872,83 @@ export default {
         this.$router.go(-1)
       }, 2000)
     },
+    getSkuType() {
+      if (this.goodsType === GOODS_TYPE.DIY || this.goodsType === GOODS_TYPE.NORM) {
+        this.getSku()
+      } else {
+        this.getSkuGift()
+      }
+    },
+    async getSku() {
+      if (
+        !this.baseinfoForm.raw_material ||
+        !this.baseinfoForm.brand ||
+        !this.baseinfoForm.model ||
+        !this.baseinfoForm.goods_name ||
+        !this.baseinfoForm.type
+      ) {
+        return
+      }
 
+      const skuCreateBaseInfo = {
+        raw_material: this.baseinfoForm.raw_material,
+        brand: this.baseinfoForm.brand,
+        model: this.baseinfoForm.model,
+        goods_name: this.baseinfoForm.goods_name,
+        type: this.baseinfoForm.type
+      }
+      const list = (this.basePicForm.opt_color_list || []).map((item, index) => {
+        return {
+          index: index,
+          color_name: item.color_name,
+          ...skuCreateBaseInfo
+        }
+      })
+
+      if (list.length === 0) return
+
+      const data = {
+        opr: 'goods_sku_create',
+        list
+      }
+
+      const resp = await goodsGet(data)
+      if (resp.ret !== 0) return
+
+      console.log('sku resp=>', resp)
+      const respList = resp.data.list || []
+
+      respList.forEach((item) => {
+        this.basePicForm.opt_color_list[item.index].sku = item.sku
+      })
+    },
+    async getSkuGift() {
+      if (!this.baseinfoForm.goods_name || !this.baseinfoForm.type) {
+        return
+      }
+
+      const data = {
+        opr: 'goods_sku_create',
+        list: [
+          {
+            goods_name: this.baseinfoForm.goods_name,
+            type: this.baseinfoForm.type,
+            raw_material: '',
+            brand: '',
+            model: '',
+            color_name: '',
+            index: 0
+          }
+        ]
+      }
+
+      const resp = await goodsGet(data)
+      if (resp.ret !== 0) return
+
+      console.log('gift sku resp=>', resp)
+      const respList = resp.data.list || []
+      this.baseinfoForm.sku = (respList[0] || {}).sku
+    },
     handlerOutlineImgSuccess({ img_name }, row) {
       row.color_img = img_name
       row.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=7&img_name=${img_name}`
@@ -868,6 +964,7 @@ export default {
           this.model_list = brand.model_list
         }
       })
+      this.getSku()
     },
     /**
      * 添加仓库库存输入

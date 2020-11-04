@@ -226,7 +226,7 @@ export const constantRoutes = [
         name: 'warehouse',
         access: '11',
         component: () => import('@/views/manage-system/warehouse/warehouse'),
-        meta: { title: '仓库管理', icon: 'shagnhuguanli' }
+        meta: { title: '仓库管理', icon: 'cangku' }
       },
       {
         path: 'param',

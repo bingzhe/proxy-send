@@ -77,6 +77,7 @@
           <el-table-column prop="raw_material" label="材质" min-width="60" />
           <el-table-column prop="brand_txt" label="品牌" min-width="60" />
           <el-table-column prop="model_txt" label="型号" min-width="80" />
+          <el-table-column prop="sku_list_str" label="sku" min-width="80" />
           <el-table-column prop="type_txt" label="类型" min-width="60" />
           <el-table-column prop="opr" label="操作" min-width="60" align="center">
             <template slot-scope="scope">

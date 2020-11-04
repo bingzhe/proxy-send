@@ -232,7 +232,7 @@ export default {
       },
       pictureFormRules: {
         material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
-        material_code: [{ required: true, message: '请输入图片编码', trigger: 'blur' }],
+        // material_code: [{ required: true, message: '请输入图片编码', trigger: 'blur' }],
         theme: [{ required: true, message: '请选择主题分类', trigger: 'change' }],
         // status: [{ required: true, message: '请选择状态', trigger: 'change' }],
         material_img: [{ required: true, message: '请上传轮廓图' }]
