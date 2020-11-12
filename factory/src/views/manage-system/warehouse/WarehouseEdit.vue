@@ -1,10 +1,10 @@
 <template>
   <SlDialog
     ref="warehouseEditDialog"
-    :title="warehouse_id ? '编辑仓库信息': '新增仓库信息'"
-    :confirm-text="warehouse_id ? '保存':'提交'"
+    :title="warehouse_id ? '编辑仓库信息' : '新增仓库信息'"
+    :confirm-text="warehouse_id ? '保存' : '提交'"
     :validate="true"
-    width="700px"
+    width="850px"
     top="8vh"
     @confirm="handleWarehouseEditConfirm"
     @close="handleWarehouseClose"
@@ -49,70 +49,128 @@
         <span class="add-btn-text">新增</span>
       </div>
       <div class="delivery-price-table default-table-change">
-        <el-table :data="warehouseForm.delivery_price_list" stripe border>
+        <el-table :data="warehouseForm.delivery_company_list" stripe border>
           <el-table-column prop="num" label="序号" width="55" align="center">
             <template slot-scope="scope">
               <span>{{ scope.$index + 1 }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="发货数量" min-width="100" align="center">
+          <el-table-column label="快递" min-width="60" align="center">
             <template slot-scope="scope">
               <el-form-item
                 class="table-form-item"
-                :prop="'delivery_price_list.' + scope.$index + '.from'"
+                :prop="'delivery_company_list.' + scope.$index + '.company_name'"
                 :rules="{
-                  required: true, trigger: 'blur'
+                  required: true,
+                  trigger: 'blur',
+                  message: '请输入快递公司'
                 }"
               >
                 <el-input
-                  v-model.trim="scope.row.from"
-                  v-limit-input-morenum="scope.row.from"
-                  :data-expression="`warehouseForm.delivery_price_list[${scope.$index}].from`"
-                  class="delivary-input"
-                  size="mini"
-                ></el-input>
-              </el-form-item>
-              <span>-</span>
-              <el-form-item
-                class="table-form-item"
-                :prop="'delivery_price_list.' + scope.$index + '.to'"
-                :rules="{
-                  required: true, trigger: 'blur'
-                }"
-              >
-                <el-input
-                  v-model="scope.row.to"
-                  v-limit-input-morenum="scope.row.to"
-                  :data-expression="`warehouseForm.delivery_price_list[${scope.$index}].to`"
-                  class="delivary-input"
+                  v-model.trim="scope.row.company_name"
+                  placeholder="请输入"
                   size="mini"
                 ></el-input>
               </el-form-item>
             </template>
           </el-table-column>
-          <el-table-column label="发货费用" min-width="100" align="center">
+          <el-table-column label="发货数量" min-width="100" align="center">
             <template slot-scope="scope">
-              <el-form-item
-                class="table-form-item"
-                :prop="'delivery_price_list.' + scope.$index + '.price'"
-                :rules="{
-                  required: true, trigger: 'blur'
-                }"
-              >
-                <el-input
-                  v-model="scope.row.price"
-                  v-limit-input-morenum="scope.row.price"
-                  :data-expression="`warehouseForm.delivery_price_list[${scope.$index}].price`"
-                  data-dotrange="{0,2}"
-                  class="delivary-price-input"
-                  size="mini"
-                ></el-input>
-              </el-form-item>
+              <div v-for="(item, index) in scope.row.price_list" :key="index">
+                <el-form-item
+                  class="table-form-item"
+                  :prop="`delivery_company_list.${scope.$index}.price_list[${index}].from`"
+                  :rules="{
+                    required: true,
+                    trigger: 'blur',
+                    message: '请输入开始数量'
+                  }"
+                >
+                  <el-input
+                    v-model.trim="item.from"
+                    v-limit-input-morenum="item.from"
+                    :data-expression="
+                      `warehouseForm.delivery_company_list[${
+                        scope.$index
+                      }].price_list[${index}].from`
+                    "
+                    class="delivary-input"
+                    size="mini"
+                    placeholder="请输入"
+                  ></el-input>
+                </el-form-item>
+                <span>-</span>
+                <el-form-item
+                  class="table-form-item"
+                  :prop="`delivery_company_list.${scope.$index}.price_list[${index}].to`"
+                  :rules="{
+                    required: true,
+                    trigger: 'blur',
+                    message: '请输入结束数量'
+                  }"
+                >
+                  <el-input
+                    v-model="item.to"
+                    v-limit-input-morenum="item.to"
+                    :data-expression="
+                      `warehouseForm.delivery_company_list[${scope.$index}].price_list[${index}].to`
+                    "
+                    class="delivary-input"
+                    size="mini"
+                    placeholder="请输入"
+                  ></el-input>
+                </el-form-item>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="发货费用" min-width="60" align="center">
+            <template slot-scope="scope">
+              <el-row v-for="(item, index) in scope.row.price_list" :key="index">
+                <el-col :span="18">
+                  <el-form-item
+                    class="table-form-item"
+                    :prop="`delivery_company_list.${scope.$index}.price_list[${index}].price`"
+                    :rules="{
+                      required: true,
+                      trigger: 'blur',
+                      message: '请输入发货费用'
+                    }"
+                  >
+                    <el-input
+                      v-model="item.price"
+                      v-limit-input-morenum="item.price"
+                      :data-expression="
+                        `warehouseForm.delivery_company_list[${
+                          scope.$index
+                        }].price_list[${index}].price`
+                      "
+                      data-dotrange="{0,2}"
+                      class="delivary-price-input"
+                      size="mini"
+                      placeholder="请输入"
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6" class="company-price-btn-wrapper">
+                  <i
+                    v-if="index === 0"
+                    class="el-icon-circle-plus"
+                    @click="handlePriceAddClick(scope.$index)"
+                  />
+                  <i
+                    v-if="index !== 0"
+                    class="el-icon-remove"
+                    @click="handlePriceRemoveClick(scope.$index, index)"
+                  />
+                </el-col>
+              </el-row>
             </template>
           </el-table-column>
           <el-table-column prop="num" label="操作" width="60" align="center">
             <template slot-scope="scope">
-              <el-button class="text-btn" type="text" @click="handleDelPriceClick(scope.$index)">删除</el-button>
+              <el-button class="text-btn" type="text" @click="handleDelPriceClick(scope.$index)"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -152,7 +210,18 @@ export default {
         address: '', // 仓库详细地址
         send_area_id_list: [], // [['1','12'], ['2', '22']]
         send_area_list: [], // 可向哪些城市发货
-        delivery_price_list: [] // 发货阶梯价 {from :"", to: "", price:""}
+        delivery_price_list: [], // 发货阶梯价 {from :"", to: "", price:""}
+        delivery_company_list: [] // 物流公司发货阶梯价
+        //         {
+        //     company_name : "顺风",    // 快递公司名称
+        //     price_list : [          // 发货阶梯价列表
+        //         {
+        //             from: 1.0,      // 发货量从from到to
+        //             to: 9.99,
+        //             price: 5.0,     // 收费price（元）
+        //         }
+        //     ]
+        // }
       },
       warehouseFormRules: {
         warehouse_name: [{ required: true, message: '请输入仓库名称', trigger: 'blur' }],
@@ -180,6 +249,7 @@ export default {
     },
     handleWarehouseClose() {
       this.$refs.warehouseEditForm.resetFields()
+      this.warehouseForm.delivery_company_list = []
       this.$emit('on-close')
     },
     handleWarehouseOpen() {
@@ -206,7 +276,8 @@ export default {
       this.warehouseForm.send_area_id_list = (info.send_area_list || []).map((item) => {
         return (this.areaMap[item] || {}).path || []
       })
-      this.warehouseForm.delivery_price_list = info.delivery_price_list || []
+      // this.warehouseForm.delivery_price_list = info.delivery_price_list || []
+      this.warehouseForm.delivery_company_list = info.delivery_company_list || []
     },
     async saveWarehose() {
       const citySelect = this.$refs.cityCascader.getCheckedNodes()
@@ -221,7 +292,8 @@ export default {
         address: this.warehouseForm.address, // 仓库详细地址
         city: city, // 仓库所在位置(城市)
         send_area_list: sendCity, // 可向哪些城市发货
-        delivery_price_list: this.warehouseForm.delivery_price_list
+        // delivery_price_list: this.warehouseForm.delivery_price_list
+        delivery_company_list: this.warehouseForm.delivery_company_list
       }
 
       if (this.warehouse_id) {
@@ -243,14 +315,37 @@ export default {
       })
     },
     handleAddPriceClick() {
-      this.warehouseForm.delivery_price_list.push({
-        from: '',
-        to: '',
-        price: ''
+      // this.warehouseForm.delivery_price_list.push({
+      //   from: '',
+      //   to: '',
+      //   price: ''
+      // })
+
+      this.warehouseForm.delivery_company_list.push({
+        company_name: '', // 快递公司名称
+        price_list: [
+          {
+            from: '', // 发货量从from到to
+            to: '',
+            price: '' // 收费price（元）
+          }
+        ]
       })
     },
     handleDelPriceClick(i) {
-      this.warehouseForm.delivery_price_list.splice(i, 1)
+      this.warehouseForm.delivery_company_list.splice(i, 1)
+    },
+    // 发货数量新增
+    handlePriceAddClick(i) {
+      this.warehouseForm.delivery_company_list[i].price_list.push({
+        from: '', // 发货量从from到to
+        to: '',
+        price: '' // 收费price（元）
+      })
+    },
+    // 删除发货数量
+    handlePriceRemoveClick(i, j) {
+      this.warehouseForm.delivery_company_list[i].price_list.splice(j, 1)
     }
   }
 }
@@ -302,5 +397,19 @@ export default {
 }
 .text-btn {
   color: #e33119;
+}
+
+.company-price-btn-wrapper {
+  font-size: 24px;
+  line-height: 28px;
+  .el-icon-circle-plus {
+    color: #2584f9;
+    cursor: pointer;
+  }
+
+  .el-icon-remove {
+    color: #e33119;
+    cursor: pointer;
+  }
 }
 </style>

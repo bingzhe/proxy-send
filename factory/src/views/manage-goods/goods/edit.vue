@@ -177,15 +177,16 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="4">
-                  <el-button v-if="index === 0" type="primary" @click="handleGiftWarehouseAddClick"
-                    >新增仓库</el-button
-                  >
+                  <el-button
+                    v-if="index === 0"
+                    type="primary"
+                    @click="handleGiftWarehouseAddClick"
+                  >新增仓库</el-button>
                   <el-button
                     v-if="index !== 0"
                     type="danger"
                     @click="handleGifeWarehousedelClick(index)"
-                    >删除</el-button
-                  >
+                  >删除</el-button>
                 </el-col>
               </el-row>
             </el-form-item>
@@ -362,9 +363,11 @@
             <el-table-column prop="warehouse_inventory" label="库存" min-width="240" align="center">
               <template slot-scope="scope">
                 <div class="warehouse-addbtn-wrapper">
-                  <el-button type="primary" size="mini" @click="handleAddWarehouseClick(scope.row)"
-                    >新增仓库</el-button
-                  >
+                  <el-button
+                    type="primary"
+                    size="mini"
+                    @click="handleAddWarehouseClick(scope.row)"
+                  >新增仓库</el-button>
                 </div>
                 <el-row
                   v-for="(item, index) in scope.row.warehouse_inventory"
@@ -377,10 +380,10 @@
                       :rules="{ required: true, message: '请选择仓库', trigger: 'change' }"
                       :prop="
                         'opt_color_list.' +
-                        scope.$index +
-                        '.warehouse_inventory.' +
-                        index +
-                        '.warehouse_id'
+                          scope.$index +
+                          '.warehouse_inventory.' +
+                          index +
+                          '.warehouse_id'
                       "
                     >
                       <el-select
@@ -408,10 +411,10 @@
                       ]"
                       :prop="
                         'opt_color_list.' +
-                        scope.$index +
-                        '.warehouse_inventory.' +
-                        index +
-                        '.inventory'
+                          scope.$index +
+                          '.warehouse_inventory.' +
+                          index +
+                          '.inventory'
                       "
                     >
                       <el-input v-model.number="item.inventory" size="mini" placeholder="请输入" />
@@ -423,8 +426,7 @@
                       type="danger"
                       size="mini"
                       @click="handleDelWarehouseClick(scope.row, index)"
-                      >删除</el-button
-                    >
+                    >删除</el-button>
                   </el-col>
                 </el-row>
               </template>
@@ -508,9 +510,11 @@
             </el-table-column>
             <el-table-column prop="opr" label="操作" min-width="45" align="center">
               <template slot-scope="scope">
-                <el-button class="text-btn" type="text" @click="handlerDeletePicClick(scope.row)"
-                  >删除</el-button
-                >
+                <el-button
+                  class="text-btn"
+                  type="text"
+                  @click="handlerDeletePicClick(scope.row)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>

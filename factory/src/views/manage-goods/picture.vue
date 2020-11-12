@@ -43,9 +43,11 @@
           <span>图库列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddPicClick"
-            >新增</el-button
-          >
+          <el-button
+            class="add-btn btn-h-38"
+            type="primary"
+            @click="handlerAddPicClick"
+          >新增</el-button>
         </div>
       </div>
 
@@ -93,9 +95,11 @@
                 type="text"
               >停用</el-button>-->
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)"
-                >删除</el-button
-              >
+              <el-button
+                class="btn-red"
+                type="text danger"
+                @click="handlerDelClick(scope.row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -106,9 +110,7 @@
           <div class="pagination-total">
             <span>
               共
-              <span class="num-text">{{ pageTotal }}</span
-              >页/ <span class="num-text">{{ total }}</span
-              >条数据
+              <span class="num-text">{{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
             </span>
           </div>
           <el-pagination
