@@ -80,24 +80,32 @@
             label-width="80px"
           >
             <el-form-item label="仓库" prop="warehouse_id" label-width="130px">
-              <el-select v-model="consigneeFrom.warehouse_id" placeholder="请选择" filterable>
+              <el-select
+                v-model="consigneeFrom.warehouse_id"
+                placeholder="请选择"
+                filterable
+                @change="handleWarehouseChange"
+              >
                 <el-option
                   v-for="(item, index) in warehouseList"
                   :key="index"
                   :label="item.warehouse_name"
                   :value="item.warehouse_id"
-                  @change="handleWarehouseChange(item)"
                 />
               </el-select>
             </el-form-item>
             <el-form-item label="物流" prop="delivery_company_name" label-width="110px">
-              <el-select v-model="consigneeFrom.company_name" placeholder="请选择" filterable>
+              <el-select
+                v-model="consigneeFrom.delivery_company_name"
+                placeholder="请选择"
+                filterable
+                @change="getPriceSave"
+              >
                 <el-option
-                  v-for="(item, index) in delivery_list"
+                  v-for="(item, index) in deliveryCompanyList"
                   :key="index"
-                  :label="item.delivery_str"
-                  :value="item.name"
-                  @change="getPriceSave"
+                  :label="item.company_name"
+                  :value="item.company_name"
                 />
               </el-select>
             </el-form-item>
@@ -260,7 +268,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function(code) {
+  toString: function (code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -296,7 +304,6 @@ export default {
         telephone: '', // 固定电话
         order_id_3rd: '', // 第三平台订单号
         tshop_id: '', // 下单店铺
-        // company_name:"",
 
         delivery_company_name: '', // 物流公司
         warehouse_id: '', // 仓库ID
@@ -308,8 +315,9 @@ export default {
         province: [{ required: true, message: '请输入省份', trigger: 'blur' }],
         city: [{ required: true, message: '请输入市区', trigger: 'blur' }],
         area: [{ required: true, message: '请输入区县', trigger: 'blur' }],
-        street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }]
-        // company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }]
+        street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }],
+        warehouse_id: [{ required: true, message: '请选择仓库', trigger: 'blur' }],
+        delivery_company_name: [{ required: true, message: '请选择物流', trigger: 'blur' }]
       },
 
       goods_fee: 0.0, // 商品合计费用
@@ -343,15 +351,13 @@ export default {
     },
     remarkImgPreviewList() {
       return this.remark_img_list.map((img) => {
-        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&type=8&img_name=${img}`
+        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=8&img_name=${img}`
       })
     }
   },
   watch: {
     goodsList: {
-      handler: function() {
+      handler: function () {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
@@ -359,15 +365,15 @@ export default {
       deep: true
     },
     remark_img_list: {
-      handler: function() {
+      handler: function () {
         this.getPriceSave()
       },
       deep: true
     }
   },
-  mounted() {
+  async mounted() {
     if (this.buycart_id) {
-      this.getBuycart()
+      await this.getBuycart()
 
       // // 选中所有商品
       // setTimeout(() => {
@@ -402,14 +408,10 @@ export default {
       })
 
       this.goodsList = (info.goods_list || []).map((item) => {
-        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
+        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
 
         item.type_str = GOODS_TYPE.toString(item.type)
-        item.goods_info_str = `${item.raw_material}_${item.brand_name}_${item.model_name}_${
-          item.color
-        }_${item.goods_id}`
+        item.goods_info_str = `${item.raw_material}_${item.brand_name}_${item.model_name}_${item.color}_${item.goods_id}`
         item.goodsSumPrice = item.num * item.price
         return item
       })
@@ -433,6 +435,9 @@ export default {
       this.goods_fee = info.goods_fee
       this.discount_fee = info.discount_fee
       this.actual_fee = info.actual_fee
+
+      this.consigneeFrom.warehouse_id = info.warehouse_id
+      this.consigneeFrom.delivery_company_name = info.delivery_company_name
 
       setTimeout(() => {
         this.goodsList.forEach((goods) => {
@@ -570,7 +575,7 @@ export default {
         goods_list,
         attach_list,
         consignee_info,
-        delivery_company_name: this.consigneeFrom.company_name,
+        delivery_company_name: this.consigneeFrom.delivery_company_name,
         warehouse_id: this.consigneeFrom.warehouse_id,
         warehouse_name: this.consigneeFrom.warehouse_name,
         remark: this.consigneeFrom.remark,
@@ -629,30 +634,27 @@ export default {
         business_id: this.business_id // 商户ID
       }
 
+      console.log('商户仓库列表 req=>', data)
       const resp = await warehouseGet(data)
       console.log('商户仓库列表 res=>', resp)
 
       if (resp.ret !== 0) return
       this.warehouseList = resp.data.list || []
 
-      //       list: [
-      //     {
-      //         warehouse_id        : "WH100",          // 仓库ID（空时为新建）
-      //         warehouse_name      : "深圳总仓",        // 仓库名称
-      //         delivery_company_list : [               // 仓库支持的快递列表
-      //             {
-      //                 company_name : "顺风",   // 快递公司名称
-      //             }
-      //         ]
-      //     }
-      // ]
+      if (this.consigneeFrom.warehouse_id) {
+        this.warehouseList.forEach((item) => {
+          if (item.warehouse_id === this.consigneeFrom.warehouse_id) {
+            this.consigneeFrom.warehouse_name = item.warehouse_name
+            this.deliveryCompanyList = item.delivery_company_list || []
+          }
+        })
+      }
     },
-    handleWarehouseChange(warehouse) {
-      console.log('warehouse', warehouse)
-
+    handleWarehouseChange(warehouse_id) {
       this.consigneeFrom.delivery_company_name = ''
       this.warehouseList.forEach((item) => {
-        if (item.warehouse_id === warehouse.warehouse_id) {
+        if (item.warehouse_id === warehouse_id) {
+          this.consigneeFrom.warehouse_name = item.warehouse_name
           this.deliveryCompanyList = item.delivery_company_list || []
         }
       })

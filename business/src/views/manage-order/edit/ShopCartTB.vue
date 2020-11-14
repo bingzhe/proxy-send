@@ -56,7 +56,7 @@
           <baseinfo-title color="#74BAFB" text="配送礼品" />
         </div>
         <div class="gifs-form-wrapper clearfix">
-          <div v-for="item in attachList" :key="item.goods_id" class="gifs-item">
+          <div v-for="(item, index) in attachList" :key="index" class="gifs-item">
             <span class="gifs-label">{{ item.goods_name }}</span>
             <el-input-number
               v-model="item.num"
@@ -80,16 +80,36 @@
             :inline="true"
             label-width="80px"
           >
-            <!-- <el-form-item label="物流选择" prop="company_name" label-width="130px">
-              <el-select v-model="consigneeFrom.company_name" placeholder="请选择" @change="getPrice">
+            <el-form-item label="仓库" prop="warehouse_id" label-width="130px">
+              <el-select
+                v-model="consigneeFrom.warehouse_id"
+                placeholder="请选择"
+                filterable
+                @change="handleWarehouseChange"
+              >
                 <el-option
-                  v-for="(item,index) in delivery_list"
+                  v-for="(item, index) in warehouseList"
                   :key="index"
-                  :label="item.delivery_str"
-                  :value="item.name"
+                  :label="item.warehouse_name"
+                  :value="item.warehouse_id"
                 />
               </el-select>
-            </el-form-item> -->
+            </el-form-item>
+            <el-form-item label="物流" prop="delivery_company_name" label-width="110px">
+              <el-select
+                v-model="consigneeFrom.delivery_company_name"
+                placeholder="请选择"
+                filterable
+                @change="getPrice"
+              >
+                <el-option
+                  v-for="(item, index) in deliveryCompanyList"
+                  :key="index"
+                  :label="item.company_name"
+                  :value="item.company_name"
+                />
+              </el-select>
+            </el-form-item>
             <el-form-item label="下单店铺" prop="tshop_id" label-width="130px">
               <el-select
                 v-model="consigneeFrom.tshop_id"
@@ -208,7 +228,7 @@
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import SlUpload from '@/components/upload/index'
-import { orderGet, orderSave, tshopGet } from '@/api/api'
+import { orderGet, orderSave, tshopGet, warehouseGet } from '@/api/api'
 import { mapState } from 'vuex'
 import { ORDER_STATUS } from '@/config/cfg'
 import _ from 'lodash'
@@ -264,6 +284,9 @@ export default {
       //     telephone: '', // 固定电话
       //     order_id_3rd: '', // 第三平台订单号
       //     tshop_id: '' // 下单店铺
+      //       delivery_company_name: '', // 物流公司
+      // warehouse_id: '', // 仓库ID
+      // warehouse_name: '' // 仓库名称
       //   },
       consigneeFrom: _.cloneDeep(this.$store.state.orderEdit.consigneeFrom),
       // remark_img_list: [],
@@ -278,7 +301,9 @@ export default {
         city: [{ required: true, message: '请输入市区', trigger: 'blur' }],
         area: [{ required: true, message: '请输入区县', trigger: 'blur' }],
         street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }],
-        company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }]
+        company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }],
+        warehouse_id: [{ required: true, message: '请选择仓库', trigger: 'blur' }],
+        delivery_company_name: [{ required: true, message: '请选择物流', trigger: 'blur' }]
       },
 
       goods_fee: 0.0, // 商品合计费用
@@ -291,7 +316,10 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
 
-      GOODS_TYPE
+      GOODS_TYPE,
+
+      warehouseList: [], // 店铺下仓库列表
+      deliveryCompanyList: [] // 仓库下可以发货物流公司的列表
     }
   },
   computed: {
@@ -345,11 +373,11 @@ export default {
       deep: true
     }
   },
-  mounted() {
+  async mounted() {
     this.order_id = this.$route.params.order_id
     if (this.order_id) {
       if (!this.orderIsEdit) {
-        this.getOrderinfo()
+        await this.getOrderinfo()
       }
 
       // 选中所有商品
@@ -358,6 +386,7 @@ export default {
       }, 500)
     }
     this.getTshopList()
+    this.getWarehouseMenu()
 
     window.addEventListener('beforeunload', this.handleBeforeunload, false)
   },
@@ -404,6 +433,10 @@ export default {
       this.consigneeFrom.area = consignee_info.area
       this.consigneeFrom.street = consignee_info.street
       // this.consigneeFrom.company_name = (info.delivery_info || {}).company_name
+
+      this.consigneeFrom.delivery_company_name = (info.delivery_info || {}).company_name
+      this.consigneeFrom.warehouse_id = (info.delivery_info || {}).warehouse_id
+
       this.consigneeFrom.company_name = ''
       this.consigneeFrom.remark = info.remark || ''
       this.consigneeFrom.telephone = consignee_info.telephone
@@ -417,6 +450,9 @@ export default {
       this.actual_fee = info.actual_fee
 
       this.order_status = info.order_status
+
+      this.consigneeFrom.warehouse_id = info.warehouse_id
+      this.consigneeFrom.delivery_company_name = info.delivery_company_name
     },
     autoSplit() {
       const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
@@ -449,7 +485,9 @@ export default {
         opr: 'cal_order_fee',
         goods_list: goods_list,
         attach_list: attach_list,
-        delivery_company_name: this.consigneeFrom.company_name,
+        delivery_company_name: this.consigneeFrom.delivery_company_name,
+        warehouse_id: this.consigneeFrom.warehouse_id,
+        warehouse_name: this.consigneeFrom.warehouse_name,
         tshop_id: this.consigneeFrom.tshop_id, // 淘宝店id（即当前订单的来源，一般是从旺店通同步过来的订单，如果是直接从商户端下单，则为空）
         order_id: this.order_id, // 订单id [可为空]
         consignee_city: this.consigneeFrom.city // 订单收货城市 [必填]
@@ -549,7 +587,9 @@ export default {
         goods_list,
         attach_list,
         consignee_info,
-        delivery_company_name: this.consigneeFrom.company_name,
+        delivery_company_name: this.consigneeFrom.delivery_company_name,
+        warehouse_id: this.consigneeFrom.warehouse_id,
+        warehouse_name: this.consigneeFrom.warehouse_name,
         remark: this.consigneeFrom.remark,
         tshop_id: this.consigneeFrom.tshop_id,
         remark_img_list: this.remark_img_list
@@ -614,6 +654,38 @@ export default {
         e.returnValue = '关闭提示'
       }
       return '关闭提示'
+    },
+    async getWarehouseMenu() {
+      const data = {
+        opr: 'get_warehouse_menu',
+        business_id: this.business_id // 商户ID
+      }
+
+      console.log('商户仓库列表 req=>', data)
+      const resp = await warehouseGet(data)
+      console.log('商户仓库列表 res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.warehouseList = resp.data.list || []
+
+      if (this.consigneeFrom.warehouse_id) {
+        this.warehouseList.forEach((item) => {
+          if (item.warehouse_id === this.consigneeFrom.warehouse_id) {
+            this.consigneeFrom.warehouse_name = item.warehouse_name
+            this.deliveryCompanyList = item.delivery_company_list || []
+          }
+        })
+      }
+    },
+    handleWarehouseChange(warehouse_id) {
+      this.consigneeFrom.delivery_company_name = ''
+      this.warehouseList.forEach((item) => {
+        if (item.warehouse_id === warehouse_id) {
+          this.consigneeFrom.warehouse_name = item.warehouse_name
+          this.deliveryCompanyList = item.delivery_company_list || []
+        }
+      })
+      this.getPrice()
     }
   }
 }

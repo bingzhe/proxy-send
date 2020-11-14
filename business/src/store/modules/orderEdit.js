@@ -15,11 +15,15 @@ const state = {
     city: '', // 市
     area: '', // 区县
     street: '', // 街道
-    company_name: '',
+    // company_name: '',
     remark: '', // 留言
     telephone: '', // 固定电话
     order_id_3rd: '', // 第三平台订单号
-    tshop_id: '' // 下单店铺
+    tshop_id: '', // 下单店铺
+
+    delivery_company_name: '', // 物流公司
+    warehouse_id: '', // 仓库ID
+    warehouse_name: '' // 仓库名称
   },
 
   remark_img_list: [], // 附图列表
