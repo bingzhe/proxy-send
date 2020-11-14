@@ -140,3 +140,6 @@ export const buycartSave = generateRequestFn('buycart_save.php')
 
 // tshop_get
 export const tshopGet = generateRequestFn('tshop_get.php')
+
+// warehouse_get
+export const warehouseGet = generateRequestFn('warehouse_get.php')
