@@ -3,7 +3,7 @@
     <canvas id="diy-designer-wrapper" />
 
     <!-- 截图 canvas -->
-    <canvas id="canvas_crop" style="visibility:hidden;display: none;" />
+    <canvas id="canvas_crop" style="visibility: hidden; display: none" />
 
     <!-- <button @click="preview">合成</button>
     <button @click="addOriginImg(ori_user_img_url)">addOriginImg</button>
@@ -46,30 +46,30 @@ export default {
       // radius: 45,
 
       canvas: null,
-      rect: null,        // 裁剪表示区域
+      rect: null, // 裁剪表示区域
       clipPath: null,
-      originImg: null,   // 原图实例
-      outlineImg: null,  // 轮廓图实例
-      colorImg: null,    // 地图实例
+      originImg: null, // 原图实例
+      outlineImg: null, // 轮廓图实例
+      colorImg: null, // 地图实例
 
       prune_img_data: '',
       preview_img_data: '',
 
-      prune_img: '',         // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-      preview_img: '',       // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+      prune_img: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+      preview_img: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
 
       outlineWidth: '',
       outlineHeight: '',
 
       isMoving: false,
 
-      scale: 1,             // canvas 缩放尺寸
+      scale: 1, // canvas 缩放尺寸
 
       // <<<<<<<<<<<<<< test data <<<<<<<<<<<<<<<
       // http://b.pso.rockyshi.cn/php/img_get.php?token=T1YL6Do4dje6MDIp&opr=get_img&type=1&img_name=2c8e46b57fe880442d15c24c9c83bb32.png
-      outline_url: require('@/assets/images/outline.png'),     // 轮廓图
+      outline_url: require('@/assets/images/outline.png'), // 轮廓图
       ori_user_img_url: require('@/assets/images/origin.jpg'), // 用户原图
-      color_img_url: require('@/assets/images/color.png')      // 底图
+      color_img_url: require('@/assets/images/color.png') // 底图
     }
   },
   methods: {
@@ -136,7 +136,7 @@ export default {
       // this.canvas.clipPath = this.clipPath
     },
     addOutline(url) {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         if (this.outlineImg) {
           this.canvas.remove(this.outlineImg)
         }
@@ -175,7 +175,12 @@ export default {
 
       fabric.Image.fromURL(url, (img) => {
         img.clipPath = this.clipPath
-        img.scaleToWidth(this.width, false)  // 缩放图片的高度到400
+
+        if (this.width > this.height) {
+          img.scaleToWidth(this.width, false) // 缩放图片的高度到400
+        } else {
+          img.scaleToHeight(this.height, false)
+        }
 
         img.top = 100
         img.left = 100
@@ -193,10 +198,18 @@ export default {
           this.canvas.setActiveObject(img)
         }
 
-        img.on('moving', () => { setOutlineTop() })
-        img.on('scaling', () => { setOutlineTop() })
-        img.on('rotating', () => { setOutlineTop() })
-        img.on('skewing', () => { setOutlineTop() })
+        img.on('moving', () => {
+          setOutlineTop()
+        })
+        img.on('scaling', () => {
+          setOutlineTop()
+        })
+        img.on('rotating', () => {
+          setOutlineTop()
+        })
+        img.on('skewing', () => {
+          setOutlineTop()
+        })
         // img.on('moved', () => { setOutlineBottom() })
         // img.on('scaled', () => { setOutlineBottom() })
         // img.on('rotated', () => { setOutlineBottom() })
@@ -217,7 +230,7 @@ export default {
       })
     },
     addColorImg(url) {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         if (this.colorImg) {
           this.canvas.remove(this.colorImg)
         }
@@ -261,7 +274,7 @@ export default {
       this.canvas.renderAll()
     },
     preview() {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         const canvas_crop = new fabric.Canvas('canvas_crop')
 
         // 去掉底色
@@ -270,7 +283,7 @@ export default {
         this.canvas.remove(this.outlineImg)
         this.canvas.renderAll()
 
-        fabric.Image.fromURL(this.canvas.toDataURL({ multiplier: 1 / this.scale }), async(img) => {
+        fabric.Image.fromURL(this.canvas.toDataURL({ multiplier: 1 / this.scale }), async (img) => {
           canvas_crop.add(img)
           canvas_crop.setHeight(this.height)
           canvas_crop.setWidth(this.width)
@@ -298,36 +311,42 @@ export default {
           this.canvas.setActiveObject(this.outlineImg)
           this.canvas.renderAll()
 
-          fabric.Image.fromURL(this.canvas.toDataURL({ multiplier: 1 / this.scale }), async(img) => {
-            canvas_crop.add(img)
-            canvas_crop.setHeight(this.outlineHeight)
-            canvas_crop.setWidth(this.outlineWidth)
-            canvas_crop.setBackgroundColor('rgba(	255,255,255,1)')
+          fabric.Image.fromURL(
+            this.canvas.toDataURL({ multiplier: 1 / this.scale }),
+            async (img) => {
+              canvas_crop.add(img)
+              canvas_crop.setHeight(this.outlineHeight)
+              canvas_crop.setWidth(this.outlineWidth)
+              canvas_crop.setBackgroundColor('rgba(	255,255,255,1)')
 
-            const top = 100 - (this.outlineHeight - this.height) / 2
-            const left = 100 - (this.outlineWidth - this.width) / 2
+              const top = 100 - (this.outlineHeight - this.height) / 2
+              const left = 100 - (this.outlineWidth - this.width) / 2
 
-            img.set('top', -top || 100)
-            img.set('left', -left || 100)
-            canvas_crop.renderAll()
+              img.set('top', -top || 100)
+              img.set('left', -left || 100)
+              canvas_crop.renderAll()
 
-            /**
-             * 生成第二张图片 和轮廓图合并后的图
-             */
-            this.preview_img_data = canvas_crop.toDataURL({ format: 'jpeg' })
+              /**
+               * 生成第二张图片 和轮廓图合并后的图
+               */
+              this.preview_img_data = canvas_crop.toDataURL({ format: 'jpeg' })
 
-            // this.preview_img = await this.imgUpload(this.preview_img_data, 5)
-            // this.prune_img = await this.imgUpload(this.prune_img_data, 6)
+              // this.preview_img = await this.imgUpload(this.preview_img_data, 5)
+              // this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
-            this.canvas.add(this.rect)
-            this.canvas.setActiveObject(this.originImg)
-            this.canvas.renderAll()
+              this.canvas.add(this.rect)
+              this.canvas.setActiveObject(this.originImg)
+              this.canvas.renderAll()
 
-            this.$emit('preview-success', { preview_img_data: this.preview_img_data, prune_img_data: this.prune_img_data })
-            // this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
-            canvas_crop.dispose()
-            resolve()
-          })
+              this.$emit('preview-success', {
+                preview_img_data: this.preview_img_data,
+                prune_img_data: this.prune_img_data
+              })
+              // this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
+              canvas_crop.dispose()
+              resolve()
+            }
+          )
         })
       })
     }
@@ -340,7 +359,7 @@ export default {
   border: 1px solid #ccc;
 }
 .canvas-bg-wrapper {
-  background: url("../../assets/images/canvas_bg.jpg") repeat;
+  background: url('../../assets/images/canvas_bg.jpg') repeat;
 }
 </style>
 
