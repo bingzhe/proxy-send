@@ -176,14 +176,21 @@ export default {
       fabric.Image.fromURL(url, (img) => {
         img.clipPath = this.clipPath
 
-        if (this.width > this.height) {
-          img.scaleToWidth(this.width, false) // 缩放图片的高度到400
-        } else {
-          img.scaleToHeight(this.height, false)
-        }
+        // if (this.width > this.height) {
+        //   img.scaleToWidth(this.width, false) // 缩放图片的高度到轮廓尺寸
+        // } else {
+        //   img.scaleToHeight(this.height, false)
+        // }
+
+        /**
+         * 计算图片缩放后的尺寸，给定位距离加上偏移距离
+         */
+        img.scaleToHeight(this.height, false)
+        const scaleWidth = img.width * img.scaleX
+        const offsetWidth = img.scaleX > 1 ? (scaleWidth - this.width) / 2 : 0
 
         img.top = 100
-        img.left = 100
+        img.left = 100 - offsetWidth
 
         this.originImg = img
 
@@ -193,10 +200,10 @@ export default {
             this.canvas.setActiveObject(this.outlineImg)
           }
         }
-        const setOutlineBottom = () => {
-          this.isMoving = false
-          this.canvas.setActiveObject(img)
-        }
+        // const setOutlineBottom = () => {
+        //   this.isMoving = false
+        //   this.canvas.setActiveObject(img)
+        // }
 
         img.on('moving', () => {
           setOutlineTop()
@@ -362,4 +369,3 @@ export default {
   background: url('../../assets/images/canvas_bg.jpg') repeat;
 }
 </style>
-
