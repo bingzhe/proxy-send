@@ -1,13 +1,7 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="30" class="order-status-wrapper clearfix">
-      <el-col
-        v-for="(item,key) in statusList"
-        :key="key"
-        :span="3"
-        class="status-item"
-        :class="{'status-item--active': searchForm.order_status === item.value}"
-      >
+    <el-row :gutter="10" class="order-status-wrapper clearfix">
+      <el-col v-for="(item, key) in statusList" :key="key" :span="2" class="status-item" :class="{ 'status-item--active': searchForm.order_status === item.value }">
         <div class="status-text" @click="handlerStatusCardClick(item)">
           {{ item.label }}
           (
@@ -66,11 +60,7 @@
       </div>
       <!-- search end -->
 
-      <div
-        v-loading="tableLoading"
-        element-loading-text="拼命加载中"
-        class="table-wrapper table-wrapper-default"
-      >
+      <div v-loading="tableLoading" element-loading-text="拼命加载中" class="table-wrapper table-wrapper-default">
         <div class="table-title clearfix">
           <div class="table-title__lable">
             <span>
@@ -100,29 +90,23 @@
                 <div class="button-group">
                   <el-button type="text" @click="goOrderinfo(scope.row.order_id)">订单详情</el-button>
 
-                  <el-button
-                    v-if="scope.row.order_status === ORDER_STATUS.AUDIT_WAIT"
-                    type="text"
-                    @click="openUndoDialogTip(scope.row.order_id)"
-                  >撤销订单</el-button>
+                  <el-button v-if="scope.row.order_status === ORDER_STATUS.AUDIT_WAIT" type="text" @click="openUndoDialogTip(scope.row.order_id)">撤销订单</el-button>
                   <el-button
                     v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL || scope.row.order_status === ORDER_STATUS.REPLENISH_WAIT"
                     type="text"
                     @click="handlerEditBtnClick(scope.row.order_id)"
-                  >编辑订单</el-button>
+                    >编辑订单</el-button
+                  >
                   <a href="https://www.kuaidi100.com/" target="_black">
-                    <el-button
-                      v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
-                      type="text"
-                    >物流跟踪</el-button>
+                    <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC" type="text">物流跟踪</el-button>
                   </a>
                   <el-button
-                    v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL
-                      || scope.row.order_status === ORDER_STATUS.REVOCAT "
+                    v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL || scope.row.order_status === ORDER_STATUS.REVOCAT"
                     type="text"
                     class="red-btn"
                     @click="openDeleteDialogTip(scope.row.order_id)"
-                  >删除订单</el-button>
+                    >删除订单</el-button
+                  >
                 </div>
               </template>
             </el-table-column>
@@ -134,14 +118,15 @@
             <div class="pagination-total">
               <span>
                 共
-                <span class="num-text">{{ pageTotal }}</span>页/
-                <span class="num-text">{{ total }}</span>条数据
+                <span class="num-text">{{ pageTotal }}</span
+                >页/ <span class="num-text">{{ total }}</span
+                >条数据
               </span>
             </div>
             <el-pagination
               class="sl-pagination"
               :current-page.sync="listQuery.page"
-              :page-sizes="[10,20,40]"
+              :page-sizes="[10, 20, 40]"
               :page-size="listQuery.limit"
               layout="prev, pager, next, jumper"
               :total="total"
@@ -256,7 +241,17 @@ export default {
           num: 0
         },
         revocat: { label: '已撤销', value: ORDER_STATUS.REVOCAT, num: 0 },
-        refund: { label: '已退款', value: ORDER_STATUS.REFUND, num: 0 }
+        refund: { label: '已退款', value: ORDER_STATUS.REFUND, num: 0 },
+        REPLENISH_WAIT: {
+          label: '已退款',
+          value: ORDER_STATUS.REPLENISH_WAIT,
+          num: 0
+        },
+        FREEZE: {
+          label: '已冻结',
+          value: ORDER_STATUS.FREEZE,
+          num: 0
+        }
       },
 
       oprOrderId: ''
@@ -320,7 +315,8 @@ export default {
         }
 
         if (item.order_status) {
-          item.order_status_str = ORDER_STATUS.toString(item.order_status)
+          // item.order_status_str = ORDER_STATUS.toString(item.order_status)
+          item.order_status_str = item.order_status_txt
         }
 
         item.delivery_number = (item.delivery_info || {}).delivery_number || '-'
@@ -338,6 +334,8 @@ export default {
       this.statusList.delivery_suc.num = statusStat[ORDER_STATUS.DELIVERY_SUC] || 0
       this.statusList.revocat.num = statusStat[ORDER_STATUS.REVOCAT] || 0
       this.statusList.refund.num = statusStat[ORDER_STATUS.REFUND] || 0
+      this.statusList.REPLENISH_WAIT.num = statusStat[ORDER_STATUS.REPLENISH_WAIT] || 0
+      this.statusList.FREEZE.num = statusStat[ORDER_STATUS.FREEZE] || 0
     },
     // 多选
     handleSelectionChange(val) {
@@ -427,7 +425,7 @@ export default {
   padding: 0 16px 20px;
 }
 .order-status-wrapper {
-  max-width: 1300px;
+  // max-width: 1300px;
   .status-item {
     .status-text {
       height: 64px;

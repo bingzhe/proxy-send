@@ -7,28 +7,13 @@
         </div>
         <div class="order-status-wrapper">
           <div class="order-status">当前订单状态：{{ ORDER_STATUS.toString(order_status) }}</div>
-          <div
-            v-if="order_status === ORDER_STATUS.AUDIT_FAIL"
-            class="order-status-reason"
-          >{{ status_remark }}</div>
+          <div v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="order-status-reason">{{ status_remark }}</div>
         </div>
       </div>
       <div class="btn-group-wrapper">
-        <el-button
-          v-if="order_status === ORDER_STATUS.AUDIT_WAIT"
-          class="btn-bd-primary"
-          @click="openUndoDialogTip"
-        >撤销订单</el-button>
-        <el-button
-          v-if="order_status === ORDER_STATUS.AUDIT_FAIL"
-          class="btn-bd-primary"
-          @click="handlerEditBtnClick"
-        >编辑订单</el-button>
-        <el-button
-          v-if="order_status === ORDER_STATUS.AUDIT_FAIL|| order_status === ORDER_STATUS.REVOCAT"
-          class="btn-bd-primary"
-          @click="openDeleteDialogTip"
-        >删除订单</el-button>
+        <el-button v-if="order_status === ORDER_STATUS.AUDIT_WAIT" class="btn-bd-primary" @click="openUndoDialogTip">撤销订单</el-button>
+        <el-button v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="btn-bd-primary" @click="handlerEditBtnClick">编辑订单</el-button>
+        <el-button v-if="order_status === ORDER_STATUS.AUDIT_FAIL || order_status === ORDER_STATUS.REVOCAT" class="btn-bd-primary" @click="openDeleteDialogTip">删除订单</el-button>
         <el-button v-if="order_status === ORDER_STATUS.DELIVERY_SUC" class="btn-bd-primary">物流追踪</el-button>
         <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
       </div>
@@ -39,11 +24,7 @@
         <baseinfo-title color="#FB7474" text="基本信息" />
       </div>
       <div class="info-content-wrapper">
-        <table-baseinfo
-          :baseinfo-list="baseinfoList"
-          @imgupload-success="handleBaseInfoimgUpload"
-          @imgdelete="handleBaseInfoimgdel"
-        />
+        <table-baseinfo :baseinfo-list="baseinfoList" @imgupload-success="handleBaseInfoimgUpload" @imgdelete="handleBaseInfoimgdel" />
       </div>
     </div>
     <!-- 商品信息 -->
@@ -84,26 +65,10 @@
     </div>
 
     <!-- 撤销提示弹窗 -->
-    <dialog-tip
-      ref="undoDialogTip"
-      type="undo"
-      cancel-text="不撤销"
-      confirm-text="撤销"
-      title="撤销订单"
-      tip-text="订单撤销不能还原，确定要撤销？"
-      @confirm="undoOrderOpr"
-    />
+    <dialog-tip ref="undoDialogTip" type="undo" cancel-text="不撤销" confirm-text="撤销" title="撤销订单" tip-text="订单撤销不能还原，确定要撤销？" @confirm="undoOrderOpr" />
 
     <!-- 删除提示弹窗 -->
-    <dialog-tip
-      ref="deleteDialogTip"
-      type="delete"
-      cancel-text="不删除"
-      confirm-text="删除"
-      title="删除订单"
-      tip-text="确定要删除订单吗？"
-      @confirm="deleteOrderOpr"
-    />
+    <dialog-tip ref="deleteDialogTip" type="delete" cancel-text="不删除" confirm-text="删除" title="删除订单" tip-text="确定要删除订单吗？" @confirm="deleteOrderOpr" />
   </div>
 </template>
 
@@ -264,31 +229,18 @@ export default {
 
       // 费用信息
       this.orderFeeList[0].goods_fee = info.goods_fee ? `¥ ${info.goods_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].freight_fee = info.freight_fee
-        ? `¥ ${info.freight_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[0].discount_fee = info.discount_fee
-        ? `- ¥ ${info.discount_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[0].attach_fee = info.attach_fee
-        ? `¥ ${info.attach_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].goods_fee = info.adjust_fee
-        ? `¥ ${info.adjust_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.refund_fee
-        ? `¥ ${info.refund_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.order_fee
-        ? `¥ ${info.order_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.actual_fee
-        ? `¥ ${info.actual_fee.toFixed(2)}`
-        : '¥ 0.00'
+      this.orderFeeList[0].freight_fee = info.freight_fee ? `¥ ${info.freight_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].discount_fee = info.discount_fee ? `- ¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.refund_fee ? `¥ ${info.refund_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.order_fee ? `¥ ${info.order_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (info.order_track || []).map((track) => {
-        track.order_status_str = ORDER_STATUS.toString(track.order_status)
+        // track.order_status_str = ORDER_STATUS.toString(track.order_status)
+        track.order_status_str = track.order_status_txt
         track.opr_time_str = moment(track.opr_time * 1000).format('YYYY-MM-DD HH:mm:ss')
         return track
       })

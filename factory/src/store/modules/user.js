@@ -26,7 +26,9 @@ const state = {
   delivery_list: [], // 快递公司
 
   icp_txt: '', // 备案信息
-  icp_url: '' // 点击后跳转的地址
+  icp_url: '', // 点击后跳转的地址
+
+  audit_list_page_limit: 100 // 审核页面条数限制
 }
 
 const mutations = {
@@ -65,6 +67,12 @@ const mutations = {
 
     state.icp_txt = (siteInfo.icp || {}).txt || ''
     state.icp_url = (siteInfo.icp || {}).url || ''
+
+    try {
+      state.audit_list_page_limit = siteInfo.cfg.order_audit_list.page_size
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
 

@@ -4,18 +4,10 @@
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
-          <el-button class="continue-shop" type="primary" plain @click="goGoodsList"
-            >继续选购</el-button
-          >
+          <el-button class="continue-shop" type="primary" plain @click="goGoodsList">继续选购</el-button>
         </div>
         <div class="select-goods-table-wrapper">
-          <el-table
-            ref="selectGoodsTable"
-            class="select-goods-table"
-            border
-            :data="goodsList"
-            @selection-change="handleSelectionChange"
-          >
+          <el-table ref="selectGoodsTable" class="select-goods-table" border :data="goodsList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
               <template slot-scope="scope">
@@ -23,11 +15,7 @@
               </template>
             </el-table-column>
             <el-table-column prop="type_str" label="商品类型" min-width="50" />
-            <el-table-column
-              prop="goods_info_str"
-              label="材质_品牌_型号_边框_商品编号"
-              width="300"
-            />
+            <el-table-column prop="goods_info_str" label="材质_品牌_型号_边框_商品编号" width="300" />
             <el-table-column prop="num" label="数量" width="150">
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.num" :min="1" size="small" @change="getPrice" />
@@ -37,15 +25,8 @@
             <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
             <el-table-column prop="opr" label="操作" width="85" align="center">
               <template slot-scope="scope">
-                <el-button
-                  v-if="ORDER_STATUS.REPLENISH_WAIT === order_status"
-                  type="text"
-                  @click="handleGoodsEditClick(scope.row)"
-                  >编辑</el-button
-                >
-                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)"
-                  >删除</el-button
-                >
+                <el-button v-if="ORDER_STATUS.REPLENISH_WAIT === order_status" type="text" @click="handleGoodsEditClick(scope.row)">编辑</el-button>
+                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -58,12 +39,7 @@
         <div class="gifs-form-wrapper clearfix">
           <div v-for="item in attachList" :key="item.goods_id" class="gifs-item">
             <span class="gifs-label">{{ item.goods_name }}</span>
-            <el-input-number
-              v-model="item.num"
-              controls-position="right"
-              :min="0"
-              @change="getPrice"
-            />
+            <el-input-number v-model="item.num" controls-position="right" :min="0" @change="getPrice" />
             <span class="gifs-price">（&yen; {{ item.price }}）</span>
           </div>
         </div>
@@ -73,13 +49,7 @@
           <baseinfo-title color="#FBBD74" text="配送信息" />
         </div>
         <div class="consignee-form-wrapper">
-          <el-form
-            ref="consigneeFrom"
-            :model="consigneeFrom"
-            :rules="consigeneeFromRules"
-            :inline="true"
-            label-width="80px"
-          >
+          <el-form ref="consigneeFrom" :model="consigneeFrom" :rules="consigeneeFromRules" :inline="true" label-width="80px">
             <!-- <el-form-item label="物流选择" prop="company_name" label-width="130px">
               <el-select v-model="consigneeFrom.company_name" placeholder="请选择" @change="getPrice">
                 <el-option
@@ -106,54 +76,27 @@
             </el-form-item>
             <br />
             <el-form-item label="省/直辖市" prop="province" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.province"
-                v-trim="consigneeFrom.province"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.province" v-trim="consigneeFrom.province" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="市" prop="city" label-width="110px">
-              <el-input
-                v-model.trim="consigneeFrom.city"
-                v-trim="consigneeFrom.city"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.city" v-trim="consigneeFrom.city" placeholder="请输入" />
             </el-form-item>
             <br />
             <el-form-item label="区/县" prop="area" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.area"
-                v-trim="consigneeFrom.area"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.area" v-trim="consigneeFrom.area" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="乡/镇/街道" prop="street" label-width="110px">
-              <el-input
-                v-model.trim="consigneeFrom.street"
-                v-trim="consigneeFrom.street"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.street" v-trim="consigneeFrom.street" placeholder="请输入" />
             </el-form-item>
             <br />
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.address"
-                v-trim="consigneeFrom.address"
-                type="textarea"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.address" v-trim="consigneeFrom.address" type="textarea" placeholder="请输入" />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
               <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.remark"
-                type="textarea"
-                placeholder="请输入"
-                maxlength="150"
-                show-word-limit
-              />
+              <el-input v-model.trim="consigneeFrom.remark" type="textarea" placeholder="请输入" maxlength="150" show-word-limit />
             </el-form-item>
           </el-form>
         </div>

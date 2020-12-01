@@ -7,10 +7,7 @@
         </div>
         <div class="order-status-wrapper">
           <div class="order-status">当前订单状态：{{ ORDER_STATUS.toString(order_status) }}</div>
-          <div
-            v-if="order_status === ORDER_STATUS.AUDIT_FAIL"
-            class="order-status-reason"
-          >{{ status_remark }}</div>
+          <div v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="order-status-reason">{{ status_remark }}</div>
         </div>
       </div>
       <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
@@ -220,31 +217,18 @@ export default {
 
       // 费用信息
       this.orderFeeList[0].goods_fee = info.goods_fee ? `¥ ${info.goods_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].freight_fee = info.freight_fee
-        ? `¥ ${info.freight_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[0].discount_fee = info.discount_fee
-        ? `- ¥ ${info.discount_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[0].attach_fee = info.attach_fee
-        ? `¥ ${info.attach_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].goods_fee = info.adjust_fee
-        ? `¥ ${info.adjust_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.refund_fee
-        ? `¥ ${info.refund_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.order_fee
-        ? `¥ ${info.order_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.actual_fee
-        ? `¥ ${info.actual_fee.toFixed(2)}`
-        : '¥ 0.00'
+      this.orderFeeList[0].freight_fee = info.freight_fee ? `¥ ${info.freight_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].discount_fee = info.discount_fee ? `- ¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.refund_fee ? `¥ ${info.refund_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.order_fee ? `¥ ${info.order_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (info.order_track || []).map((track) => {
-        track.order_status_str = ORDER_STATUS.toString(track.order_status)
+        // track.order_status_str = ORDER_STATUS.toString(track.order_status)
+        track.order_status_str = track.order_status_txt
         track.opr_time_str = moment(track.opr_time * 1000).format('YYYY-MM-DD HH:mm:ss')
         return track
       })

@@ -316,8 +316,8 @@ export default {
         city: [{ required: true, message: '请输入市区', trigger: 'blur' }],
         area: [{ required: true, message: '请输入区县', trigger: 'blur' }],
         street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }],
-        warehouse_id: [{ required: true, message: '请选择仓库', trigger: 'blur' }],
-        delivery_company_name: [{ required: true, message: '请选择物流', trigger: 'blur' }]
+        // warehouse_id: [{ required: true, message: '请选择仓库', trigger: 'blur' }],
+        // delivery_company_name: [{ required: true, message: '请选择物流', trigger: 'blur' }]
       },
 
       goods_fee: 0.0, // 商品合计费用
