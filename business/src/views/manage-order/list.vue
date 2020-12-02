@@ -243,7 +243,7 @@ export default {
         revocat: { label: '已撤销', value: ORDER_STATUS.REVOCAT, num: 0 },
         refund: { label: '已退款', value: ORDER_STATUS.REFUND, num: 0 },
         REPLENISH_WAIT: {
-          label: '已退款',
+          label: '待处理',
           value: ORDER_STATUS.REPLENISH_WAIT,
           num: 0
         },
