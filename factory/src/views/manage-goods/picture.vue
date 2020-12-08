@@ -43,11 +43,9 @@
           <span>图库列表</span>
         </div>
         <div class="add-button-group">
-          <el-button
-            class="add-btn btn-h-38"
-            type="primary"
-            @click="handlerAddPicClick"
-          >新增</el-button>
+          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddPicClick"
+            >新增</el-button
+          >
         </div>
       </div>
 
@@ -95,11 +93,9 @@
                 type="text"
               >停用</el-button>-->
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
-              <el-button
-                class="btn-red"
-                type="text danger"
-                @click="handlerDelClick(scope.row)"
-              >删除</el-button>
+              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -110,7 +106,9 @@
           <div class="pagination-total">
             <span>
               共
-              <span class="num-text">{{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
+              <span class="num-text">{{ pageTotal }}</span
+              >页/ <span class="num-text">{{ total }}</span
+              >条数据
             </span>
           </div>
           <el-pagination
@@ -133,6 +131,7 @@
         :title="editPictureId ? '编辑图片' : '新增图片'"
         :confirm-text="editPictureId ? '保存' : '提交'"
         :validate="true"
+        top="10vh"
         @confirm="handlerPicEditDialogConfirm"
         @close="handlerPicEditDialogClose"
       >
@@ -164,13 +163,20 @@
               />
             </el-select>
           </el-form-item>-->
-          <el-form-item v-model="pictureForm" label="组合sku" prop="sku_list_str">
+          <el-form-item label="组合sku" prop="sku_list_str" class="sku-form-item">
             <el-input
               v-model="pictureForm.sku_list_str"
               :rows="5"
               type="textarea"
               placeholder="请输入"
             />
+            <el-button
+              class="search-sku-btn"
+              size="mini"
+              type="primary"
+              @click="handleOpenSkuSearchDialog"
+              >查询sku</el-button
+            >
           </el-form-item>
           <el-form-item label="图片" prop="material_img">
             <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
@@ -185,6 +191,70 @@
         </el-form>
       </sl-dialog>
       <!-- 图片编辑弹窗 end -->
+
+      <sl-dialog
+        ref="skuSearchDialog"
+        title="查询SKU"
+        top="8vh"
+        @confirm="handleSkuSearchDialogConfirm"
+        @close="handleSkuSearchDialogClose"
+      >
+        <div class="search-wrapper sku-search-wrapper">
+          <el-form ref="skuSearchForm" class="su-search-form" :model="skuSearchForm" :inline="true">
+            <el-form-item label="材质" prop="goods_material" label-width="70px">
+              <el-select v-model="skuSearchForm.goods_material" placeholder="请选择" clearable>
+                <el-option
+                  v-for="item in raw_material_list"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="品牌" prop="brand" label-width="70px">
+              <el-select v-model="skuSearchForm.brand" placeholder="请选择" clearable>
+                <el-option
+                  v-for="item in phone_brand_list"
+                  :key="item.brand_id"
+                  :label="item.brand_name"
+                  :value="item.brand_id"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="型号" prop="model" label-width="70px">
+              <el-select v-model="skuSearchForm.model" filterable placeholder="请选择" clearable>
+                <el-option
+                  v-for="item in model_list"
+                  :key="item.model_id"
+                  :label="item.model_name"
+                  :value="item.model_id"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="商品名称" prop="goods_name" label-width="70px">
+              <el-input v-model.trim="skuSearchForm.goods_name" placeholder="请输入" />
+            </el-form-item>
+            <el-form-item>
+              <el-button class="btn-h-38" type="primary" @click="getSkuList">查询</el-button>
+            </el-form-item>
+          </el-form>
+
+          <div v-loading="skuTableLoading" element-loading-text="拼命加载中">
+            <div class="table-content default-table-change sku-table">
+              <el-table
+                ref="skuTable"
+                :data="skuList"
+                stripe
+                class="sku-table"
+                @selection-change="handleSkuSelectionChange"
+              >
+                <el-table-column type="selection" align="center" width="55" />
+                <el-table-column align="center" prop="sku" label="sku" />
+              </el-table>
+            </div>
+          </div>
+        </div>
+      </sl-dialog>
     </div>
   </div>
 </template>
@@ -192,7 +262,7 @@
 import SlDialog from '@/components/Dialog/Dialog'
 import moment from 'moment'
 import { mapState } from 'vuex'
-import { materialGet, materialSave } from '@/api/api'
+import { materialGet, materialSave, goodsGet } from '@/api/api'
 import { PICTURE_STATUS } from '@/config/cfg'
 import SlUpload from '@/components/upload/index'
 
@@ -241,16 +311,27 @@ export default {
       },
 
       // 图片使用状态 正常：1 停用：2
-      picStatusOptions: [
-        { label: '正常', value: 1 },
-        { label: '停用', value: 2 }
-      ],
-      PICTURE_STATUS
+      picStatusOptions: [{ label: '正常', value: 1 }, { label: '停用', value: 2 }],
+      PICTURE_STATUS,
+
+      skuSearchForm: {
+        goods_material: '',
+        brand: '',
+        model: '',
+        goods_name: ''
+      },
+
+      skuList: [],
+      skuMultipleSelection: [],
+      skuTableLoading: false
     }
   },
   computed: {
     ...mapState({
-      theme_list: (state) => state.user.theme_list
+      theme_list: (state) => state.user.theme_list,
+      phone_brand_list: (state) => state.user.phone_brand_list,
+      model_list: (state) => state.user.model_list,
+      raw_material_list: (state) => state.user.raw_material_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -297,7 +378,9 @@ export default {
         //   item.status_str = PICTURE_STATUS.toString(item.status)
         // }
 
-        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=44&height=64&img_name=${item.material_img}`
+        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&type=1&width=44&height=64&img_name=${item.material_img}`
 
         return item
       })
@@ -328,7 +411,9 @@ export default {
     handlerOutlineImgSuccess({ img_name }) {
       this.pictureForm.material_img = img_name
       // http://f.pso.rockyshi.cn/php/img_get.php?token=TestToken&opr=get_img&type=1&img_name=d508bf88200289028d152ace532dbc6a.jpg
-      this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=117&height=140&img_name=${img_name}`
+      this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+        this.token
+      }&opr=get_img&type=1&width=117&height=140&img_name=${img_name}`
     },
     handlerPicEditDialogConfirm() {
       this.$refs.pictureForm.validate((valid) => {
@@ -416,6 +501,56 @@ export default {
         message: '删除成功',
         type: 'success'
       })
+    },
+
+    handleSkuSelectionChange(val) {
+      this.skuMultipleSelection = val
+    },
+    // sku选择
+    handleOpenSkuSearchDialog() {
+      this.$refs.skuSearchDialog.show()
+    },
+    handleSkuSearchDialogClose() {
+      this.$refs.skuSearchForm.resetFields()
+      this.skuList = []
+      this.skuMultipleSelection = []
+    },
+    handleSkuSearchDialogConfirm() {
+      if (this.skuMultipleSelection.length === 0) return
+
+      const skuStr = this.skuMultipleSelection
+        .map((item) => {
+          return item.sku
+        })
+        .join(' ')
+
+      this.pictureForm.sku_list_str = skuStr
+      this.handleSkuSearchDialogClose()
+      this.$refs.skuSearchDialog.hide()
+    },
+    async getSkuList() {
+      const data = {
+        opr: 'get_goods_sku_list',
+        goods_name: this.skuSearchForm.goods_name, // 商品名称
+        raw_material: this.skuSearchForm.goods_material, // 材质（见系统管理中参数配置）
+        brand: this.skuSearchForm.brand, // 品牌ID
+        model: this.skuSearchForm.model // 型号ID
+      }
+
+      this.skuTableLoading = true
+
+      console.log('get sku data req=>', data)
+      const resp = await goodsGet(data)
+      console.log('get sku data res=>', resp)
+
+      if (resp.ret !== 0) return
+      this.skuTableLoading = false
+
+      this.skuList = resp.data.list
+
+      this.$nextTick(() => {
+        this.$refs.skuTable.toggleAllSelection()
+      })
     }
   }
 }
@@ -437,6 +572,9 @@ export default {
   .el-select {
     width: 180px;
   }
+  &.sku-search-wrapper {
+    padding-top: 0;
+  }
 }
 
 .el-table {
@@ -449,7 +587,15 @@ export default {
     height: 60px;
     vertical-align: middle;
   }
+  &.sku-table {
+    min-height: 200px;
+
+    /deep/ td {
+      padding: 6px 0;
+    }
+  }
 }
+
 .picture-form {
   width: 530px;
 }
@@ -493,5 +639,13 @@ export default {
 .btn-red {
   color: #e33119;
 }
-</style>
 
+.sku-form-item {
+  position: relative;
+  .search-sku-btn {
+    position: absolute;
+    bottom: 0;
+    right: -85px;
+  }
+}
+</style>
