@@ -174,9 +174,9 @@
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
-                  :rules="{required: true, message: '店铺url', trigger:'blur'}"
                   :prop="'tshopList.' + scope.$index + '.tshop_url'"
                 >
+                  <!-- :rules="{required: true, message: '店铺url', trigger:'blur'}" -->
                   <el-input
                     v-if="scope.row.isEdit"
                     v-model.trim="scope.row.tshop_url"
@@ -190,9 +190,9 @@
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
-                  :rules="{required: true, message: '请输入旺店通子账号', trigger:'blur'}"
                   :prop="'tshopList.' + scope.$index + '.wdt_account'"
                 >
+                  <!-- :rules="{required: true, message: '请输入旺店通子账号', trigger:'blur'}" -->
                   <el-input
                     v-if="scope.row.isEdit"
                     v-model.trim="scope.row.wdt_account"

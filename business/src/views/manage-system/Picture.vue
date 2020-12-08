@@ -43,9 +43,11 @@
           <span>图库列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddPicClick"
-            >新增</el-button
-          >
+          <el-button
+            class="add-btn btn-h-38"
+            type="primary"
+            @click="handlerAddPicClick"
+          >新增</el-button>
         </div>
       </div>
 
@@ -93,9 +95,11 @@
                 type="text"
               >停用</el-button>-->
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)"
-                >删除</el-button
-              >
+              <el-button
+                class="btn-red"
+                type="text danger"
+                @click="handlerDelClick(scope.row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -106,9 +110,7 @@
           <div class="pagination-total">
             <span>
               共
-              <span class="num-text">{{ pageTotal }}</span
-              >页/ <span class="num-text">{{ total }}</span
-              >条数据
+              <span class="num-text">{{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
             </span>
           </div>
           <el-pagination
@@ -175,8 +177,7 @@
               size="mini"
               type="primary"
               @click="handleOpenSkuSearchDialog"
-              >查询sku</el-button
-            >
+            >查询sku</el-button>
           </el-form-item>
           <el-form-item label="图片" prop="material_img">
             <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
@@ -305,7 +306,7 @@ export default {
       pictureFormRules: {
         material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
         // material_code: [{ required: true, message: '请输入图片编码', trigger: 'blur' }],
-        theme: [{ required: true, message: '请选择主题分类', trigger: 'change' }],
+        // theme: [{ required: true, message: '请选择主题分类', trigger: 'change' }],
         // status: [{ required: true, message: '请选择状态', trigger: 'change' }],
         material_img: [{ required: true, message: '请上传轮廓图' }]
       },

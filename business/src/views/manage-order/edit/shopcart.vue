@@ -176,7 +176,7 @@ export default {
         province: [{ required: true, message: '请输入省份', trigger: 'blur' }],
         city: [{ required: true, message: '请输入市区', trigger: 'blur' }],
         area: [{ required: true, message: '请输入区县', trigger: 'blur' }],
-        street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }],
+        // street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }],
         company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }]
       },
 

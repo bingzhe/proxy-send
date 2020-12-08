@@ -112,26 +112,26 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" width="210">
             <template slot-scope="scope">
-              <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)"
-                >订单详情</el-button
-              >
+              <el-button
+                type="text"
+                @click="goSearchOrderinfo(scope.row.order_id)"
+              >订单详情</el-button>
               <el-button
                 v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_WAIT"
                 type="text"
                 @click="openChangeAddressDialog(scope.row.order_id)"
-                >修改收货信息</el-button
-              >
+              >修改收货信息</el-button>
               <a href="https://www.kuaidi100.com/" target="_black">
-                <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC" type="text"
-                  >物流跟踪</el-button
-                >
+                <el-button
+                  v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
+                  type="text"
+                >物流跟踪</el-button>
               </a>
               <el-button
                 v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
                 type="text"
                 @click="openRefundDialog(scope.row)"
-                >退款</el-button
-              >
+              >退款</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -142,9 +142,7 @@
           <div class="pagination-total">
             <span>
               共
-              <span class="num-text">{{ pageTotal }}</span
-              >页/ <span class="num-text">{{ total }}</span
-              >条数据
+              <span class="num-text">{{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
             </span>
           </div>
           <el-pagination

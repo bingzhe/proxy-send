@@ -95,8 +95,7 @@
                     v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL || scope.row.order_status === ORDER_STATUS.REPLENISH_WAIT"
                     type="text"
                     @click="handlerEditBtnClick(scope.row.order_id)"
-                    >编辑订单</el-button
-                  >
+                  >编辑订单</el-button>
                   <a href="https://www.kuaidi100.com/" target="_black">
                     <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC" type="text">物流跟踪</el-button>
                   </a>
@@ -105,8 +104,7 @@
                     type="text"
                     class="red-btn"
                     @click="openDeleteDialogTip(scope.row.order_id)"
-                    >删除订单</el-button
-                  >
+                  >删除订单</el-button>
                 </div>
               </template>
             </el-table-column>
@@ -118,9 +116,7 @@
             <div class="pagination-total">
               <span>
                 共
-                <span class="num-text">{{ pageTotal }}</span
-                >页/ <span class="num-text">{{ total }}</span
-                >条数据
+                <span class="num-text">{{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
               </span>
             </div>
             <el-pagination

@@ -4,9 +4,12 @@
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
-          <el-button class="continue-shop" type="primary" plain @click="goGoodsList"
-            >继续选购</el-button
-          >
+          <el-button
+            class="continue-shop"
+            type="primary"
+            plain
+            @click="goGoodsList"
+          >继续选购</el-button>
         </div>
         <div class="select-goods-table-wrapper">
           <el-table
@@ -41,11 +44,12 @@
                   v-if="scope.row.type === GOODS_TYPE.DIY"
                   type="text"
                   @click="handleGoodsEditClick(scope.row)"
-                  >编辑</el-button
-                >
-                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)"
-                  >删除</el-button
-                >
+                >编辑</el-button>
+                <el-button
+                  class="del-btn"
+                  type="text"
+                  @click="delShopcart(scope.$index)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -300,8 +304,8 @@ export default {
         province: [{ required: true, message: '请输入省份', trigger: 'blur' }],
         city: [{ required: true, message: '请输入市区', trigger: 'blur' }],
         area: [{ required: true, message: '请输入区县', trigger: 'blur' }],
-        street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }],
-        company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }],
+        // street: [{ required: true, message: '请输入街道/镇', trigger: 'blur' }],
+        company_name: [{ required: true, message: '请选择快递公司', trigger: 'change' }]
         // warehouse_id: [{ required: true, message: '请选择仓库', trigger: 'blur' }],
         // delivery_company_name: [{ required: true, message: '请选择物流', trigger: 'blur' }]
       },
