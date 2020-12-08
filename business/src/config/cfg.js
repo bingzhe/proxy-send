@@ -263,6 +263,7 @@ export const ORDER_STATUS = {
   COMPLETE: 7,
   REPLENISH_WAIT: 8,
   FREEZE: 9,
+  ERROR: 10,
 
   code: {
     1: '待审核',
@@ -273,7 +274,8 @@ export const ORDER_STATUS = {
     6: '已退款',
     7: '已完成',
     8: '待处理',
-    9: '已冻结'
+    9: '已冻结',
+    10: '异常'
   },
 
   toString: function(code) {

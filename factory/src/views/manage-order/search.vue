@@ -6,7 +6,12 @@
         <el-form-item label="订单状态" prop="order_status" label-width="70px">
           <el-select v-model="searchForm.order_status" placeholder="请选择">
             <el-option key="全部" label="全部" value />
-            <el-option v-for="item in orderStausOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option
+              v-for="item in orderStausOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="订单编号" prop="order_id" label-width="70px">
@@ -40,7 +45,11 @@
     </div>
 
     <!-- search end -->
-    <div v-loading="tableLoading" element-loading-text="拼命加载中" class="table-wrapper table-wrapper-default">
+    <div
+      v-loading="tableLoading"
+      element-loading-text="拼命加载中"
+      class="table-wrapper table-wrapper-default"
+    >
       <div class="table-title clearfix">
         <div class="table-title__lable">
           <span>
@@ -96,14 +105,33 @@
               <span>{{ scope.row.order_status_str }}</span>
             </template>
           </el-table-column>
+          <el-table-column prop="order_remark" label="备注" min-width="60">
+            <template slot-scope="scope">
+              <span>{{ scope.row.order_remark }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="opr" label="操作" width="210">
             <template slot-scope="scope">
-              <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)">订单详情</el-button>
-              <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_WAIT" type="text" @click="openChangeAddressDialog(scope.row.order_id)">修改收货信息</el-button>
+              <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)"
+                >订单详情</el-button
+              >
+              <el-button
+                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_WAIT"
+                type="text"
+                @click="openChangeAddressDialog(scope.row.order_id)"
+                >修改收货信息</el-button
+              >
               <a href="https://www.kuaidi100.com/" target="_black">
-                <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC" type="text">物流跟踪</el-button>
+                <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC" type="text"
+                  >物流跟踪</el-button
+                >
               </a>
-              <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC" type="text" @click="openRefundDialog(scope.row)">退款</el-button>
+              <el-button
+                v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC"
+                type="text"
+                @click="openRefundDialog(scope.row)"
+                >退款</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -135,10 +163,20 @@
     </div>
 
     <!-- 退款弹窗 -->
-    <dialog-refund ref="refundDialog" :refund-info="refundInfo" @close="handlerRefundDialogClose" @on-success="handlerRefundDialogSuc" />
+    <dialog-refund
+      ref="refundDialog"
+      :refund-info="refundInfo"
+      @close="handlerRefundDialogClose"
+      @on-success="handlerRefundDialogSuc"
+    />
 
     <!-- 调整地址 -->
-    <dialog-change-address ref="changeAddress" :order-id="curChangeAddressId" @close="handlerChangeAddressClose" @on-success="handlerChangeAddrerss" />
+    <dialog-change-address
+      ref="changeAddress"
+      :order-id="curChangeAddressId"
+      @close="handlerChangeAddressClose"
+      @on-success="handlerChangeAddrerss"
+    />
   </div>
 </template>
 <script>
@@ -215,6 +253,10 @@ export default {
         {
           label: ORDER_STATUS.toString(ORDER_STATUS.FREEZE),
           value: ORDER_STATUS.FREEZE
+        },
+        {
+          label: ORDER_STATUS.toString(ORDER_STATUS.ERROR),
+          value: ORDER_STATUS.ERROR
         }
       ],
       ORDER_STATUS,
@@ -379,4 +421,3 @@ export default {
   }
 }
 </style>
-
