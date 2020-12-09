@@ -17,7 +17,11 @@
         <el-row>
           <el-col :span="11" :xs="20">
             <el-form-item label="账户名" prop="username">
-              <el-input v-model="shopEditForm.username" :disabled="!!businessId" placeholder="请输入" />
+              <el-input
+                v-model="shopEditForm.username"
+                :disabled="!!businessId"
+                placeholder="请输入"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
@@ -158,7 +162,7 @@
               <template slot-scope="scope">
                 <el-form-item
                   class="pictable-form-item"
-                  :rules="{required: true, message: '请输入店铺名称', trigger:'blur'}"
+                  :rules="{ required: true, message: '请输入店铺名称', trigger: 'blur' }"
                   :prop="'tshopList.' + scope.$index + '.tshop_name'"
                 >
                   <el-input
@@ -230,25 +234,29 @@
                   class="text-btn save-btn"
                   type="text"
                   @click="handleTshopSaveClick(scope.row)"
-                >保存</el-button>
+                  >保存</el-button
+                >
                 <el-button
                   v-if="scope.row.isEdit"
                   class="text-btn save-btn"
                   type="text"
                   @click="handleTshopCancelClick(scope.row)"
-                >取消</el-button>
+                  >取消</el-button
+                >
                 <el-button
                   v-if="!scope.row.isEdit"
                   class="text-btn edit-btn"
                   type="text"
                   @click="handleTshopEditClick(scope.row)"
-                >编辑</el-button>
+                  >编辑</el-button
+                >
                 <el-button
                   v-if="!scope.row.isEdit"
                   class="text-btn del-btn"
                   type="text"
                   @click="handleDelTshopClick(scope.row)"
-                >删除</el-button>
+                  >删除</el-button
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -260,11 +268,9 @@
 
     <div class="button-group-wrapper">
       <el-button class="btn-h-44-w-100 btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
-      <el-button
-        class="btn-h-44-w-100"
-        type="primary"
-        @click="handlerSaveBtnClick"
-      >{{ businessId ? '保存' : '提交' }}</el-button>
+      <el-button class="btn-h-44-w-100" type="primary" @click="handlerSaveBtnClick">{{
+        businessId ? '保存' : '提交'
+      }}</el-button>
     </div>
   </div>
 </template>
@@ -462,7 +468,31 @@ export default {
 
       this.tshopForm.tshopList.push(tshop)
     },
-    handleDelTshopClick() {},
+    handleDelTshopClick(row) {
+      this.$confirm('确认要删除选中店铺', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const data = {
+            opr: 'delete_tshop',
+            tshop_id: row.tshop_id // 淘宝店铺ID
+          }
+
+          // console.log('删除店铺 req=>', data)
+          const resp = await tshopSave(data)
+          // console.log('删除店铺 res=>', data)
+          if (resp.ret !== 0) return
+          this.getTshopList()
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success'
+          })
+        })
+        .catch(() => {})
+    },
     handleTshopEditClick(row) {
       const hasEditTshop = this.tshopForm.tshopList.some((item) => item.isEdit)
       if (hasEditTshop) {
@@ -480,6 +510,7 @@ export default {
     async handleTshopSaveClick(row) {
       // eslint-disable-next-line space-before-function-paren
       this.$refs.tshopForm.validate(async (valid) => {
+        if (!valid) return
         const data = {
           opr: 'save_tshop',
           business_id: this.businessId, // 店铺所属的商户ID
