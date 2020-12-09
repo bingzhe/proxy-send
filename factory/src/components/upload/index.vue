@@ -1,10 +1,5 @@
 <template>
-  <el-upload
-    :before-upload="beforeOutlineImgUpload"
-    :show-file-list="false"
-    :http-request="imgUpload"
-    :action="url"
-  >
+  <el-upload :before-upload="beforeOutlineImgUpload" :show-file-list="false" :http-request="imgUpload" :action="url">
     <slot />
   </el-upload>
 </template>
@@ -46,7 +41,7 @@ export default {
         imgfile: file
       }
 
-      Http.EncSubmit(this.url, data, resp => {
+      Http.EncSubmit(this.url, data, (resp) => {
         if (resp.ret !== 0) {
           return this.$message.error(resp.msg)
         }

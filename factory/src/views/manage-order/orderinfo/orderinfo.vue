@@ -19,7 +19,7 @@
           <baseinfo-title color="#F348A1" text="基本信息" />
         </div>
         <div class="info-content-wrapper">
-          <table-baseinfo :baseinfo-list="baseinfoList" />
+          <table-baseinfo :baseinfo-list="baseinfoList" @imgupload-success="handleBaseInfoimgUpload" @imgdelete="handleBaseInfoimgdel" />
         </div>
       </div>
       <!-- 商品信息 -->
@@ -64,22 +64,11 @@
       <div class="audit-form-wrapper">
         <el-form ref="auditForm" :model="auditForm" label-width="107px" :rules="auditFormRules">
           <el-form-item label="结论：" prop="pass">
-            <el-radio
-              v-model="auditForm.pass"
-              :disabled="order_status === ORDER_STATUS.DELIVERY_WAIT"
-              :label="1"
-            >通过</el-radio>
+            <el-radio v-model="auditForm.pass" :disabled="order_status === ORDER_STATUS.DELIVERY_WAIT" :label="1">通过</el-radio>
             <el-radio v-model="auditForm.pass" :label="0">不通过</el-radio>
           </el-form-item>
           <el-form-item label="原因：" prop="remark">
-            <el-input
-              v-model="auditForm.remark"
-              :rows="4"
-              type="textarea"
-              placeholder="请输入内容"
-              maxlength="200"
-              show-word-limit
-            />
+            <el-input v-model="auditForm.remark" :rows="4" type="textarea" placeholder="请输入内容" maxlength="200" show-word-limit />
           </el-form-item>
         </el-form>
       </div>
@@ -91,18 +80,10 @@
     </div>
 
     <!-- 调整订单金额 -->
-    <dialog-adjust-order-fee
-      ref="adjustFeeDialog"
-      :order-id="order_id"
-      @on-success="handlerAdjustFeeSuc"
-    />
+    <dialog-adjust-order-fee ref="adjustFeeDialog" :order-id="order_id" @on-success="handlerAdjustFeeSuc" />
     <!-- @close="handlerAdjustFeeClose" -->
     <!-- 调整地址 -->
-    <dialog-change-address
-      ref="changeAddress"
-      :order-id="order_id"
-      @on-success="handlerChangeAddrerss"
-    />
+    <dialog-change-address ref="changeAddress" :order-id="order_id" @on-success="handlerChangeAddrerss" />
   </div>
 </template>
 
@@ -203,7 +184,9 @@ export default {
         pass: { required: true, message: '请选择审单处理', trigger: 'change' }
       },
 
-      tableLoading: false
+      tableLoading: false,
+
+      remark_img_list: [] // 附图名称
     }
   },
   created() {
@@ -257,6 +240,8 @@ export default {
         return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=8&img_name=${img}&vxversion=v2`
       })
 
+      this.remark_img_list = info.remark_img_list || []
+
       // 商品信息
       this.goodsList = info.goods_list.map((goods) => {
         goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.color}_${goods.goods_id}`
@@ -278,27 +263,13 @@ export default {
 
       // 费用信息
       this.orderFeeList[0].goods_fee = info.goods_fee ? `¥ ${info.goods_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].freight_fee = info.freight_fee
-        ? `¥ ${info.freight_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[0].discount_fee = info.discount_fee
-        ? `- ¥ ${info.discount_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[0].attach_fee = info.attach_fee
-        ? `¥ ${info.attach_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].goods_fee = info.adjust_fee
-        ? `¥ ${info.adjust_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.refund_fee
-        ? `¥ ${info.refund_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.order_fee
-        ? `¥ ${info.order_fee.toFixed(2)}`
-        : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.actual_fee
-        ? `¥ ${info.actual_fee.toFixed(2)}`
-        : '¥ 0.00'
+      this.orderFeeList[0].freight_fee = info.freight_fee ? `¥ ${info.freight_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].discount_fee = info.discount_fee ? `- ¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.refund_fee ? `¥ ${info.refund_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.order_fee ? `¥ ${info.order_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (info.order_track || []).map((track) => {
@@ -409,6 +380,28 @@ export default {
       this.getOrderinfo()
     },
     handlerChangeAddrerss() {
+      this.getOrderinfo()
+    },
+
+    handleBaseInfoimgUpload(imgname) {
+      this.remark_img_list.push(imgname)
+      this.saveRemarkImg(this.remark_img_list)
+    },
+    handleBaseInfoimgdel(i) {
+      this.remark_img_list.splice(i, 1)
+      this.saveRemarkImg(this.remark_img_list)
+    },
+    async saveRemarkImg(remarkList) {
+      const data = {
+        opr: 'save_order_remark_img',
+        order_id: this.order_id,
+        remark_img_list: remarkList
+      }
+
+      const resp = await orderSave(data)
+      if (resp.ret !== 0) return
+
+      this.$slnotify({ message: '操作成功' })
       this.getOrderinfo()
     }
   }
