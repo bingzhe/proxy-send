@@ -29,8 +29,16 @@
           <span>手机机型列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddBrandClick">新增品牌</el-button>
-          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddModelClick">新增型号</el-button>
+          <el-button
+            class="add-btn btn-h-38"
+            type="primary"
+            @click="handlerAddBrandClick"
+          >新增品牌</el-button>
+          <el-button
+            class="add-btn btn-h-38"
+            type="primary"
+            @click="handlerAddModelClick"
+          >新增型号</el-button>
         </div>
       </div>
 
@@ -77,7 +85,11 @@
                 type="text"
               >停用</el-button>-->
               <el-button type="text" @click="handlerModelEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)">删除</el-button>
+              <el-button
+                class="btn-red"
+                type="text danger"
+                @click="handlerDelClick(scope.row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -88,14 +100,13 @@
           <div class="pagination-total">
             <span>
               共
-              <span class="num-text">{{ pageTotal }}</span>页/
-              <span class="num-text">{{ total }}</span>条数据
+              <span class="num-text">{{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
             </span>
           </div>
           <el-pagination
             class="sl-pagination"
             :current-page.sync="listQuery.page"
-            :page-sizes="[10,20,40]"
+            :page-sizes="[10, 20, 40]"
             :page-size="listQuery.limit"
             layout="prev, pager, next, jumper"
             :total="total"
@@ -110,8 +121,8 @@
     <!-- 型号添加弹窗 -->
     <sl-dialog
       ref="modelEditDialog"
-      :title="editModelId ? '编辑型号': '新增型号'"
-      :confirm-text="editModelId ? '保存': '提交'"
+      :title="editModelId ? '编辑型号' : '新增型号'"
+      :confirm-text="editModelId ? '保存' : '提交'"
       :validate="true"
       @confirm="handlerModelEditDialogConfirm"
       @close="handlerModelEditDialogClose"
@@ -176,7 +187,11 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerDialogAddBrandClick">新增</el-button>
+          <el-button
+            class="btn-h-38"
+            type="primary"
+            @click="handlerDialogAddBrandClick"
+          >新增</el-button>
         </el-form-item>
       </el-form>
       <div class="brand-wrapper">
@@ -184,10 +199,7 @@
         <div class="brand-wrapper-list">
           <el-button v-for="brand in phoneBrandOptions" :key="brand.brand_id">
             {{ brand.brand_name }}
-            <i
-              class="el-icon--right el-icon-close"
-              @click="handlerBrandDeleteClick(brand)"
-            />
+            <i class="el-icon--right el-icon-close" @click="handlerBrandDeleteClick(brand)" />
           </el-button>
         </div>
       </div>
@@ -275,8 +287,17 @@ export default {
   mounted() {
     this.getPhoneModelList()
     this.getBrandList()
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getPhoneModelList()
+      }
+    },
     async getPhoneModelList() {
       const data = {
         opr: 'get_phone_model_list',
@@ -625,4 +646,3 @@ export default {
   color: #e33119;
 }
 </style>
-

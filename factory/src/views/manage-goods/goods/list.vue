@@ -4,13 +4,17 @@
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
         <el-form-item label="材质" prop="goods_material" label-width="70px">
-          <el-select v-model="searchForm.goods_material" placeholder="请选择">
+          <el-select
+            v-model="searchForm.goods_material"
+            placeholder="请选择"
+            @change="getGoodsList"
+          >
             <el-option key="全部" label="全部" value />
             <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="商品种类" prop="type" label-width="70px">
-          <el-select v-model="searchForm.type" placeholder="请选择">
+          <el-select v-model="searchForm.type" placeholder="请选择" @change="getGoodsList">
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in goodsTypeOptions"
@@ -21,7 +25,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="品牌" prop="brand" label-width="70px">
-          <el-select v-model="searchForm.brand" placeholder="请选择">
+          <el-select v-model="searchForm.brand" placeholder="请选择" @change="getGoodsList">
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in phone_brand_list"
@@ -32,7 +36,12 @@
           </el-select>
         </el-form-item>
         <el-form-item label="型号" prop="model" label-width="70px">
-          <el-select v-model="searchForm.model" filterable placeholder="请选择">
+          <el-select
+            v-model="searchForm.model"
+            filterable
+            placeholder="请选择"
+            @change="getGoodsList"
+          >
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in model_list"
@@ -230,6 +239,10 @@ export default {
   },
   mounted() {
     this.getGoodsList()
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
     async getGoodsList() {
@@ -363,6 +376,11 @@ export default {
     },
     handleExeclUploadClose() {
       this.getGoodsList()
+    },
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getGoodsList()
+      }
     }
   }
 }

@@ -20,7 +20,7 @@
       <div class="search-wrapper">
         <el-form ref="searchForm" :model="searchForm" :inline="true">
           <el-form-item label="品牌" prop="brand_id" label-width="70px">
-            <el-select v-model="searchForm.brand_id" placeholder="请选择">
+            <el-select v-model="searchForm.brand_id" placeholder="请选择" @change="getList">
               <el-option key="全部" label="全部" value />
               <el-option
                 v-for="item in phone_brand_list"
@@ -31,7 +31,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="状态" prop="status_txt" label-width="70px">
-            <el-select v-model="searchForm.status_txt" placeholder="请选择">
+            <el-select v-model="searchForm.status_txt" placeholder="请选择" @change="getList">
               <el-option key="全部" label="全部" value />
               <el-option
                 v-for="item in production_order_status_list"
@@ -42,7 +42,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="材质" prop="raw_material" label-width="70px">
-            <el-select v-model="searchForm.raw_material" placeholder="请选择">
+            <el-select v-model="searchForm.raw_material" placeholder="请选择" @change="getList">
               <el-option key="全部" label="全部" value />
               <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
             </el-select>
@@ -66,6 +66,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               :default-time="['00:00:00', '23:59:59']"
+              @change="getList"
             />
           </el-form-item>
           <el-form-item>
@@ -225,8 +226,17 @@ export default {
   mounted() {
     this.getList()
     this.getStatusNum()
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getList()
+      }
+    },
     async getList() {
       const data = {
         opr: 'get_production_order_list',

@@ -4,7 +4,7 @@
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
         <el-form-item label="物流单状态" prop="status_txt" label-width="84px">
-          <el-select v-model="searchForm.status_txt" placeholder="请选择">
+          <el-select v-model="searchForm.status_txt" placeholder="请选择" @change="getList">
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="(item,key) in delivery_order_status_list"
@@ -28,13 +28,13 @@
           <el-input v-model.trim="searchForm.delivery_number" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="材质" prop="goods_material" label-width="70px">
-          <el-select v-model="searchForm.goods_material" placeholder="请选择">
+          <el-select v-model="searchForm.goods_material" placeholder="请选择" @change="getList">
             <el-option key="全部" label="全部" value />
             <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="商品种类" prop="type" label-width="70px">
-          <el-select v-model="searchForm.type" placeholder="请选择">
+          <el-select v-model="searchForm.type" placeholder="请选择" @change="getList">
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in goodsTypeOptions"
@@ -53,6 +53,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             :default-time="['00:00:00', '23:59:59']"
+            @change="getList"
           />
         </el-form-item>
         <el-form-item>
@@ -232,8 +233,17 @@ export default {
   },
   mounted() {
     this.getList()
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getList()
+      }
+    },
     async getList() {
       const data = {
         opr: 'get_delivery_order_list',

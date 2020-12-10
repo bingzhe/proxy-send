@@ -4,7 +4,7 @@
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
         <el-form-item label="主题分类" prop="theme" label-width="70px">
-          <el-select v-model="searchForm.theme" placeholder="请选择">
+          <el-select v-model="searchForm.theme" placeholder="请选择" @change="getPictureList">
             <el-option key="全部" label="全部" value />
             <el-option v-for="item in theme_list" :key="item" :label="item" :value="item" />
           </el-select>
@@ -340,8 +340,17 @@ export default {
   },
   mounted() {
     this.getPictureList()
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getPictureList()
+      }
+    },
     async getPictureList() {
       const data = {
         opr: 'get_material_list',
