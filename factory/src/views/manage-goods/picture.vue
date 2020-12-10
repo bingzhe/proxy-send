@@ -247,6 +247,7 @@
                 :data="skuList"
                 stripe
                 class="sku-table"
+                height="350"
                 @selection-change="handleSkuSelectionChange"
               >
                 <el-table-column type="selection" align="center" width="55" />
@@ -532,7 +533,7 @@ export default {
         .map((item) => {
           return item.sku
         })
-        .join(' ')
+        .join('\n')
 
       this.pictureForm.sku_list_str = skuStr
       this.handleSkuSearchDialogClose()

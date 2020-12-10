@@ -129,8 +129,17 @@ export default {
   async mounted() {
     await this.getRegionGet()
     await this.getWarehouseList()
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getWarehouseList()
+      }
+    },
     async getWarehouseList() {
       const data = {
         opr: 'get_warehouse_list',

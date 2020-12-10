@@ -51,6 +51,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               :default-time="['00:00:00', '23:59:59']"
+              @change="getList"
             />
           </el-form-item>
           <el-form-item>
@@ -260,8 +261,17 @@ export default {
   },
   mounted() {
     this.getList()
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getList()
+      }
+    },
     async getList() {
       const data = {
         opr: 'get_order_list',

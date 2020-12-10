@@ -10,7 +10,7 @@
       <div class="search-wrapper">
         <el-form ref="searchForm" :model="searchForm" :inline="true">
           <el-form-item label="状态" prop="status" label-width="45px">
-            <el-select v-model="searchForm.status" placeholder="请选择">
+            <el-select v-model="searchForm.status" placeholder="请选择" @change="getList">
               <el-option key="全部" label="全部" value />
               <el-option
                 v-for="item in statusOptions"
@@ -32,6 +32,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               :default-time="['00:00:00', '23:59:59']"
+              @change="getList"
             />
           </el-form-item>
           <el-form-item>
@@ -182,8 +183,17 @@ export default {
     this.getList()
     // 更新页面全局数据
     this.$store.dispatch('user/getUserInfo')
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getList()
+      }
+    },
     async getList() {
       const data = {
         opr: 'get_recharge_list',

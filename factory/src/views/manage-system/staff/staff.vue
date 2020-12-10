@@ -4,7 +4,7 @@
     <div class="search-wrapper">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
         <el-form-item label="状态" prop="status" label-width="70px">
-          <el-select v-model="searchForm.status" placeholder="请选择">
+          <el-select v-model="searchForm.status" placeholder="请选择" @change="getStaffList">
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in statusOptions"
@@ -15,7 +15,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="角色" prop="role_id" label-width="70px">
-          <el-select v-model="searchForm.role_id" placeholder="请选择">
+          <el-select v-model="searchForm.role_id" placeholder="请选择" @change="getStaffList">
             <el-option key="全部" label="全部" value />
             <el-option
               v-for="item in role_list"
@@ -44,6 +44,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             :default-time="['00:00:00', '23:59:59']"
+            @change="getStaffList"
           />
         </el-form-item>
         <el-form-item>
@@ -189,8 +190,17 @@ export default {
     this.getStaffList()
     // this.getRoleList()
     this.getWarehouseList()
+    document.addEventListener('keydown', this.handleKeydownEvent, false)
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydownEvent, false)
   },
   methods: {
+    handleKeydownEvent(e) {
+      if (e.keyCode === 13) {
+        this.getStaffList()
+      }
+    },
     async getStaffList() {
       const data = {
         opr: 'get_employee_list',
