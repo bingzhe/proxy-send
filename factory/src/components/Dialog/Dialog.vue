@@ -5,6 +5,8 @@
     :width="width"
     :visible.sync="dialogVisible"
     :show-close="showClose"
+    :close-on-click-modal="closeOnClickModal"
+    :close-on-press-escape="closeOnPressEscape"
     @close="close"
     @open="open"
   >
@@ -57,6 +59,14 @@ export default {
     validate: {
       type: Boolean,
       default: false
+    },
+    closeOnClickModal: {
+      type: Boolean,
+      default: true
+    },
+    closeOnPressEscape: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -84,7 +94,6 @@ export default {
       this.$emit('open')
     }
   }
-
 }
 </script>
 

@@ -234,29 +234,25 @@
                   class="text-btn save-btn"
                   type="text"
                   @click="handleTshopSaveClick(scope.row)"
-                  >保存</el-button
-                >
+                >保存</el-button>
                 <el-button
                   v-if="scope.row.isEdit"
                   class="text-btn save-btn"
                   type="text"
                   @click="handleTshopCancelClick(scope.row)"
-                  >取消</el-button
-                >
+                >取消</el-button>
                 <el-button
                   v-if="!scope.row.isEdit"
                   class="text-btn edit-btn"
                   type="text"
                   @click="handleTshopEditClick(scope.row)"
-                  >编辑</el-button
-                >
+                >编辑</el-button>
                 <el-button
                   v-if="!scope.row.isEdit"
                   class="text-btn del-btn"
                   type="text"
                   @click="handleDelTshopClick(scope.row)"
-                  >删除</el-button
-                >
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>

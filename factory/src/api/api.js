@@ -147,3 +147,6 @@ export const tshopSave = generateRequestFn('tshop_save.php')
 
 // tshop_get
 export const tshopGet = generateRequestFn('tshop_get.php')
+
+// progress_get
+export const progressGet = generateRequestFn('progress_get.php')

@@ -8,7 +8,10 @@
           </div>
         </div>
         <div class="btn-group-wrapper">
-          <el-button class="btn-bd-primary" @click="openChangeAddressDialog">修改收货人信息</el-button>
+          <el-button
+            class="btn-bd-primary"
+            @click="openChangeAddressDialog"
+          >修改收货人信息</el-button>
           <el-button class="btn-bd-primary" @click="oprAdjustFeeDialog">调整订单金额</el-button>
           <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
         </div>
@@ -19,7 +22,11 @@
           <baseinfo-title color="#F348A1" text="基本信息" />
         </div>
         <div class="info-content-wrapper">
-          <table-baseinfo :baseinfo-list="baseinfoList" @imgupload-success="handleBaseInfoimgUpload" @imgdelete="handleBaseInfoimgdel" />
+          <table-baseinfo
+            :baseinfo-list="baseinfoList"
+            @imgupload-success="handleBaseInfoimgUpload"
+            @imgdelete="handleBaseInfoimgdel"
+          />
         </div>
       </div>
       <!-- 商品信息 -->
@@ -64,26 +71,48 @@
       <div class="audit-form-wrapper">
         <el-form ref="auditForm" :model="auditForm" label-width="107px" :rules="auditFormRules">
           <el-form-item label="结论：" prop="pass">
-            <el-radio v-model="auditForm.pass" :disabled="order_status === ORDER_STATUS.DELIVERY_WAIT" :label="1">通过</el-radio>
+            <el-radio
+              v-model="auditForm.pass"
+              :disabled="order_status === ORDER_STATUS.DELIVERY_WAIT"
+              :label="1"
+            >通过</el-radio>
             <el-radio v-model="auditForm.pass" :label="0">不通过</el-radio>
           </el-form-item>
           <el-form-item label="原因：" prop="remark">
-            <el-input v-model="auditForm.remark" :rows="4" type="textarea" placeholder="请输入内容" maxlength="200" show-word-limit />
+            <el-input
+              v-model="auditForm.remark"
+              :rows="4"
+              type="textarea"
+              placeholder="请输入内容"
+              maxlength="200"
+              show-word-limit
+            />
           </el-form-item>
         </el-form>
       </div>
       <div class="audit-opr">
         <el-button class="btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
         <el-button type="primary" @click="handlerAuditOprClick">提交</el-button>
-        <el-button class="btn-bd-primary" @click="handlerAuditOprAndNextClick">提交并审核下一单</el-button>
+        <el-button
+          class="btn-bd-primary"
+          @click="handlerAuditOprAndNextClick"
+        >提交并审核下一单</el-button>
       </div>
     </div>
 
     <!-- 调整订单金额 -->
-    <dialog-adjust-order-fee ref="adjustFeeDialog" :order-id="order_id" @on-success="handlerAdjustFeeSuc" />
+    <dialog-adjust-order-fee
+      ref="adjustFeeDialog"
+      :order-id="order_id"
+      @on-success="handlerAdjustFeeSuc"
+    />
     <!-- @close="handlerAdjustFeeClose" -->
     <!-- 调整地址 -->
-    <dialog-change-address ref="changeAddress" :order-id="order_id" @on-success="handlerChangeAddrerss" />
+    <dialog-change-address
+      ref="changeAddress"
+      :order-id="order_id"
+      @on-success="handlerChangeAddrerss"
+    />
   </div>
 </template>
 
@@ -237,18 +266,26 @@ export default {
         .join('，')
       this.baseinfoList[2].company_name = info.remark
       this.baseinfoList[3].company_name = (info.remark_img_list || []).map((img) => {
-        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=8&img_name=${img}&vxversion=v2`
+        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&type=8&img_name=${img}&vxversion=v2`
       })
 
       this.remark_img_list = info.remark_img_list || []
 
       // 商品信息
       this.goodsList = info.goods_list.map((goods) => {
-        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.color}_${goods.goods_id}`
+        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${
+          goods.color
+        }_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
-        goods.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${goods.goods_img}`
-        goods.goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${goods.goods_img}`
+        goods.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&width=64&height=64&type=7&img_name=${goods.goods_img}`
+        goods.goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
+          this.token
+        }&opr=get_img&type=7&to=jpg&img_name=${goods.goods_img}`
         goods.warehouse_name = (goods.delivery_info || {}).warehouse_name || '-'
         goods.delivery_number = (goods.delivery_info || {}).delivery_number || '-'
         return goods
@@ -263,13 +300,27 @@ export default {
 
       // 费用信息
       this.orderFeeList[0].goods_fee = info.goods_fee ? `¥ ${info.goods_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].freight_fee = info.freight_fee ? `¥ ${info.freight_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].discount_fee = info.discount_fee ? `- ¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.refund_fee ? `¥ ${info.refund_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.order_fee ? `¥ ${info.order_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].freight_fee = info.freight_fee
+        ? `¥ ${info.freight_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].discount_fee = info.discount_fee
+        ? `- ¥ ${info.discount_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].attach_fee = info.attach_fee
+        ? `¥ ${info.attach_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].goods_fee = info.adjust_fee
+        ? `¥ ${info.adjust_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.refund_fee
+        ? `¥ ${info.refund_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.order_fee
+        ? `¥ ${info.order_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.actual_fee
+        ? `¥ ${info.actual_fee.toFixed(2)}`
+        : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (info.order_track || []).map((track) => {
@@ -401,14 +452,18 @@ export default {
       const resp = await orderSave(data)
       if (resp.ret !== 0) return
 
-      this.$slnotify({ message: '操作成功' })
+      this.$notify({
+        title: '成功',
+        message: '操作成功',
+        type: 'success'
+      })
       this.getOrderinfo()
     }
   }
 }
 </script>
 
-<style  lang="scss" scoped>
+<style lang="scss" scoped>
 .order-info-wrapper {
   background: rgba(255, 255, 255, 1);
   border-radius: 2px;
@@ -497,4 +552,3 @@ export default {
   }
 }
 </style>
-

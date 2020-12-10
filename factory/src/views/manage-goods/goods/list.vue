@@ -12,19 +12,34 @@
         <el-form-item label="商品种类" prop="type" label-width="70px">
           <el-select v-model="searchForm.type" placeholder="请选择">
             <el-option key="全部" label="全部" value />
-            <el-option v-for="item in goodsTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option
+              v-for="item in goodsTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="品牌" prop="brand" label-width="70px">
           <el-select v-model="searchForm.brand" placeholder="请选择">
             <el-option key="全部" label="全部" value />
-            <el-option v-for="item in phone_brand_list" :key="item.brand_id" :label="item.brand_name" :value="item.brand_id" />
+            <el-option
+              v-for="item in phone_brand_list"
+              :key="item.brand_id"
+              :label="item.brand_name"
+              :value="item.brand_id"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="型号" prop="model" label-width="70px">
           <el-select v-model="searchForm.model" filterable placeholder="请选择">
             <el-option key="全部" label="全部" value />
-            <el-option v-for="item in model_list" :key="item.model_id" :label="item.model_name" :value="item.model_id" />
+            <el-option
+              v-for="item in model_list"
+              :key="item.model_id"
+              :label="item.model_name"
+              :value="item.model_id"
+            />
           </el-select>
         </el-form-item>
         <br />
@@ -35,14 +50,23 @@
           <el-input v-model.trim="searchForm.goods_id" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="库存量" prop="goods_stock_type" label-width="70px">
-          <el-select v-model="searchForm.goods_stock_type" class="goods-stock-type" placeholder="请选择">
+          <el-select
+            v-model="searchForm.goods_stock_type"
+            class="goods-stock-type"
+            placeholder="请选择"
+          >
             <el-option key="全部" label="全部" value />
             <el-option key="more" label="大于等于" value="more" />
             <el-option key="less" label="小于等于" value="less" />
           </el-select>
         </el-form-item>
         <el-form-item prop="goods_stock">
-          <el-input v-model.trim="searchForm.goods_stock" v-limit-input-number="searchForm.goods_stock" class="goods-stock" placeholder="请输入" />
+          <el-input
+            v-model.trim="searchForm.goods_stock"
+            v-limit-input-number="searchForm.goods_stock"
+            class="goods-stock"
+            placeholder="请输入"
+          />
         </el-form-item>
         <el-form-item>
           <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
@@ -51,7 +75,11 @@
     </div>
     <!-- search end -->
 
-    <div v-loading="tableLoading" element-loading-text="拼命加载中" class="table-wrapper table-wrapper-default">
+    <div
+      v-loading="tableLoading"
+      element-loading-text="拼命加载中"
+      class="table-wrapper table-wrapper-default"
+    >
       <div class="table-title clearfix">
         <div class="table-title__lable">
           <span>
@@ -60,7 +88,11 @@
           <span>商品列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="goods-add btn-h-38" type="primary" @click="handleUploadGoodsClick">导入商品</el-button>
+          <el-button
+            class="goods-add btn-h-38"
+            type="primary"
+            @click="handleUploadGoodsClick"
+          >导入商品</el-button>
           <router-link to="/manage-goods/goods/edit">
             <el-button class="goods-add btn-h-38" type="primary">新增商品</el-button>
           </router-link>
@@ -83,10 +115,27 @@
           <el-table-column prop="status_str" label="状态" min-width="60" />
           <el-table-column prop="opr" label="操作" width="160" align="center">
             <template slot-scope="scope">
-              <el-button v-if="scope.row.status === GOODS_STATUS.OFF" class="btn-green" type="text" @click="handlerOnOffClick(scope.row.goods_id, 'on')">上架</el-button>
-              <el-button v-if="scope.row.status === GOODS_STATUS.ON" class="btn-green" type="text" @click="handlerOnOffClick(scope.row.goods_id, 'off')">下架</el-button>
-              <el-button type="text" @click="handlerEditBtnClick(scope.row.goods_id)">编辑</el-button>
-              <el-button class="btn-red" type="text" @click="handlerDeleteBtnClick(scope.row.goods_id)">删除</el-button>
+              <el-button
+                v-if="scope.row.status === GOODS_STATUS.OFF"
+                class="btn-green"
+                type="text"
+                @click="handlerOnOffClick(scope.row.goods_id, 'on')"
+              >上架</el-button>
+              <el-button
+                v-if="scope.row.status === GOODS_STATUS.ON"
+                class="btn-green"
+                type="text"
+                @click="handlerOnOffClick(scope.row.goods_id, 'off')"
+              >下架</el-button>
+              <el-button
+                type="text"
+                @click="handlerEditBtnClick(scope.row.goods_id)"
+              >编辑</el-button>
+              <el-button
+                class="btn-red"
+                type="text"
+                @click="handlerDeleteBtnClick(scope.row.goods_id)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -97,9 +146,7 @@
           <div class="pagination-total">
             <span>
               共
-              <span class="num-text">{{ pageTotal }}</span
-              >页/ <span class="num-text">{{ total }}</span
-              >条数据
+              <span class="num-text">{{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
             </span>
           </div>
           <el-pagination
@@ -117,7 +164,7 @@
       </div>
     </div>
 
-    <GoodsExeclUploadDialog ref="goodsExeclUploadDialog" />
+    <GoodsExeclUploadDialog ref="goodsExeclUploadDialog" @close-dialog="handleExeclUploadClose" />
   </div>
 </template>
 <script>
@@ -313,6 +360,9 @@ export default {
     },
     handleUploadGoodsClick() {
       this.$refs.goodsExeclUploadDialog.show()
+    },
+    handleExeclUploadClose() {
+      this.getGoodsList()
     }
   }
 }
@@ -355,4 +405,3 @@ export default {
   color: #e33119;
 }
 </style>
-
