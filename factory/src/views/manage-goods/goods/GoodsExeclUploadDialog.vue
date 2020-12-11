@@ -8,7 +8,7 @@
     :closeOnPressEscape="false"
   >
     <div class="upload-wrapper">
-      <el-input v-model="file_id" readonly></el-input>
+      <el-input v-model="oriname" readonly></el-input>
 
       <el-upload :show-file-list="false" :http-request="upload" :action="url">
         <el-button class="select-file-btn" type="primary">选择</el-button>
@@ -48,6 +48,7 @@ export default {
 
       file_id: '', // 文件上传接口返回的文件id
       file_md5: '', // 文件上传接口返回的文件md5
+      oriname: '',
 
       task_id: '', // 开始处理后的id
 
@@ -71,6 +72,7 @@ export default {
       this.file_id = ''
       this.file_md5 = ''
       this.task_id = ''
+      this.oriname = ''
       this.progressContent = ''
       if (this.setintervalId) {
         clearInterval(this.setintervalId)
@@ -91,6 +93,7 @@ export default {
 
         this.file_id = resp.data.file_id
         this.file_md5 = resp.data.file_md5
+        this.oriname = resp.data.oriname
 
         // this.$emit('on-success', resp.data)
       })

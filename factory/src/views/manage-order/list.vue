@@ -6,7 +6,12 @@
         <el-form-item label="订单状态" prop="order_status" label-width="70px">
           <el-select v-model="searchForm.order_status" placeholder="请选择" @change="getList">
             <el-option key="全部" label="全部" value />
-            <el-option v-for="item in orderStausOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option
+              v-for="item in orderStausOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="订单编号" prop="order_id" label-width="70px">
@@ -44,7 +49,11 @@
     </div>
     <!-- search end -->
 
-    <div v-loading="tableLoading" element-loading-text="拼命加载中" class="table-wrapper table-wrapper-default">
+    <div
+      v-loading="tableLoading"
+      element-loading-text="拼命加载中"
+      class="table-wrapper table-wrapper-default"
+    >
       <div class="table-title clearfix">
         <div class="table-title__lable">
           <span>
@@ -53,9 +62,21 @@
           <span>订单审核列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="goods-add btn-h-38" type="primary" @click="handleToggleFreeze">冻结/解冻</el-button>
-          <el-button class="goods-add btn-h-38" type="primary" @click="handleOpenSelectIdAuditDialog">审核</el-button>
-          <el-button class="goods-add btn-h-38" type="primary" @click="handleOpenQueryOrderAuditDialog">全部审核</el-button>
+          <el-button
+            class="goods-add btn-h-38"
+            type="primary"
+            @click="handleToggleFreeze"
+          >冻结/解冻</el-button>
+          <el-button
+            class="goods-add btn-h-38"
+            type="primary"
+            @click="handleOpenSelectIdAuditDialog"
+          >审核</el-button>
+          <el-button
+            class="goods-add btn-h-38"
+            type="primary"
+            @click="handleOpenQueryOrderAuditDialog"
+          >全部审核</el-button>
 
           <!-- <el-button class="goods-add btn-h-38" type="primary" @click="handlerMuAuditClick"
             >审核通过</el-button
@@ -115,9 +136,22 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" min-width="60">
             <template slot-scope="scope">
-              <el-button v-if="ORDER_STATUS.ERROR === scope.row.order_status" type="text" @click="handleErrorOrder(scope.row.order_id)">处理</el-button>
-              <el-button v-if="ORDER_STATUS.ERROR === scope.row.order_status" type="text" class="btn-red" @click="handleDelErrorDialog(scope.row.order_id)">删除</el-button>
-              <el-button v-if="ORDER_STATUS.ERROR !== scope.row.order_status" type="text" @click="goOrderinfo(scope.row.order_id)">{{
+              <el-button
+                v-if="ORDER_STATUS.ERROR === scope.row.order_status"
+                type="text"
+                @click="handleErrorOrder(scope.row.order_id)"
+              >处理</el-button>
+              <el-button
+                v-if="ORDER_STATUS.ERROR === scope.row.order_status"
+                type="text"
+                class="btn-red"
+                @click="handleDelErrorDialog(scope.row.order_id)"
+              >删除</el-button>
+              <el-button
+                v-if="ORDER_STATUS.ERROR !== scope.row.order_status"
+                type="text"
+                @click="goOrderinfo(scope.row.order_id)"
+              >{{
                 ORDER_STATUS.AUDIT_WAIT === scope.row.order_status ? '审单' : '重新审单'
               }}</el-button>
             </template>
@@ -149,53 +183,118 @@
     </div>
 
     <!-- 冻结/解冻弹窗 -->
-    <sl-dialog ref="freezeDialog" class="freeze-dialog" :validate="true" title="冻结/解冻订单" @close="handleFreezeDialogClose" @confirm="handleFreezeDialogConfirm">
-      <el-form ref="freezeDialogForm" :model="freezeDialogForm" :rules="freezeDialogFormRules" label-width="130px">
+    <sl-dialog
+      ref="freezeDialog"
+      class="freeze-dialog"
+      :validate="true"
+      title="冻结/解冻订单"
+      @close="handleFreezeDialogClose"
+      @confirm="handleFreezeDialogConfirm"
+    >
+      <el-form
+        ref="freezeDialogForm"
+        :model="freezeDialogForm"
+        :rules="freezeDialogFormRules"
+        label-width="130px"
+      >
         <el-form-item label="操作" prop="freeze">
           <el-radio v-model="freezeDialogForm.freeze" :label="1">冻结</el-radio>
           <el-radio v-model="freezeDialogForm.freeze" :label="0">解冻</el-radio>
         </el-form-item>
         <el-form-item label="原因" prop="remark">
-          <el-input v-model="freezeDialogForm.remark" :rows="3" type="textarea" placeholder="请输入" maxlength="150" show-word-limit />
+          <el-input
+            v-model="freezeDialogForm.remark"
+            :rows="3"
+            type="textarea"
+            placeholder="请输入"
+            maxlength="150"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
     </sl-dialog>
 
     <!-- 选择订单审核 -->
-    <sl-dialog ref="selectIdAuditDialog" class="freeze-dialog" :validate="true" title="审核" @close="handleSelectIdAuditDialogClose" @confirm="handleSelectIdAuditeDialogConfirm">
-      <el-form ref="selectIdAuditForm" :model="selectIdAuditForm" :rules="selectIdAuditFormRules" label-width="130px">
+    <sl-dialog
+      ref="selectIdAuditDialog"
+      class="freeze-dialog"
+      :validate="true"
+      title="审核"
+      @close="handleSelectIdAuditDialogClose"
+      @confirm="handleSelectIdAuditeDialogConfirm"
+    >
+      <el-form
+        ref="selectIdAuditForm"
+        :model="selectIdAuditForm"
+        :rules="selectIdAuditFormRules"
+        label-width="130px"
+      >
         <el-form-item label="操作" prop="pass">
           <el-radio v-model="selectIdAuditForm.pass" :label="1">审核通过</el-radio>
           <el-radio v-model="selectIdAuditForm.pass" :label="0">审核不通过</el-radio>
         </el-form-item>
         <el-form-item label="原因" prop="remark">
-          <el-input v-model="selectIdAuditForm.remark" :rows="3" type="textarea" placeholder="请输入" maxlength="150" show-word-limit />
+          <el-input
+            v-model="selectIdAuditForm.remark"
+            :rows="3"
+            type="textarea"
+            placeholder="请输入"
+            maxlength="150"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
     </sl-dialog>
 
     <!-- 查询出来的订单审核 -->
-    <sl-dialog ref="queryOrderAuditDialog" class="freeze-dialog" :validate="true" title="查询订单审核" @close="handleQueryOrderAuditDialogClose" @confirm="handleQueryOrderAuditeDialogConfirm">
-      <el-form ref="queryOrderAuditForm" :model="queryOrderAuditForm" :rules="queryOrderAuditFormRules" label-width="130px">
+    <sl-dialog
+      ref="queryOrderAuditDialog"
+      class="freeze-dialog"
+      :validate="true"
+      title="查询订单审核"
+      @close="handleQueryOrderAuditDialogClose"
+      @confirm="handleQueryOrderAuditeDialogConfirm"
+    >
+      <el-form
+        ref="queryOrderAuditForm"
+        :model="queryOrderAuditForm"
+        :rules="queryOrderAuditFormRules"
+        label-width="130px"
+      >
         <el-form-item label="操作" prop="pass">
           <el-radio v-model="queryOrderAuditForm.pass" :label="1">审核通过</el-radio>
           <el-radio v-model="queryOrderAuditForm.pass" :label="0">审核不通过</el-radio>
         </el-form-item>
         <el-form-item label="原因" prop="remark">
-          <el-input v-model="queryOrderAuditForm.remark" :rows="3" type="textarea" placeholder="请输入" maxlength="150" show-word-limit />
+          <el-input
+            v-model="queryOrderAuditForm.remark"
+            :rows="3"
+            type="textarea"
+            placeholder="请输入"
+            maxlength="150"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
     </sl-dialog>
 
     <!-- 处理异常订单 -->
-    <sl-dialog ref="handleErrorDialog" title="异常订单处理" width="650px" confirmText="立即处理" @close="handleErrorDialogClose" @confirm="handleErrorDialogConfirm">
+    <sl-dialog
+      ref="handleErrorDialog"
+      :validate="true"
+      title="异常订单处理"
+      width="650px"
+      confirmText="立即处理"
+      @close="handleErrorDialogClose"
+      @confirm="handleErrorDialogConfirm"
+    >
       <div class="error-dialog-item">
         <div class="label">订单号</div>
         <div class="value">{{ handle_orderid }}</div>
       </div>
       <div class="error-dialog-item">
         <div class="label">异常说明</div>
-        <div class="value">{{ exception_remark }}</div>
+        <div class="value" v-html="exception_remark"></div>
       </div>
     </sl-dialog>
   </div>
@@ -618,6 +717,7 @@ export default {
     handleErrorDialogClose() {
       this.handle_orderid = ''
       this.exception_remark = ''
+      this.$refs.handleErrorDialog.hide()
     },
     async handleErrorDialogConfirm() {
       const data = {
@@ -705,6 +805,10 @@ export default {
     flex-basis: 90px;
     flex-shrink: 0;
     width: 90px;
+  }
+
+  /deep/ a {
+    color: #2584f9;
   }
 }
 </style>
