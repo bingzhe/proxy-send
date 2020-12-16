@@ -143,3 +143,6 @@ export const tshopGet = generateRequestFn('tshop_get.php')
 
 // warehouse_get
 export const warehouseGet = generateRequestFn('warehouse_get.php')
+
+// progress_get
+export const progressGet = generateRequestFn('progress_get.php')

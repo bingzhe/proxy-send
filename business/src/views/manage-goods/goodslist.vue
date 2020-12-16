@@ -61,6 +61,9 @@
           </span>
           <span>商品列表</span>
         </div>
+        <div class="add-button-group">
+          <el-button class="goods-add btn-h-38" type="primary" @click="handleExportGoodsClick">导出商品</el-button>
+        </div>
       </div>
 
       <div class="table-content default-table-change">
@@ -110,14 +113,19 @@
         <!-- 分页 end -->
       </div>
     </div>
+    <GoodsExportDialog ref="goodsExportDialog" :searchForm="searchForm" />
   </div>
 </template>
 <script>
 import { GOODS_TYPE, GOODS_STATUS } from '@/config/cfg'
 import { goodsGet } from '@/api/api'
 import { mapState } from 'vuex'
+import GoodsExportDialog from './components/GoodsExportDialog'
 
 export default {
+  components: {
+    GoodsExportDialog
+  },
   data() {
     return {
       // search
@@ -179,7 +187,7 @@ export default {
       }
       // 材质
       if (this.searchForm.goods_material) {
-        data.goods_material = this.searchForm.goods_material
+        data.raw_material = this.searchForm.goods_material
       }
       // 类型
       if (this.searchForm.type) {
@@ -258,6 +266,9 @@ export default {
           this.$router.push({ path: `/manage-goods/norm/${goodsId}` })
         }
       }
+    },
+    handleExportGoodsClick() {
+      this.$refs.goodsExportDialog.show()
     }
   }
 }
