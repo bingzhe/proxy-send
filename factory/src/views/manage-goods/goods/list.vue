@@ -102,6 +102,7 @@
             type="primary"
             @click="handleUploadGoodsClick"
           >导入商品</el-button>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handleExportGoodsClick">导出商品</el-button>
           <router-link to="/manage-goods/goods/edit">
             <el-button class="goods-add btn-h-38" type="primary">新增商品</el-button>
           </router-link>
@@ -174,6 +175,7 @@
     </div>
 
     <GoodsExeclUploadDialog ref="goodsExeclUploadDialog" @close-dialog="handleExeclUploadClose" />
+    <GoodsExportDialog ref="goodsExportDialog" :searchForm="searchForm"/>
   </div>
 </template>
 <script>
@@ -181,10 +183,12 @@ import { GOODS_TYPE, GOODS_STATUS } from '@/config/cfg'
 import { goodsSave, goodsGet } from '@/api/api'
 import { mapState } from 'vuex'
 import GoodsExeclUploadDialog from './GoodsExeclUploadDialog'
+import GoodsExportDialog from './GoodsExportDialog'
 
 export default {
   components: {
-    GoodsExeclUploadDialog
+    GoodsExeclUploadDialog,
+    GoodsExportDialog
   },
   data() {
     return {
@@ -381,6 +385,9 @@ export default {
       if (e.keyCode === 13) {
         this.getGoodsList()
       }
+    },
+    handleExportGoodsClick() {
+      this.$refs.goodsExportDialog.show()
     }
   }
 }
