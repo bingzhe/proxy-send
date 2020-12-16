@@ -1,34 +1,20 @@
 <template>
-  <sl-dialog
-    ref="uploadGoodsExecl"
-    title="上传商品"
-    :showFooter="false"
-    :showClose="false"
-    :closeOnClickModal="false"
-    :closeOnPressEscape="false"
-  >
+  <sl-dialog ref="uploadGoodsExecl" title="上传商品" :showFooter="false" :showClose="false" :closeOnClickModal="false" :closeOnPressEscape="false">
     <div class="upload-wrapper">
       <el-input v-model="oriname" readonly></el-input>
 
       <el-upload :show-file-list="false" :http-request="upload" :action="url">
-        <el-button class="select-file-btn" type="primary">选择</el-button>
+        <el-button class="select-file-btn" type="primary" :disabled="showProgress">选择</el-button>
       </el-upload>
     </div>
-    <el-input
-      v-model="progressContent"
-      class="handle-file-process-text"
-      type="textarea"
-      :rows="6"
-      readonly
-    ></el-input>
+    <el-input v-model="progressContent" class="handle-file-process-text" type="textarea" :rows="6" readonly></el-input>
     <div class="footer-content">
       <el-button type="primary" :disabled="disabledButton" @click="starHandle">开始导入</el-button>
       <el-button type="primary" @click="stopHandleFile">中止处理</el-button>
-      <el-button
-        type="primary"
-        :disabled="disabledButton"
-        @click="handleCloseClick"
-      >关闭</el-button>
+      <el-button type="primary" :disabled="disabledButton" @click="handleCloseClick">关闭</el-button>
+    </div>
+    <div v-if="showProgress" class="progress-wrapper">
+      <el-progress :text-inside="true" :stroke-width="36" :percentage="progressPercent"></el-progress>
     </div>
   </sl-dialog>
 </template>
@@ -56,7 +42,10 @@ export default {
 
       progressContent: '',
 
-      setintervalId: ''
+      setintervalId: '',
+
+      progressPercent: 0,
+      showProgress: false
     }
   },
   methods: {
@@ -85,18 +74,31 @@ export default {
         file: file
       }
 
-      Http.EncSubmit(this.url, data, (resp) => {
-        console.log('上传文件 resp', resp)
-        if (resp.ret !== 0) {
-          return this.$message.error(resp.msg)
+      this.showProgress = true
+      Http.EncSubmit(
+        this.url,
+        data,
+        (resp) => {
+          console.log('上传文件 resp', resp)
+          this.showProgress = false
+          this.progressPercent = 0
+          if (resp.ret !== 0) {
+            return this.$message.error(resp.msg)
+          }
+
+          this.file_id = resp.data.file_id
+          this.file_md5 = resp.data.file_md5
+          this.oriname = resp.data.oriname
+
+          // this.$emit('on-success', resp.data)
+        },
+        {
+          UploadProgress: ({ complete, loaded, total }) => {
+            // console.log(complete, loaded, total)
+            this.progressPercent = complete
+          }
         }
-
-        this.file_id = resp.data.file_id
-        this.file_md5 = resp.data.file_md5
-        this.oriname = resp.data.oriname
-
-        // this.$emit('on-success', resp.data)
-      })
+      )
     },
     async starHandle() {
       if (!this.file_id) {
@@ -177,5 +179,19 @@ export default {
 .handle-file-process-text {
   padding: 0 40px;
   margin: 20px 0;
+}
+.progress-wrapper {
+  position: absolute;
+  top: 86px;
+  left: 61px;
+  height: 32px;
+  width: 568px;
+  /deep/ .el-progress-bar__outer {
+    background: #fff;
+    border-radius: 0;
+  }
+  /deep/ .el-progress-bar__inner {
+    border-radius: 0;
+  }
 }
 </style>
