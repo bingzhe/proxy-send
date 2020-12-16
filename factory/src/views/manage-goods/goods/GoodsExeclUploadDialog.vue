@@ -7,7 +7,7 @@
         <el-button class="select-file-btn" type="primary" :disabled="showProgress">选择</el-button>
       </el-upload>
     </div>
-    <el-input v-model="progressContent" class="handle-file-process-text" type="textarea" :rows="6" readonly></el-input>
+    <div class="handle-file-process-text" v-html="progressContent" />
     <div class="footer-content">
       <el-button type="primary" :disabled="disabledButton" @click="starHandle">开始导入</el-button>
       <el-button type="primary" @click="stopHandleFile">中止处理</el-button>
@@ -177,8 +177,17 @@ export default {
   padding-bottom: 11px;
 }
 .handle-file-process-text {
-  padding: 0 40px;
-  margin: 20px 0;
+  margin: 20px 40px;
+  border: 1px solid #e6e6e6;
+  height: 120px;
+  transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  &:hover {
+    border-color: #2584f9;
+  }
+  /deep/  a {
+    color: #2584f9;
+  }
 }
 .progress-wrapper {
   position: absolute;

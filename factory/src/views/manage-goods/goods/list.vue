@@ -175,7 +175,7 @@
     </div>
 
     <GoodsExeclUploadDialog ref="goodsExeclUploadDialog" @close-dialog="handleExeclUploadClose" />
-    <GoodsExportDialog ref="goodsExportDialog" :searchForm="searchForm"/>
+    <GoodsExportDialog ref="goodsExportDialog" :searchForm="searchForm" />
   </div>
 </template>
 <script>
@@ -256,7 +256,7 @@ export default {
       }
       // 材质
       if (this.searchForm.goods_material) {
-        data.goods_material = this.searchForm.goods_material
+        data.raw_material = this.searchForm.goods_material
       }
       // 商品种类
       if (this.searchForm.type) {
@@ -428,5 +428,9 @@ export default {
 }
 .btn-red {
   color: #e33119;
+}
+
+.el-button.btn-h-38{
+  margin-left: 0;
 }
 </style>

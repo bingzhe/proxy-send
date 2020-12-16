@@ -7,13 +7,7 @@
     :closeOnClickModal="false"
     :closeOnPressEscape="false"
   >
-    <el-input
-      v-model="progressContent"
-      class="handle-file-process-text"
-      type="textarea"
-      :rows="6"
-      readonly
-    ></el-input>
+    <div class="handle-file-process-text" v-html="progressContent"></div>
     <div class="footer-content">
       <el-button type="primary" :disabled="disabledButton" @click="handleStartExport">开始导出</el-button>
       <el-button type="primary" @click="stopHandle">中止处理</el-button>
@@ -75,9 +69,8 @@ export default {
       }
 
       // 材质
-      console.log(this.searchForm)
       if (this.searchForm.goods_material) {
-        data.goods_material = this.searchForm.goods_material
+        data.raw_material = this.searchForm.goods_material
       }
       // 商品种类
       if (this.searchForm.type) {
@@ -142,7 +135,7 @@ export default {
 
     async stopHandle() {
       const data = {
-        opr: 'cancel_goods_import',
+        opr: 'cancel_goods_export',
         task_id: this.task_id // 任务id
       }
 
@@ -164,7 +157,17 @@ export default {
   text-align: center;
 }
 .handle-file-process-text {
-  padding: 0 40px;
-  margin: 20px 0;
+  margin: 20px 40px;
+  border: 1px solid #e6e6e6;
+  height: 120px;
+  transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  &:hover {
+    border-color: #2584f9;
+  }
+
+  /deep/  a {
+    color: #2584f9;
+  }
 }
 </style>
