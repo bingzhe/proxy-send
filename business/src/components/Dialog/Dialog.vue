@@ -5,6 +5,8 @@
     :width="width"
     :visible.sync="dialogVisible"
     :show-close="showClose"
+    :close-on-click-modal="closeOnClickModal"
+    :close-on-press-escape="closeOnPressEscape"
     @close="close"
     @open="open"
   >
@@ -55,6 +57,14 @@ export default {
     },
     // 表单验证
     validate: {
+      type: Boolean,
+      default: false
+    },
+    closeOnClickModal: {
+      type: Boolean,
+      default: false
+    },
+    closeOnPressEscape: {
       type: Boolean,
       default: false
     }

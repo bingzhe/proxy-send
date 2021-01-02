@@ -187,7 +187,8 @@ export default {
          */
         img.scaleToHeight(this.height, false)
         const scaleWidth = img.width * img.scaleX
-        const offsetWidth = img.scaleX > 1 ? (scaleWidth - this.width) / 2 : 0
+        // const offsetWidth = img.scaleX > 1 ? (scaleWidth - this.width) / 2 : 0
+        const offsetWidth = (scaleWidth - this.width) / 2
 
         img.top = 100
         img.left = 100 - offsetWidth

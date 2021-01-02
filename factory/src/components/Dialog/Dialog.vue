@@ -62,11 +62,11 @@ export default {
     },
     closeOnClickModal: {
       type: Boolean,
-      default: true
+      default: false
     },
     closeOnPressEscape: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {
