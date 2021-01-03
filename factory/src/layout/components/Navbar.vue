@@ -74,7 +74,9 @@ export default {
       this.$confirm('确定要退出登录吗？', '退出确认', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        closeOnClickModal: false,
+        closeOnPressEscape: false
       }).then(() => {
         this.logoutOpr()
       }).catch(() => {

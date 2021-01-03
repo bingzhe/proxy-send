@@ -292,7 +292,9 @@ export default {
       this.$confirm('确认要删除选中商户？', '删除确认', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        closeOnClickModal: false,
+        closeOnPressEscape: false
       })
         .then(() => {
           this.delOpr(business_id)

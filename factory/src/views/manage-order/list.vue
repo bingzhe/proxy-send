@@ -742,7 +742,9 @@ export default {
       this.$confirm('确认要删除订单', '删除确认', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        closeOnClickModal: false,
+        closeOnPressEscape: false
       })
         .then(async() => {
           const data = {

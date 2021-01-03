@@ -62,6 +62,7 @@
           <span>商品列表</span>
         </div>
         <div class="add-button-group">
+          <el-button class="goods-add btn-h-38" type="primary" @click="handleCheckGoodsClick">检查商品</el-button>
           <el-button class="goods-add btn-h-38" type="primary" @click="handleExportGoodsClick">导出商品</el-button>
         </div>
       </div>
@@ -114,6 +115,7 @@
       </div>
     </div>
     <GoodsExportDialog ref="goodsExportDialog" :searchForm="searchForm" />
+    <CheckGoodsDialog ref="checkGoodsDialog" />
   </div>
 </template>
 <script>
@@ -121,10 +123,12 @@ import { GOODS_TYPE, GOODS_STATUS } from '@/config/cfg'
 import { goodsGet } from '@/api/api'
 import { mapState } from 'vuex'
 import GoodsExportDialog from './components/GoodsExportDialog'
+import CheckGoodsDialog from './components/CheckGoodsDialog'
 
 export default {
   components: {
-    GoodsExportDialog
+    GoodsExportDialog,
+    CheckGoodsDialog
   },
   data() {
     return {
@@ -269,6 +273,9 @@ export default {
     },
     handleExportGoodsClick() {
       this.$refs.goodsExportDialog.show()
+    },
+    handleCheckGoodsClick() {
+      this.$refs.checkGoodsDialog.show()
     }
   }
 }
