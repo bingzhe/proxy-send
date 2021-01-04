@@ -345,16 +345,17 @@ export default {
       })
     },
     handleKeydown(e) {
-      if (e.keyCode === 38 && this.originImg) {
+      // console.log(e.keyCode)
+      if (e.ctrlKey && e.keyCode === 38 && this.originImg) {
         this.originImg.top -= 5
       }
-      if (e.keyCode === 40 && this.originImg) {
+      if (e.ctrlKey && e.keyCode === 40 && this.originImg) {
         this.originImg.top += 5
       }
-      if (e.keyCode === 37 && this.originImg) {
+      if (e.ctrlKey && e.keyCode === 37 && this.originImg) {
         this.originImg.left -= 5
       }
-      if (e.keyCode === 39 && this.originImg) {
+      if (e.ctrlKey && e.keyCode === 39 && this.originImg) {
         this.originImg.left += 5
       }
 

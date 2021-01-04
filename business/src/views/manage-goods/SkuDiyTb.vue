@@ -110,7 +110,7 @@ import { goodsGet } from '@/api/api'
 // buycartSave
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
-import DiyDesigner from './DiyDesigner'
+import DiyDesigner from './PictureDesigner'
 import Http from '@/config/encsubmit'
 
 export default {
@@ -291,9 +291,9 @@ export default {
         /**
          * 默认选中第一张地图
          */
+        await this.$refs.diyDesigner.addOutline(this.outline_img_url)
         await this.$refs.diyDesigner.addColorImg(this.color_img_url)
         // console.log(this.outline_img_url)
-        await this.$refs.diyDesigner.addOutline(this.outline_img_url)
 
         /**
          * 回显ori_user_img
@@ -333,8 +333,8 @@ export default {
       // <<<<<<<<<<<<<<<<<<
       this.$refs.diyDesigner.removeOriginImg()
 
-      await this.$refs.diyDesigner.addColorImg(this.color_img_url)
       await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+      await this.$refs.diyDesigner.addColorImg(this.color_img_url)
 
       // await this.$refs.diyDesigner.addColorImg(require('@/assets/images/color.png'))
       // await this.$refs.diyDesigner.addOutline(require('@/assets/images/outline.png'))

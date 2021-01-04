@@ -49,7 +49,7 @@ const Http = new function() {
     return p
   }
 
-  axios.defaults.timeout = 30000 // 设置超时时间(毫秒)
+  axios.defaults.timeout = 600000 // 设置超时时间(毫秒)
   // axios.defaults.withCredentials = true // 设置超时时间(毫秒)
 
   // axios.defaults.responseType = 'json';

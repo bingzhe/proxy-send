@@ -194,7 +194,7 @@ export const constantRoutes = [
     ]
   },
   { path: '/diy', component: () => import('@/views/manage-goods/DiyDesigner'), hidden: true },
-  { path: '/test', component: () => import('@/views/test/test'), hidden: true },
+  // { path: '/test', component: () => import('@/views/test/test'), hidden: true },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

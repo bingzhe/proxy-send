@@ -65,7 +65,7 @@
         </div>
         <div class="diy-content-wrapper">
           <div class="diy-designer-wrapper">
-            <diy-designer
+            <DiyDesigner
               ref="diyDesigner"
               :height="picHeight"
               :width="picWidth"
@@ -109,7 +109,7 @@ import MaterialList from './components/MaterialList'
 import { goodsGet, buycartSave } from '@/api/api'
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
-import DiyDesigner from './DiyDesigner'
+import DiyDesigner from './PictureDesigner'
 import Http from '@/config/encsubmit'
 
 export default {
@@ -251,9 +251,9 @@ export default {
         /**
          * 默认选中第一张地图
          */
-        await this.$refs.diyDesigner.addColorImg(this.color_img_url)
         // console.log(this.outline_img_url)
         await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+        await this.$refs.diyDesigner.addColorImg(this.color_img_url)
       })
     },
     handlerGetUploadFile({ file }) {
@@ -286,8 +286,8 @@ export default {
       // <<<<<<<<<<<<<<<<<<
       this.$refs.diyDesigner.removeOriginImg()
 
-      await this.$refs.diyDesigner.addColorImg(this.color_img_url)
       await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+      await this.$refs.diyDesigner.addColorImg(this.color_img_url)
 
       // await this.$refs.diyDesigner.addColorImg(require('@/assets/images/color.png'))
       // await this.$refs.diyDesigner.addOutline(require('@/assets/images/outline.png'))
