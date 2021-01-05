@@ -81,6 +81,11 @@
           <!-- <el-button class="goods-add btn-h-38" type="primary" @click="handlerMuAuditClick"
             >审核通过</el-button
           > -->
+          <el-button
+            class="goods-add btn-h-38"
+            type="primary"
+            @click="hanldeQmClick"
+          >抓单</el-button>
         </div>
       </div>
 
@@ -296,6 +301,8 @@
         <div class="value" v-html="exception_remark"></div>
       </div>
     </sl-dialog>
+
+    <DialogOrderFromQm ref="dialogOrderFromQm" />
   </div>
 </template>
 <script>
@@ -304,10 +311,12 @@ import moment from 'moment'
 import { ORDER_STATUS, pickerOptions } from '@/config/cfg'
 import SlDialog from '@/components/Dialog/Dialog'
 import { mapState } from 'vuex'
+import DialogOrderFromQm from './components/DialogOrderFromQm'
 
 export default {
   components: {
-    SlDialog
+    SlDialog,
+    DialogOrderFromQm
   },
   data() {
     return {
@@ -761,6 +770,9 @@ export default {
           this.getList()
         })
         .catch(() => {})
+    },
+    hanldeQmClick() {
+      this.$refs.dialogOrderFromQm.show()
     }
   }
 }
