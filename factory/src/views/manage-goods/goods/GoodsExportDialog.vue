@@ -145,7 +145,7 @@ export default {
 
       if (resp.ret !== 0) return
 
-      clearInterval(this.setintervalId)
+      // clearInterval(this.setintervalId)
       this.disabledButton = false
     }
   }
