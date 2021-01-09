@@ -208,6 +208,13 @@ export const constantRoutes = [
     meta: { title: '系统', icon: 'system' },
     children: [
       {
+        path: 'backtask',
+        name: 'backtask',
+        access: '11',
+        component: () => import('@/views/manage-system/task/task'),
+        meta: { title: '后台任务', icon: 'task' }
+      },
+      {
         path: 'shop',
         name: 'shop',
         access: '11',
@@ -229,13 +236,6 @@ export const constantRoutes = [
         meta: { title: '仓库管理', icon: 'cangku' }
       },
       {
-        path: 'param',
-        name: 'param',
-        access: '12',
-        component: () => import('@/views/manage-system/param/param'),
-        meta: { title: '参数配置', icon: 'canshupeizhi' }
-      },
-      {
         path: 'staff',
         name: 'staff',
         component: () => import('@/views/manage-system/staff/staff'),
@@ -248,6 +248,13 @@ export const constantRoutes = [
         access: '14',
         component: () => import('@/views/manage-system/role/role'),
         meta: { title: '角色管理', icon: 'jueseguangli' }
+      },
+      {
+        path: 'param',
+        name: 'param',
+        access: '12',
+        component: () => import('@/views/manage-system/param/param'),
+        meta: { title: '参数配置', icon: 'canshupeizhi' }
       }
       // {
       //   path: 'permission',

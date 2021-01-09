@@ -150,3 +150,9 @@ export const tshopGet = generateRequestFn('tshop_get.php')
 
 // progress_get
 export const progressGet = generateRequestFn('progress_get.php')
+
+// task_get
+export const taskGet = generateRequestFn('task_get.php')
+
+// task_save
+export const taskSave = generateRequestFn('task_save.php')

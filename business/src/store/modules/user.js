@@ -31,6 +31,7 @@ const state = {
   buycart_id: '', // 购物车id
   input_account_list: [], // 收款账户
   outline_angle_offset: '', // 圆角偏差值
+  task_status_list: [], // 后台任务状态
 
   icp_txt: '', // 备案信息
   icp_url: '' // 点击后跳转的地址
@@ -67,11 +68,10 @@ const mutations = {
     state.buycart_id = siteInfo.buycart_id
     state.input_account_list = siteInfo.input_account_list || []
     state.outline_angle_offset = siteInfo.outline_angle_offset || 0
+    state.task_status_list = siteInfo.task_status_list || []
 
     const delivery_list = (siteInfo.delivery_list || []).map((item) => {
-      item.delivery_str = item.price
-        ? `${item.name}（邮费：${item.price}元）`
-        : `${item.name}（邮费：包邮）`
+      item.delivery_str = item.price ? `${item.name}（邮费：${item.price}元）` : `${item.name}（邮费：包邮）`
       return item
     })
 

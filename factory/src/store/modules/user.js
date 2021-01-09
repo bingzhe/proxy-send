@@ -24,6 +24,7 @@ const state = {
   delivery_order_status_list: [], // 物流单状态列表
   production_order_status_list: [], // 生产单状态列
   delivery_list: [], // 快递公司
+  task_status_list: [], // 后台任务状态
 
   icp_txt: '', // 备案信息
   icp_url: '', // 点击后跳转的地址
@@ -55,6 +56,7 @@ const mutations = {
     state.theme_list = siteInfo.theme_list || []
     state.delivery_order_status_list = siteInfo.delivery_order_status_list || []
     state.production_order_status_list = siteInfo.production_order_status_list || []
+    state.task_status_list = siteInfo.task_status_list || []
 
     const delivery_list = (siteInfo.delivery_list || []).map((item) => {
       item.delivery_str = item.price

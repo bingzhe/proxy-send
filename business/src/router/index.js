@@ -180,6 +180,12 @@ export const constantRoutes = [
     meta: { title: '系统', icon: 'system' },
     children: [
       {
+        path: 'backtask',
+        name: 'backtask',
+        component: () => import('@/views/manage-system/task/task'),
+        meta: { title: '后台任务', icon: 'task' }
+      },
+      {
         path: 'shop',
         name: 'shop',
         component: () => import('@/views/manage-system/ShopInfo'),
