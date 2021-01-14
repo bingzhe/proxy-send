@@ -196,6 +196,7 @@
       <sl-dialog
         ref="skuSearchDialog"
         title="查询SKU"
+        width="900px"
         top="8vh"
         @confirm="handleSkuSearchDialogConfirm"
         @close="handleSkuSearchDialogClose"
@@ -213,7 +214,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="品牌" prop="brand" label-width="70px">
-              <el-select v-model="skuSearchForm.brand" placeholder="请选择" clearable>
+              <el-select v-model="skuSearchForm.brand" filterable placeholder="请选择" clearable @change="handlerBrandChange">
                 <el-option
                   v-for="item in phone_brand_list"
                   :key="item.brand_id"
@@ -222,10 +223,13 @@
                 />
               </el-select>
             </el-form-item>
+            <el-form-item label="颜色" prop="color_name" label-width="70px">
+              <el-input v-model.trim="skuSearchForm.color_name" placeholder="请输入" />
+            </el-form-item>
             <el-form-item label="型号" prop="model" label-width="70px">
               <el-select v-model="skuSearchForm.model" filterable placeholder="请选择" clearable>
                 <el-option
-                  v-for="item in model_list"
+                  v-for="item in data_model_list"
                   :key="item.model_id"
                   :label="item.model_name"
                   :value="item.model_id"
@@ -320,12 +324,15 @@ export default {
         goods_material: '',
         brand: '',
         model: '',
-        goods_name: ''
+        goods_name: '',
+        color_name: ''
       },
 
       skuList: [],
       skuMultipleSelection: [],
-      skuTableLoading: false
+      skuTableLoading: false,
+
+      data_model_list: []
     }
   },
   computed: {
@@ -456,16 +463,16 @@ export default {
       }
 
       console.log('保存图片 req=>', data)
-      const resp = await materialSave(data)
+      const resp = await materialSave(data, true, true)
       console.log('保存图片 res=>', resp)
 
       if (resp.ret !== 0) return
 
-      this.$notify({
-        title: '成功',
-        message: this.editPictureId ? '保存成功' : '提交成功',
-        type: 'success'
-      })
+      // this.$notify({
+      //   title: '成功',
+      //   message: this.editPictureId ? '保存成功' : '提交成功',
+      //   type: 'success'
+      // })
       this.handlerPicEditDialogClose()
       this.$refs.pictureEditDialog.hide()
       this.getPictureList()
@@ -543,7 +550,7 @@ export default {
         })
         .join('\n')
 
-      this.pictureForm.sku_list_str = skuStr
+      this.pictureForm.sku_list_str = this.pictureForm.sku_list_str === '' ? skuStr : this.pictureForm.sku_list_str + '\n' + skuStr
       this.handleSkuSearchDialogClose()
       this.$refs.skuSearchDialog.hide()
     },
@@ -553,7 +560,8 @@ export default {
         goods_name: this.skuSearchForm.goods_name, // 商品名称
         raw_material: this.skuSearchForm.goods_material, // 材质（见系统管理中参数配置）
         brand: this.skuSearchForm.brand, // 品牌ID
-        model: this.skuSearchForm.model // 型号ID
+        model: this.skuSearchForm.model, // 型号ID
+        color_name: this.skuSearchForm.color_name
       }
 
       this.skuTableLoading = true
@@ -569,6 +577,14 @@ export default {
 
       this.$nextTick(() => {
         this.$refs.skuTable.toggleAllSelection()
+      })
+    },
+    handlerBrandChange(brand_id) {
+      this.skuSearchForm.model = ''
+      this.phone_brand_list.forEach((brand) => {
+        if (brand.brand_id === brand_id) {
+          this.data_model_list = brand.model_list
+        }
       })
     }
   }

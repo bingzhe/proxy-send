@@ -39,7 +39,11 @@
           <el-table-column prop="start_time_txt" label="操作时间" min-width="60" />
           <el-table-column prop="end_time_txt" label="结束时间" min-width="60" />
           <el-table-column prop="task_status_txt" label="状态" min-width="60" />
-          <el-table-column prop="progress" label="处理进度" min-width="60" />
+          <el-table-column prop="progress" label="处理进度" min-width="80">
+            <template slot-scope="scope">
+              <div v-html="scope.row.progress" />
+            </template>
+          </el-table-column>
           <el-table-column prop="opr_person" label="操作人" min-width="60" />
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">

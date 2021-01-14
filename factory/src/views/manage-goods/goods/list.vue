@@ -97,6 +97,7 @@
           <span>商品列表</span>
         </div>
         <div class="add-button-group">
+          <el-button class="goods-add btn-h-38" type="primary" @click="handleInventoryAdjustClick">库存调整</el-button>
           <el-button
             class="goods-add btn-h-38"
             type="primary"
@@ -176,6 +177,7 @@
 
     <GoodsExeclUploadDialog ref="goodsExeclUploadDialog" @close-dialog="handleExeclUploadClose" />
     <GoodsExportDialog ref="goodsExportDialog" :searchForm="searchForm" />
+    <GoodsInventoryAdjustDialog ref="goodsInventoryAdjustDialog" />
   </div>
 </template>
 <script>
@@ -184,11 +186,13 @@ import { goodsSave, goodsGet } from '@/api/api'
 import { mapState } from 'vuex'
 import GoodsExeclUploadDialog from './GoodsExeclUploadDialog'
 import GoodsExportDialog from './GoodsExportDialog'
+import GoodsInventoryAdjustDialog from './GoodsInventoryAdjustDialog'
 
 export default {
   components: {
     GoodsExeclUploadDialog,
-    GoodsExportDialog
+    GoodsExportDialog,
+    GoodsInventoryAdjustDialog
   },
   data() {
     return {
@@ -390,6 +394,9 @@ export default {
     },
     handleExportGoodsClick() {
       this.$refs.goodsExportDialog.show()
+    },
+    handleInventoryAdjustClick() {
+      this.$refs.goodsInventoryAdjustDialog.show()
     }
   }
 }

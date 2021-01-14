@@ -14,7 +14,7 @@ function generateRequestFn(interfaceFile, options = {}) {
    * @param {boolean} showErrTip 是否显示全局错误提示
    * @return Promise
    */
-  const fn = (data, showErrTip = true) => {
+  const fn = (data, showErrTip = true, showSucTip = false) => {
     return new Promise((resolve, reject) => {
       http.DataEncSubmit(
         interfaceFile,
@@ -24,6 +24,13 @@ function generateRequestFn(interfaceFile, options = {}) {
             if (showErrTip) {
               Vue.prototype.$message.error(resp.msg || '')
             }
+          }
+          if (resp.ret === 0 && showSucTip) {
+            Vue.prototype.$notify.success({
+              // title: '成功',
+              duration: 1500,
+              message: resp.msg
+            })
           }
           resolve(resp)
         },
