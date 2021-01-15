@@ -27,9 +27,9 @@ function generateRequestFn(interfaceFile, options = {}) {
             }
           }
           if (resp.ret === 0 && showSucTip) {
-            Vue.prototype.$notify.success({
+            Vue.prototype.$message.success({
               // title: '成功',
-              duration: 1500,
+              duration: 2000,
               message: resp.msg
             })
           }
