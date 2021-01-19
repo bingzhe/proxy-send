@@ -126,7 +126,7 @@
           <el-col v-if="goodsType === GOODS_TYPE.GIFT" :span="11" :xs="20">
             <el-form-item label="sku编码" label-width="160px" prop="sku">
               <el-tooltip effect="dark" :content="baseinfoForm.sku" placement="top">
-                <el-input v-model.trim="baseinfoForm.sku" placeholder="请输入" readonly></el-input>
+                <el-input v-model.trim="baseinfoForm.sku" placeholder="请输入" @change="getSkuGift"></el-input>
               </el-tooltip>
             </el-form-item>
           </el-col>
@@ -355,7 +355,7 @@
                   :prop="'opt_color_list.' + scope.$index + '.sku'"
                 >
                   <el-tooltip effect="dark" :content="scope.row.sku" placement="top">
-                    <el-input v-model="scope.row.sku" placeholder="请输入" readonly />
+                    <el-input v-model="scope.row.sku" placeholder="请输入" @change="getSku" />
                   </el-tooltip>
                 </el-form-item>
               </template>
@@ -905,6 +905,7 @@ export default {
         return {
           index: index,
           color_name: item.color_name,
+          sku: item.sku,
           ...skuCreateBaseInfo
         }
       })
@@ -941,7 +942,8 @@ export default {
             brand: '',
             model: '',
             color_name: '',
-            index: 0
+            index: 0,
+            sku: this.baseinfoForm.sku
           }
         ]
       }
