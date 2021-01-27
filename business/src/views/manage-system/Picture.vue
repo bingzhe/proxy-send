@@ -30,11 +30,7 @@
     </div>
     <!-- search end -->
 
-    <div
-      v-loading="tableLoading"
-      element-loading-text="拼命加载中"
-      class="table-wrapper table-wrapper-default"
-    >
+    <div v-loading="tableLoading" element-loading-text="拼命加载中" class="table-wrapper table-wrapper-default">
       <div class="table-title clearfix">
         <div class="table-title__lable">
           <span>
@@ -43,11 +39,8 @@
           <span>图库列表</span>
         </div>
         <div class="add-button-group">
-          <el-button
-            class="add-btn btn-h-38"
-            type="primary"
-            @click="handlerAddPicClick"
-          >新增</el-button>
+          <el-button class="add-btn btn-h-38" type="primary" @click="handleUploadClick">导入sku组合</el-button>
+          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddPicClick">新增</el-button>
         </div>
       </div>
 
@@ -95,11 +88,7 @@
                 type="text"
               >停用</el-button>-->
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
-              <el-button
-                class="btn-red"
-                type="text danger"
-                @click="handlerDelClick(scope.row)"
-              >删除</el-button>
+              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -137,13 +126,7 @@
         @confirm="handlerPicEditDialogConfirm"
         @close="handlerPicEditDialogClose"
       >
-        <el-form
-          ref="pictureForm"
-          :rules="pictureFormRules"
-          :model="pictureForm"
-          class="picture-form"
-          label-width="130px"
-        >
+        <el-form ref="pictureForm" :rules="pictureFormRules" :model="pictureForm" class="picture-form" label-width="130px">
           <el-form-item label="图片名称" prop="material_name">
             <el-input v-model="pictureForm.material_name" placeholder="请输入" />
           </el-form-item>
@@ -166,26 +149,12 @@
             </el-select>
           </el-form-item>-->
           <el-form-item label="组合sku" prop="sku_list_str" class="sku-form-item">
-            <el-input
-              v-model="pictureForm.sku_list_str"
-              :rows="5"
-              type="textarea"
-              placeholder="请输入"
-            />
-            <el-button
-              class="search-sku-btn"
-              size="mini"
-              type="primary"
-              @click="handleOpenSkuSearchDialog"
-            >查询sku</el-button>
+            <el-input v-model="pictureForm.sku_list_str" :rows="5" type="textarea" placeholder="请输入" />
+            <el-button class="search-sku-btn" size="mini" type="primary" @click="handleOpenSkuSearchDialog">查询sku</el-button>
           </el-form-item>
           <el-form-item label="图片" prop="material_img">
             <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
-              <img
-                v-if="pictureForm.material_img"
-                :src="pictureForm.material_img_url"
-                class="upload-preview"
-              />
+              <img v-if="pictureForm.material_img" :src="pictureForm.material_img_url" class="upload-preview" />
               <i v-else class="el-icon-plus avatar-uploader-icon" />
             </sl-upload>
           </el-form-item>
@@ -193,34 +162,17 @@
       </sl-dialog>
       <!-- 图片编辑弹窗 end -->
 
-      <sl-dialog
-        ref="skuSearchDialog"
-        title="查询SKU"
-        width="900px"
-        top="8vh"
-        @confirm="handleSkuSearchDialogConfirm"
-        @close="handleSkuSearchDialogClose"
-      >
+      <sl-dialog ref="skuSearchDialog" title="查询SKU" width="900px" top="8vh" @confirm="handleSkuSearchDialogConfirm" @close="handleSkuSearchDialogClose">
         <div class="search-wrapper sku-search-wrapper">
           <el-form ref="skuSearchForm" class="su-search-form" :model="skuSearchForm" :inline="true">
             <el-form-item label="材质" prop="goods_material" label-width="70px">
               <el-select v-model="skuSearchForm.goods_material" placeholder="请选择" clearable>
-                <el-option
-                  v-for="item in raw_material_list"
-                  :key="item"
-                  :label="item"
-                  :value="item"
-                />
+                <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
               </el-select>
             </el-form-item>
             <el-form-item label="品牌" prop="brand" label-width="70px">
               <el-select v-model="skuSearchForm.brand" filterable placeholder="请选择" clearable @change="handlerBrandChange">
-                <el-option
-                  v-for="item in phone_brand_list"
-                  :key="item.brand_id"
-                  :label="item.brand_name"
-                  :value="item.brand_id"
-                />
+                <el-option v-for="item in phone_brand_list" :key="item.brand_id" :label="item.brand_name" :value="item.brand_id" />
               </el-select>
             </el-form-item>
             <el-form-item label="颜色" prop="color_name" label-width="70px">
@@ -228,12 +180,7 @@
             </el-form-item>
             <el-form-item label="型号" prop="model" label-width="70px">
               <el-select v-model="skuSearchForm.model" filterable placeholder="请选择" clearable>
-                <el-option
-                  v-for="item in data_model_list"
-                  :key="item.model_id"
-                  :label="item.model_name"
-                  :value="item.model_id"
-                />
+                <el-option v-for="item in data_model_list" :key="item.model_id" :label="item.model_name" :value="item.model_id" />
               </el-select>
             </el-form-item>
             <el-form-item label="商品名称" prop="goods_name" label-width="70px">
@@ -246,14 +193,7 @@
 
           <div v-loading="skuTableLoading" element-loading-text="拼命加载中">
             <div class="table-content default-table-change sku-table">
-              <el-table
-                ref="skuTable"
-                :data="skuList"
-                stripe
-                height="350"
-                class="sku-table"
-                @selection-change="handleSkuSelectionChange"
-              >
+              <el-table ref="skuTable" :data="skuList" stripe height="350" class="sku-table" @selection-change="handleSkuSelectionChange">
                 <el-table-column type="selection" align="center" width="55" />
                 <el-table-column align="center" prop="sku" label="sku" />
               </el-table>
@@ -262,6 +202,8 @@
         </div>
       </sl-dialog>
     </div>
+
+    <TaskDialog ref="uploadSkuDialog" :type="10" title="导入sku组合" />
   </div>
 </template>
 <script>
@@ -271,11 +213,13 @@ import { mapState } from 'vuex'
 import { materialGet, materialSave, goodsGet } from '@/api/api'
 import { PICTURE_STATUS } from '@/config/cfg'
 import SlUpload from '@/components/upload/index'
+import TaskDialog from '@/components/TaskDialog/TaskDialog'
 
 export default {
   components: {
     SlDialog,
-    SlUpload
+    SlUpload,
+    TaskDialog
   },
   data() {
     return {
@@ -317,7 +261,10 @@ export default {
       },
 
       // 图片使用状态 正常：1 停用：2
-      picStatusOptions: [{ label: '正常', value: 1 }, { label: '停用', value: 2 }],
+      picStatusOptions: [
+        { label: '正常', value: 1 },
+        { label: '停用', value: 2 }
+      ],
       PICTURE_STATUS,
 
       skuSearchForm: {
@@ -401,9 +348,7 @@ export default {
         //   item.status_str = PICTURE_STATUS.toString(item.status)
         // }
 
-        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&type=1&width=44&height=64&img_name=${item.material_img}`
+        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=44&height=64&img_name=${item.material_img}`
 
         return item
       })
@@ -434,9 +379,7 @@ export default {
     handlerOutlineImgSuccess({ img_name }) {
       this.pictureForm.material_img = img_name
       // http://f.pso.rockyshi.cn/php/img_get.php?token=TestToken&opr=get_img&type=1&img_name=d508bf88200289028d152ace532dbc6a.jpg
-      this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-        this.token
-      }&opr=get_img&type=1&width=117&height=140&img_name=${img_name}`
+      this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=117&height=140&img_name=${img_name}`
     },
     handlerPicEditDialogConfirm() {
       this.$refs.pictureForm.validate((valid) => {
@@ -586,6 +529,9 @@ export default {
           this.data_model_list = brand.model_list
         }
       })
+    },
+    handleUploadClick() {
+      this.$refs.uploadSkuDialog.show()
     }
   }
 }

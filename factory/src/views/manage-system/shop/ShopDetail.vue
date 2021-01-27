@@ -8,20 +8,11 @@
       <div class="baseinfo-title-wrapper">
         <baseinfo-title color="#F348A1" text="基本信息" />
       </div>
-      <el-form
-        ref="shopEditForm"
-        :model="shopEditForm"
-        :rules="shopEditFormRules"
-        label-width="150px"
-      >
+      <el-form ref="shopEditForm" :model="shopEditForm" :rules="shopEditFormRules" label-width="165px">
         <el-row>
           <el-col :span="11" :xs="20">
             <el-form-item label="账户名" prop="username">
-              <el-input
-                v-model="shopEditForm.username"
-                :disabled="!!businessId"
-                placeholder="请输入"
-              />
+              <el-input v-model="shopEditForm.username" :disabled="!!businessId" placeholder="请输入" />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
@@ -32,23 +23,13 @@
 
           <el-col :span="11" :xs="20">
             <el-form-item label="手机号" prop="telephone">
-              <el-input
-                v-model="shopEditForm.telephone"
-                v-limit-input-number="shopEditForm.telephone"
-                data-dotrange="{0,0}"
-                placeholder="请输入"
-              />
+              <el-input v-model="shopEditForm.telephone" v-limit-input-number="shopEditForm.telephone" data-dotrange="{0,0}" placeholder="请输入" />
             </el-form-item>
           </el-col>
           <el-col :span="11" :xs="20">
             <el-form-item label="VIP等级" prop="vip_level">
               <el-select v-model="shopEditForm.vip_level" placeholder="请选择">
-                <el-option
-                  v-for="item in vip_level_list"
-                  :key="item.vip_level"
-                  :label="item.vip_title"
-                  :value="item.vip_level"
-                />
+                <el-option v-for="item in vip_level_list" :key="item.vip_level" :label="item.vip_title" :value="item.vip_level" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -61,12 +42,7 @@
           <el-col :span="11" :xs="20">
             <el-form-item label="业务员" prop="salesman">
               <el-select v-model="shopEditForm.salesman" filterable placeholder="请选择">
-                <el-option
-                  v-for="item in employee_list"
-                  :key="item.employee_id"
-                  :label="item.real_name"
-                  :value="item.employee_id"
-                />
+                <el-option v-for="item in employee_list" :key="item.employee_id" :label="item.real_name" :value="item.employee_id" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -74,12 +50,7 @@
           <el-col :span="11" :xs="20">
             <el-form-item label="状态" prop="status">
               <el-select v-model="shopEditForm.status" placeholder="请选择">
-                <el-option
-                  v-for="item in statusOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
+                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -87,24 +58,14 @@
             <el-form-item label="可使用DIY设计器" prop="designer_valid">
               <!-- <el-input v-model="shopEditForm.designer_valid" placeholder="请输入"/> -->
               <el-select v-model="shopEditForm.designer_valid" placeholder="请选择">
-                <el-option
-                  v-for="item in useDesignerOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
+                <el-option v-for="item in useDesignerOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
 
           <el-col :span="11" :xs="20">
             <el-form-item label="图库最大使用空间" prop="space_max">
-              <el-input
-                v-model.trim="shopEditForm.space_max"
-                v-limit-input-number="shopEditForm.space_max"
-                data-dotrange="{0,2}"
-                placeholder="请输入"
-              >
+              <el-input v-model.trim="shopEditForm.space_max" v-limit-input-number="shopEditForm.space_max" data-dotrange="{0,2}" placeholder="请输入">
                 <!-- type="number" -->
                 <span slot="suffix" class="input-suffix-text">MB</span>
               </el-input>
@@ -120,15 +81,21 @@
             </el-form-item>
           </el-col>
 
+          <el-col :span="11" :xs="20">
+            <el-form-item label="图片和sku最大组合数" prop="sku_max">
+              <el-input v-model.trim="shopEditForm.sku_max" v-limit-input-number="shopEditForm.sku_max" data-dotrange="{0,0}" placeholder="请输入"> </el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="11" :xs="20">
+            <el-form-item label="图片和sku已组合数" prop="sku_used">
+              <el-input v-model.trim="shopEditForm.sku_used" v-limit-input-number="shopEditForm.sku_max" data-dotrange="{0,0}" placeholder="请输入"> </el-input>
+            </el-form-item>
+          </el-col>
+
           <el-col :span="22" :xs="20">
             <el-form-item label="联系地址" prop="address">
-              <el-input
-                v-model="shopEditForm.address"
-                class="address"
-                type="textarea"
-                placeholder="请输入"
-                :rows="3"
-              />
+              <el-input v-model="shopEditForm.address" class="address" type="textarea" placeholder="请输入" :rows="3" />
             </el-form-item>
           </el-col>
 
@@ -160,48 +127,26 @@
             <el-table-column prop="tshop_id" label="淘宝店铺ID" min-width="50" align="center" />
             <el-table-column prop="tshop_name" label="店铺名称" min-width="60" align="center">
               <template slot-scope="scope">
-                <el-form-item
-                  class="pictable-form-item"
-                  :rules="{ required: true, message: '请输入店铺名称', trigger: 'blur' }"
-                  :prop="'tshopList.' + scope.$index + '.tshop_name'"
-                >
-                  <el-input
-                    v-if="scope.row.isEdit"
-                    v-model.trim="scope.row.tshop_name"
-                    placeholder="请输入"
-                  />
+                <el-form-item class="pictable-form-item" :rules="{ required: true, message: '请输入店铺名称', trigger: 'blur' }" :prop="'tshopList.' + scope.$index + '.tshop_name'">
+                  <el-input v-if="scope.row.isEdit" v-model.trim="scope.row.tshop_name" placeholder="请输入" />
                   <span v-else>{{ scope.row.tshop_name }}</span>
                 </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="tshop_url" label="店铺url" min-width="80" align="center">
               <template slot-scope="scope">
-                <el-form-item
-                  class="pictable-form-item"
-                  :prop="'tshopList.' + scope.$index + '.tshop_url'"
-                >
+                <el-form-item class="pictable-form-item" :prop="'tshopList.' + scope.$index + '.tshop_url'">
                   <!-- :rules="{required: true, message: '店铺url', trigger:'blur'}" -->
-                  <el-input
-                    v-if="scope.row.isEdit"
-                    v-model.trim="scope.row.tshop_url"
-                    placeholder="请输入"
-                  />
+                  <el-input v-if="scope.row.isEdit" v-model.trim="scope.row.tshop_url" placeholder="请输入" />
                   <span v-else>{{ scope.row.tshop_url }}</span>
                 </el-form-item>
               </template>
             </el-table-column>
             <el-table-column prop="wdt_account" label="旺店通子账号" min-width="60" align="center">
               <template slot-scope="scope">
-                <el-form-item
-                  class="pictable-form-item"
-                  :prop="'tshopList.' + scope.$index + '.wdt_account'"
-                >
+                <el-form-item class="pictable-form-item" :prop="'tshopList.' + scope.$index + '.wdt_account'">
                   <!-- :rules="{required: true, message: '请输入旺店通子账号', trigger:'blur'}" -->
-                  <el-input
-                    v-if="scope.row.isEdit"
-                    v-model.trim="scope.row.wdt_account"
-                    placeholder="请输入"
-                  />
+                  <el-input v-if="scope.row.isEdit" v-model.trim="scope.row.wdt_account" placeholder="请输入" />
                   <span v-else>{{ scope.row.wdt_account }}</span>
                 </el-form-item>
               </template>
@@ -209,19 +154,8 @@
             <el-table-column prop="warehouse_id" label="发货仓库" min-width="60" align="center">
               <template slot-scope="scope">
                 <el-form-item class="pictable-form-item">
-                  <el-select
-                    v-if="scope.row.isEdit"
-                    v-model="scope.row.warehouse_id"
-                    filterable
-                    clearable
-                    placeholder="请选择"
-                  >
-                    <el-option
-                      v-for="item in warehouseList"
-                      :key="item.warehouse_id"
-                      :label="item.warehouse_name"
-                      :value="item.warehouse_id"
-                    />
+                  <el-select v-if="scope.row.isEdit" v-model="scope.row.warehouse_id" filterable clearable placeholder="请选择">
+                    <el-option v-for="item in warehouseList" :key="item.warehouse_id" :label="item.warehouse_name" :value="item.warehouse_id" />
                   </el-select>
                   <span v-else>{{ scope.row.warehouse_id }}</span>
                 </el-form-item>
@@ -229,30 +163,10 @@
             </el-table-column>
             <el-table-column prop="opr" label="操作" min-width="45" align="center">
               <template slot-scope="scope">
-                <el-button
-                  v-if="scope.row.isEdit"
-                  class="text-btn save-btn"
-                  type="text"
-                  @click="handleTshopSaveClick(scope.row)"
-                >保存</el-button>
-                <el-button
-                  v-if="scope.row.isEdit"
-                  class="text-btn save-btn"
-                  type="text"
-                  @click="handleTshopCancelClick(scope.row)"
-                >取消</el-button>
-                <el-button
-                  v-if="!scope.row.isEdit"
-                  class="text-btn edit-btn"
-                  type="text"
-                  @click="handleTshopEditClick(scope.row)"
-                >编辑</el-button>
-                <el-button
-                  v-if="!scope.row.isEdit"
-                  class="text-btn del-btn"
-                  type="text"
-                  @click="handleDelTshopClick(scope.row)"
-                >删除</el-button>
+                <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopSaveClick(scope.row)">保存</el-button>
+                <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopCancelClick(scope.row)">取消</el-button>
+                <el-button v-if="!scope.row.isEdit" class="text-btn edit-btn" type="text" @click="handleTshopEditClick(scope.row)">编辑</el-button>
+                <el-button v-if="!scope.row.isEdit" class="text-btn del-btn" type="text" @click="handleDelTshopClick(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -264,9 +178,7 @@
 
     <div class="button-group-wrapper">
       <el-button class="btn-h-44-w-100 btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
-      <el-button class="btn-h-44-w-100" type="primary" @click="handlerSaveBtnClick">{{
-        businessId ? '保存' : '提交'
-      }}</el-button>
+      <el-button class="btn-h-44-w-100" type="primary" @click="handlerSaveBtnClick">{{ businessId ? '保存' : '提交' }}</el-button>
     </div>
   </div>
 </template>
@@ -306,7 +218,9 @@ export default {
         address: '', // 联系地址
         url: '', // 商铺URL
         space_max: '', // 最大使用空间（浮点数，可输入，单位：MB）
-        space_used: '' // 已使用空间（浮点数，只显示，单位：MB）
+        space_used: '', // 已使用空间（浮点数，只显示，单位：MB）
+        sku_max: '', // 最大sku数
+        sku_used: '' // 已使用sku数
       },
 
       shopEditFormRules: {
@@ -323,9 +237,7 @@ export default {
         business_name: [{ required: true, message: '请输入商户姓名', trigger: 'blur' }],
         salesman: [{ required: true, message: '请选择业务员', trigger: 'change' }],
         status: [{ required: true, message: '请选择状态', trigger: 'change' }],
-        designer_valid: [
-          { required: true, message: '请选择是否可使用DIY设计器', trigger: 'change' }
-        ],
+        designer_valid: [{ required: true, message: '请选择是否可使用DIY设计器', trigger: 'change' }],
         address: [{ required: true, message: '请输入联系地址', trigger: 'blur' }]
       },
 
@@ -400,6 +312,8 @@ export default {
       this.shopEditForm.url = info.url
       this.shopEditForm.space_max = info.space_max
       this.shopEditForm.space_used = info.space_used
+      this.shopEditForm.sku_max = info.sku_max
+      this.shopEditForm.sku_used = info.sku_used
     },
     async handlerSaveBtnClick() {
       // eslint-disable-next-line space-before-function-paren
@@ -421,6 +335,12 @@ export default {
 
           if (this.shopEditForm.space_max) {
             data.space_max = this.shopEditForm.space_max
+          }
+          if (this.shopEditForm.sku_max) {
+            data.sku_max = this.shopEditForm.sku_max
+          }
+          if (this.shopEditForm.sku_used) {
+            data.sku_used = this.shopEditForm.sku_used
           }
 
           if (this.businessId) {
@@ -596,7 +516,7 @@ export default {
 }
 
 .tshop-wrapper {
-  max-width: 1035px;
+  max-width: 1100px;
   .tshop-title-wrapper {
     display: flex;
     justify-content: space-between;

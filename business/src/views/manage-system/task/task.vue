@@ -28,6 +28,9 @@
           </span>
           <span>任务列表</span>
         </div>
+        <div class="add-button-group">
+          <el-button class="btn-h-38" type="danger" @click="handleMuDelClick">删除</el-button>
+        </div>
       </div>
 
       <div class="table-content default-table-change">
@@ -98,7 +101,7 @@ export default {
       },
 
       list: [],
-
+      multipleSelection: [],
       tableLoading: false,
       // 分页
       total: 100, // 分页总条数
@@ -222,6 +225,46 @@ export default {
         message: '删除成功',
         type: 'success'
       })
+    },
+    handleMuDelClick() {
+      const task_id_list = this.multipleSelection.map((item) => {
+        return item.task_id
+      })
+
+      if (task_id_list.length === 0) {
+        this.$notify({
+          title: '警告',
+          message: '请选择要批量操作的任务',
+          type: 'warning'
+        })
+        return
+      }
+
+      this.$confirm('确认要删除选中任务？', '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        closeOnClickModal: false,
+        closeOnPressEscape: false
+      })
+        .then(() => {
+          this.muDelOpr(task_id_list)
+        })
+        .catch(() => {})
+    },
+    async muDelOpr(task_id_list) {
+      const data = {
+        opr: 'delete_task',
+        task_id_list: task_id_list // 任务id(批量删除)
+      }
+
+      console.log('批量删除 req=>', data)
+      const resp = await taskSave(data)
+      console.log('批量删除 res=>', resp)
+
+      if (resp.ret !== 0) return
+
+      this.getTaskList()
     }
   }
 }
