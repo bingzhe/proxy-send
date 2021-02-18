@@ -4,10 +4,21 @@
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
-          <el-button class="continue-shop" type="primary" plain @click="goGoodsList">继续选购</el-button>
+          <el-button
+            class="continue-shop"
+            type="primary"
+            plain
+            @click="goGoodsList"
+          >继续选购</el-button>
         </div>
         <div class="select-goods-table-wrapper">
-          <el-table ref="selectGoodsTable" class="select-goods-table" border :data="goodsList" @selection-change="handleSelectionChange">
+          <el-table
+            ref="selectGoodsTable"
+            class="select-goods-table"
+            border
+            :data="goodsList"
+            @selection-change="handleSelectionChange"
+          >
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
               <template slot-scope="scope">
@@ -15,17 +26,30 @@
               </template>
             </el-table-column>
             <el-table-column prop="type_str" label="商品类型" min-width="50" />
-            <el-table-column prop="goods_info_str" label="材质_品牌_型号_边框_商品编号" width="300" />
+            <el-table-column
+              prop="goods_info_str"
+              label="材质_品牌_型号_边框_商品编号"
+              width="300"
+            />
             <el-table-column prop="num" label="数量" width="150">
               <template slot-scope="scope">
-                <el-input-number v-model="scope.row.num" :min="1" size="small" @change="getPriceSave" />
+                <el-input-number
+                  v-model="scope.row.num"
+                  :min="1"
+                  size="small"
+                  @change="getPriceSave"
+                />
               </template>
             </el-table-column>
             <el-table-column prop="price" label="单价" min-width="50" />
             <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
             <el-table-column prop="opr" label="操作" min-width="50">
               <template slot-scope="scope">
-                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
+                <el-button
+                  class="del-btn"
+                  type="text"
+                  @click="delShopcart(scope.$index)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -38,18 +62,14 @@
         <div class="gifs-form-wrapper clearfix">
           <div v-for="item in attachList" :key="item.goods_id" class="gifs-item">
             <span class="gifs-label">{{ item.goods_name }}</span>
-            <el-input-number v-model="item.num" controls-position="right" :min="0" @change="getPriceSave" />
+            <el-input-number
+              v-model="item.num"
+              controls-position="right"
+              :min="0"
+              @change="getPriceSave"
+            />
             <span class="gifs-price">（&yen; {{ item.price }}）</span>
           </div>
-        </div>
-      </div>
-
-      <div class="goodslist-wrapper">
-        <div class="baseinfo-title-wrapper">
-          <baseinfo-title color="#FB7474" text="商品列表" />
-        </div>
-        <div>
-          <ShopcartGoodslist @goodslist-norm-select-suc="handleNormSelectSuc" />
         </div>
       </div>
       <div class="consignee-wrapper">
@@ -57,64 +77,153 @@
           <baseinfo-title color="#FBBD74" text="配送信息" />
         </div>
         <div class="consignee-form-wrapper">
-          <el-form ref="consigneeFrom" :model="consigneeFrom" :rules="consigeneeFromRules" :inline="true" label-width="80px">
+          <el-form
+            ref="consigneeFrom"
+            :model="consigneeFrom"
+            :rules="consigeneeFromRules"
+            :inline="true"
+            label-width="80px"
+          >
             <el-form-item label="仓库" prop="warehouse_id" label-width="130px">
-              <el-select v-model="consigneeFrom.warehouse_id" placeholder="请选择" filterable @change="handleWarehouseChange">
-                <el-option v-for="(item, index) in warehouseList" :key="index" :label="item.warehouse_name" :value="item.warehouse_id" />
+              <el-select
+                v-model="consigneeFrom.warehouse_id"
+                placeholder="请选择"
+                filterable
+                @change="handleWarehouseChange"
+              >
+                <el-option
+                  v-for="(item, index) in warehouseList"
+                  :key="index"
+                  :label="item.warehouse_name"
+                  :value="item.warehouse_id"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="物流" prop="delivery_company_name" label-width="110px">
-              <el-select v-model="consigneeFrom.delivery_company_name" placeholder="请选择" filterable @change="getPriceSave">
-                <el-option v-for="(item, index) in deliveryCompanyList" :key="index" :label="item.company_name" :value="item.company_name" />
+              <el-select
+                v-model="consigneeFrom.delivery_company_name"
+                placeholder="请选择"
+                filterable
+                @change="getPriceSave"
+              >
+                <el-option
+                  v-for="(item, index) in deliveryCompanyList"
+                  :key="index"
+                  :label="item.company_name"
+                  :value="item.company_name"
+                />
               </el-select>
             </el-form-item>
             <br />
             <el-form-item label="下单店铺" prop="tshop_id" label-width="130px">
-              <el-select v-model="consigneeFrom.tshop_id" class="full-width" placeholder="请选择" @change="getPriceSave">
-                <el-option v-for="(item, index) in tshopList" :key="index" :label="item.tshop_name" :value="item.tshop_id" />
+              <el-select
+                v-model="consigneeFrom.tshop_id"
+                class="full-width"
+                placeholder="请选择"
+                @change="getPriceSave"
+              >
+                <el-option
+                  v-for="(item, index) in tshopList"
+                  :key="index"
+                  :label="item.tshop_name"
+                  :value="item.tshop_id"
+                />
               </el-select>
             </el-form-item>
             <br />
             <el-form-item label="收件人" prop="person" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.person" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.person"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
             </el-form-item>
             <el-form-item label="联系电话" prop="phone" label-width="110px">
-              <el-input v-model.trim="consigneeFrom.phone" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.phone"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
             </el-form-item>
             <br />
             <el-form-item label="第三方平台订单号" prop="order_id_3rd" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.order_id_3rd" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.order_id_3rd"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
             </el-form-item>
             <el-form-item label="固定电话" prop="telephone" label-width="110px">
-              <el-input v-model.trim="consigneeFrom.telephone" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.telephone"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
             </el-form-item>
             <br />
             <el-form-item label="省/直辖市" prop="province" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.province" v-trim="consigneeFrom.province" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.province"
+                v-trim="consigneeFrom.province"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
             </el-form-item>
             <el-form-item label="市" prop="city" label-width="110px">
-              <el-input v-model.trim="consigneeFrom.city" v-trim="consigneeFrom.city" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.city"
+                v-trim="consigneeFrom.city"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
             </el-form-item>
             <br />
             <el-form-item label="区/县" prop="area" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.area" v-trim="consigneeFrom.area" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.area"
+                v-trim="consigneeFrom.area"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
             </el-form-item>
             <el-form-item label="乡/镇/街道" prop="street" label-width="110px">
-              <el-input v-model.trim="consigneeFrom.street" v-trim="consigneeFrom.street" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.street"
+                v-trim="consigneeFrom.street"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
             </el-form-item>
             <br />
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.address" v-trim="consigneeFrom.address" type="textarea" placeholder="请输入" @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.address"
+                v-trim="consigneeFrom.address"
+                type="textarea"
+                placeholder="请输入"
+                @change="getPriceSave"
+              />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
               <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.remark" type="textarea" placeholder="请输入" maxlength="150" show-word-limit @change="getPriceSave" />
+              <el-input
+                v-model.trim="consigneeFrom.remark"
+                type="textarea"
+                placeholder="请输入"
+                maxlength="150"
+                show-word-limit
+                @change="getPriceSave"
+              />
             </el-form-item>
             <el-form-item label="附图" prop="remark_img_list" label-width="130px">
               <div class="remark-img-wrapper">
-                <div v-for="(item, index) in remarkImgPreviewList" :key="index" class="remark-img-item">
+                <div
+                  v-for="(item, index) in remarkImgPreviewList"
+                  :key="index"
+                  class="remark-img-item"
+                >
                   <img :src="item" @click="handleRemarkImgClick(item)" />
                   <i class="el-icon-error" @click="handleRemarkImgRemoveClick(index)"></i>
                 </div>
@@ -152,7 +261,6 @@ import { orderSave, buycartGet, buycartSave, tshopGet, warehouseGet } from '@/ap
 import { mapState } from 'vuex'
 import { setTimeout } from 'timers'
 // import { GOODS_TYPE } from '@/config/cfg'
-import ShopcartGoodslist from './ShopcartGoodslist'
 
 export const GOODS_TYPE = {
   DIY: 1,
@@ -165,7 +273,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function(code) {
+  toString: function (code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -175,8 +283,7 @@ export default {
   components: {
     BaseinfoTitle,
     ShopcartEmpty,
-    SlUpload,
-    ShopcartGoodslist
+    SlUpload
   },
   data() {
     return {
@@ -255,7 +362,7 @@ export default {
   },
   watch: {
     goodsList: {
-      handler: function() {
+      handler: function () {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
@@ -263,7 +370,7 @@ export default {
       deep: true
     },
     remark_img_list: {
-      handler: function() {
+      handler: function () {
         this.getPriceSave()
       },
       deep: true
@@ -557,33 +664,6 @@ export default {
         }
       })
       this.getPriceSave()
-    },
-    /**
-     * 商品列表 标品加入购物车成功
-     *
-     * 调后台购物车 只更新goodsList
-     */
-    async handleNormSelectSuc() {
-      const data = {
-        opr: 'get_buycart_info', // 标品加入购物车
-        buycart_id: this.buycart_id // 购物车id
-      }
-
-      console.log('购物车 req=>', data)
-      const resp = await buycartGet(data)
-      console.log('购物车 res=>', resp)
-
-      if (resp.ret !== 0) return
-
-      const info = resp.data
-      this.goodsList = (info.goods_list || []).map((item) => {
-        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
-
-        item.type_str = GOODS_TYPE.toString(item.type)
-        item.goods_info_str = `${item.raw_material}_${item.brand_name}_${item.model_name}_${item.color}_${item.goods_id}`
-        item.goodsSumPrice = item.num * item.price
-        return item
-      })
     }
   }
 }
