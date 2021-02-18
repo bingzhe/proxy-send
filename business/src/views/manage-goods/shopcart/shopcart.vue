@@ -49,7 +49,7 @@
           <baseinfo-title color="#FB7474" text="商品列表" />
         </div>
         <div>
-          <ShopcartGoodslist @goodslist-norm-select-suc="handleNormSelectSuc" />
+          <ShopcartGoodslist @goodslist-norm-select-suc="handleNormSelectSuc" @goodslist-diy-select="handleDiySelect" />
         </div>
       </div>
       <div class="consignee-wrapper">
@@ -141,6 +141,8 @@
     <el-dialog class="preview-pic-wrapper" :visible.sync="dialogVisible">
       <img :src="dialogImageUrl" alt />
     </el-dialog>
+
+    <DialogDesigner ref="dialogDesinger" />
   </div>
 </template>
 
@@ -153,6 +155,7 @@ import { mapState } from 'vuex'
 import { setTimeout } from 'timers'
 // import { GOODS_TYPE } from '@/config/cfg'
 import ShopcartGoodslist from './ShopcartGoodslist'
+import DialogDesigner from './DialogDesigner'
 
 export const GOODS_TYPE = {
   DIY: 1,
@@ -165,7 +168,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function(code) {
+  toString: function (code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -176,7 +179,8 @@ export default {
     BaseinfoTitle,
     ShopcartEmpty,
     SlUpload,
-    ShopcartGoodslist
+    ShopcartGoodslist,
+    DialogDesigner
   },
   data() {
     return {
@@ -255,7 +259,7 @@ export default {
   },
   watch: {
     goodsList: {
-      handler: function() {
+      handler: function () {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
@@ -263,7 +267,7 @@ export default {
       deep: true
     },
     remark_img_list: {
-      handler: function() {
+      handler: function () {
         this.getPriceSave()
       },
       deep: true
@@ -584,6 +588,9 @@ export default {
         item.goodsSumPrice = item.num * item.price
         return item
       })
+    },
+    handleDiySelect() {
+      this.$refs.dialogDesinger.show()
     }
   }
 }
