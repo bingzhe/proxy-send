@@ -176,7 +176,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function(code) {
+  toString: function (code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -272,7 +272,7 @@ export default {
   },
   watch: {
     goodsList: {
-      handler: function() {
+      handler: function () {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
@@ -280,7 +280,7 @@ export default {
       deep: true
     },
     remark_img_list: {
-      handler: function() {
+      handler: function () {
         this.getPriceSave()
       },
       deep: true
@@ -400,7 +400,10 @@ export default {
           color: goods.color,
           num: goods.num,
           index_id: goods.index_id,
-          checked: checked
+          checked: checked,
+          preview_img: goods.preview_img || '',
+          prune_img: goods.prune_img || '',
+          ori_user_img: goods.ori_user_img || ''
         }
       })
 
@@ -642,7 +645,12 @@ export default {
       this.goodsList[index].preview_img = updateData.preview_img
       this.goodsList[index].prune_img = updateData.prune_img
       this.goodsList[index].color = updateData.color
+      this.goodsList[index].goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${updateData.preview_img}`
 
+      /**
+       * 后台更新一下
+       */
+      this.getPriceSave()
       /**
        * TODO 可能需要更新预览图片
        */

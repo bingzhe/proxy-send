@@ -10,6 +10,7 @@
     top="5vh"
     width="90vw"
     @close="handleDialogClose"
+    @confirm="handlerAddCartClick"
   >
     <div class="opr-item clearfix pic-source">
       <div class="opr-lable">图片来源</div>
@@ -147,8 +148,8 @@ export default {
   },
   watch: {
     designerGoods: {
-      handler: function(val, oldVal) {
-        console.log(val, oldVal)
+      handler: function (val) {
+        console.log('设计器处理的goods', val)
         if (JSON.stringify(val) === '{}') return
 
         this.picHeight = (val.img_print_param || {}).height
@@ -170,7 +171,6 @@ export default {
           this.num = val.num
           this.index_id = val.index_id
           this.curPic = (val.opt_color_list || []).findIndex((item) => item.color_name === val.color)
-          // console.log('goods', goods)
         }
         this.$nextTick(async () => {
           this.$refs.diyDesigner.init()
@@ -179,7 +179,6 @@ export default {
            */
           await this.$refs.diyDesigner.addOutline(this.outline_img_url)
           await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-          // console.log(this.outline_img_url)
           /**
            * 回显ori_user_img
            */
@@ -237,9 +236,10 @@ export default {
       this.$refs.dialogDesigner.hide()
     },
     handleDialogClose() {
-      console.log(this.$refs.diyDesigner)
       this.$refs.diyDesigner.disposeCanvas()
+      this.picSource = 1
       this.ori_user_img = '' // 用户上传的未经处理的原图
+      this.ori_user_img_url = ''
       this.prune_img = '' // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
       this.preview_img = '' // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
       this.$emit('dialog-designer-close')
@@ -250,6 +250,7 @@ export default {
       }
       this.$refs.diyDesigner.removeOriginImg()
       this.ori_user_img = ''
+      this.ori_user_img_url = ''
       this.ori_user_img_data = ''
       // this.outline_img_url = ''
     },
@@ -262,7 +263,7 @@ export default {
       const _this = this
       const fr = new FileReader()
 
-      fr.onload = function() {
+      fr.onload = function () {
         _this.ori_user_img_data = fr.result
 
         // <<<<<<<<<<<<<<<<<<
@@ -313,6 +314,27 @@ export default {
       this.showPicList = false
       this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
     },
+    base64ToFile(urlData) {
+      var arr = urlData.split(',')
+      var mime = arr[0].match(/:(.*?);/)[1] || 'image/png'
+      // 去掉url的头，并转化为byte
+      var bytes = window.atob(arr[1])
+      // 处理异常,将ascii码小于0的转换为大于0
+      var ab = new ArrayBuffer(bytes.length)
+      // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
+      var ia = new Uint8Array(ab)
+
+      for (var i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i)
+      }
+
+      // return new Blob([ab], {
+      //   type: mime
+      // })
+      return new File([ab], 'preview.png', {
+        type: mime
+      })
+    },
     imgUpload(fileData, type) {
       return new Promise((resolve, reject) => {
         const file = this.base64ToFile(fileData)
@@ -349,15 +371,17 @@ export default {
       /**
        * 本地选择的图片需要先上传
        */
-      if (this.picSource === 1) {
+      if (this.picSource === 1 && this.ori_user_img_data) {
         this.ori_user_img = await this.imgUpload(this.ori_user_img_data, 4)
       }
+
       this.preview_img = await this.imgUpload(this.preview_img_data, 5)
+
       this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
       const data = {
         opr: 'put_to_buycart_diy',
-        goods_id: this.goodsInfo.goods_id, // 商品编号(ID)
+        goods_id: this.designerGoods.goods_id, // 商品编号(ID)
         num: 1, // 订购数量
         color: this.opt_color_list[this.curPic].color_name, // 颜色分类("红色"、"绿色"...)
         preview_img: this.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
