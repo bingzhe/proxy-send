@@ -23,8 +23,9 @@
             </el-table-column>
             <el-table-column prop="price" label="单价" min-width="50" />
             <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
-            <el-table-column prop="opr" label="操作" min-width="50">
+            <el-table-column prop="opr" label="操作" min-width="50" align="center">
               <template slot-scope="scope">
+                <el-button v-if="scope.row.type === GOODS_TYPE.DIY" type="text" @click="handleShopcartGoodsEdit(scope.row)">编辑</el-button>
                 <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
               </template>
             </el-table-column>
@@ -142,7 +143,7 @@
       <img :src="dialogImageUrl" alt />
     </el-dialog>
 
-    <DialogDesigner ref="dialogDesinger" />
+    <DialogDesigner ref="dialogDesinger" :designerGoods="designerGoods" :isEditShopcartGoods="isEditShopcartGoods" @diy-select-suc="handleDiySelectSuc" @diy-edit-suc="handleDiyEditSuc" />
   </div>
 </template>
 
@@ -150,7 +151,7 @@
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import ShopcartEmpty from './ShopcartEmpty'
 import SlUpload from '@/components/upload/index'
-import { orderSave, buycartGet, buycartSave, tshopGet, warehouseGet } from '@/api/api'
+import { orderSave, buycartGet, buycartSave, tshopGet, warehouseGet, orderGet } from '@/api/api'
 import { mapState } from 'vuex'
 import { setTimeout } from 'timers'
 // import { GOODS_TYPE } from '@/config/cfg'
@@ -168,7 +169,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function (code) {
+  toString: function(code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -232,7 +233,12 @@ export default {
       dialogVisible: false,
 
       warehouseList: [], // 店铺下仓库列表
-      deliveryCompanyList: [] // 仓库下可以发货物流公司的列表
+      deliveryCompanyList: [], // 仓库下可以发货物流公司的列表
+
+      GOODS_TYPE,
+
+      isEditShopcartGoods: false, // 是否是购物车商品里的编辑
+      designerGoods: {} // 设计器正在处理的商品
     }
   },
   computed: {
@@ -259,7 +265,7 @@ export default {
   },
   watch: {
     goodsList: {
-      handler: function () {
+      handler: function() {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
@@ -267,7 +273,7 @@ export default {
       deep: true
     },
     remark_img_list: {
-      handler: function () {
+      handler: function() {
         this.getPriceSave()
       },
       deep: true
@@ -349,14 +355,29 @@ export default {
         })
       }, 500)
     },
-    autoSplit() {
-      const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
-      const res = this.consigneeFrom.address.match(reg) || []
+    async autoSplit() {
+      // const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
+      // const res = this.consigneeFrom.address.match(reg) || []
 
-      this.consigneeFrom.province = res[0] || ''
-      this.consigneeFrom.city = res[1] || ''
-      this.consigneeFrom.area = res[2] || ''
-      this.consigneeFrom.street = res[3] || ''
+      // this.consigneeFrom.province = res[0] || ''
+      // this.consigneeFrom.city = res[1] || ''
+      // this.consigneeFrom.area = res[2] || ''
+      // this.consigneeFrom.street = res[3] || ''
+
+      const data = {
+        opr: 'order_address_parse',
+        address: this.consigneeFrom.address // 订单详细地址
+      }
+
+      const resp = await orderGet(data)
+      if (resp.ret !== 0) return
+
+      const info = resp.data || {}
+      this.consigneeFrom.address = info.address
+      this.consigneeFrom.province = info.province
+      this.consigneeFrom.city = info.city
+      this.consigneeFrom.area = info.area
+      this.consigneeFrom.street = info.street
     },
     async getPriceSave() {
       const goods_list = this.goodsList.map((goods) => {
@@ -563,13 +584,11 @@ export default {
       this.getPriceSave()
     },
     /**
-     * 商品列表 标品加入购物车成功
-     *
      * 调后台购物车 只更新goodsList
      */
-    async handleNormSelectSuc() {
+    async getBuycartUpdateGoods() {
       const data = {
-        opr: 'get_buycart_info', // 标品加入购物车
+        opr: 'get_buycart_info',
         buycart_id: this.buycart_id // 购物车id
       }
 
@@ -589,8 +608,34 @@ export default {
         return item
       })
     },
-    handleDiySelect() {
+    handleNormSelectSuc() {
+      this.getBuycartUpdateGoods()
+    },
+    handleDiySelect(row) {
+      this.designerGoods = row
+      this.isEditShopcartGoods = false
       this.$refs.dialogDesinger.show()
+    },
+    handleDiySelectSuc() {
+      this.getBuycartUpdateGoods()
+    },
+    handleShopcartGoodsEdit(row) {
+      this.designerGoods = row
+      this.isEditShopcartGoods = true
+      this.$refs.dialogDesinger.show()
+    },
+    handleDiyEditSuc(updateData) {
+      const index = this.goodsList.findIndex((item) => item.index_id === updateData.index_id)
+
+      console.log('更新的数据', updateData)
+      this.goodsList[index].ori_user_img = updateData.ori_user_img
+      this.goodsList[index].preview_img = updateData.preview_img
+      this.goodsList[index].prune_img = updateData.prune_img
+      this.goodsList[index].color = updateData.color
+
+      /**
+       * TODO 可能需要更新预览图片
+       */
     }
   }
 }

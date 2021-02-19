@@ -135,7 +135,8 @@ export default {
        */
       const data = {
         opr: 'get_goods_list',
-        page_no: this.listQuery.page
+        page_no: this.listQuery.page,
+        from: 'buycart'
       }
       // 材质
       if (this.searchForm.goods_material) {
@@ -177,31 +178,33 @@ export default {
       this.getGoodsList()
     },
     handleSelectClick(row) {
-      console.log(row)
       if (row.type === GOODS_TYPE.DIY) {
-        this.handleDiySelect()
+        this.handleDiySelect(row)
       } else if (row.type === GOODS_TYPE.NORM) {
         this.handleNormSelect(row)
       }
     },
-    handleDiySelect() {
-      this.$emit('goodslist-diy-select')
+    handleDiySelect(row) {
+      this.$emit('goodslist-diy-select', row)
     },
     async handleNormSelect(row) {
+      const color_name = (row.opt_color_list || [])[0].color_name
+
       const data = {
         opr: 'put_to_buycart_standard',
         goods_id: row.goods_id, // 商品编号(ID)
         num: 1, // 订购数量
-        color: row.color_name // 颜色分类("红色"、"绿色"...)
+        color: color_name // 颜色分类("红色"、"绿色"...)
       }
 
       if (this.buycart_id) {
         data.buycart_id = this.buycart_id
       }
 
-      console.log('标品加入购物车', data)
-      const resp = await buycartSave(data)
-      console.log('标品加入购物车', resp)
+      // console.log('标品加入购物车 req', data)
+      // const resp =
+      await buycartSave(data)
+      // console.log('标品加入购物车 res', resp)
       this.$emit('goodslist-norm-select-suc')
     },
     handleSearchClick() {

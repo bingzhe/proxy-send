@@ -262,7 +262,7 @@ export default {
           (item) => item.color_name === goods.color
         )
 
-        console.log('goods', goods)
+        // console.log('goods', goods)
       }
 
       this.opt_color_list = (info.opt_color_list || []).map((item, index) => {

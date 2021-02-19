@@ -62,6 +62,7 @@
 
 <script>
 import SlDialog from '@/components/Dialog/Dialog'
+import { buycartSave } from '@/api/api'
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
 import DiyDesigner from '../PictureDesigner'
@@ -75,10 +76,24 @@ export default {
     SlUpload,
     MaterialList
   },
+  props: {
+    designerGoods: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
+    isEditShopcartGoods: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       token: window.Store.GetGlobalData('token'),
       url: process.env.VUE_APP_BASEURL + '/img_save.php',
+
+      num: 1, // 商品数量
 
       ori_user_img: '', // 用户上传的未经处理的原图
       prune_img: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
@@ -120,13 +135,69 @@ export default {
       // 图片base64数据
       ori_user_img_data: '',
       prune_img_data: '',
-      preview_img_data: ''
+      preview_img_data: '',
+
+      index_id: '' // 编辑完成之后，更新数据需要用的index_id
     }
   },
   computed: {
     ...mapState({
       buycart_id: (state) => state.user.buycart_id
     })
+  },
+  watch: {
+    designerGoods: {
+      handler: function(val, oldVal) {
+        console.log(val, oldVal)
+
+        this.picHeight = (val.img_print_param || {}).height
+        this.picWidth = (val.img_print_param || {}).width
+        this.picRadius = (val.img_print_param || {}).radius_adjius
+
+        this.opt_color_list = (val.opt_color_list || []).map((item, index) => {
+          item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${item.color_img}`
+          item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${item.outline_img}`
+
+          if (this.curPic === index) {
+            this.color_img_url = item.color_img_url
+            this.outline_img_url = item.outline_img_url
+          }
+
+          return item
+        })
+
+        if (this.isEditShopcartGoods) {
+          const ori_user_img = val.ori_user_img
+          this.ori_user_img = ori_user_img
+          this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${ori_user_img}`
+
+          this.num = val.num
+          this.index_id = val.index_id
+          this.curPic = (val.opt_color_list || []).findIndex((item) => item.color_name === val.color)
+
+          // console.log('goods', goods)
+        }
+
+        this.$nextTick(async () => {
+          this.$refs.diyDesigner.init()
+
+          /**
+           * 默认选中第一张地图
+           */
+          await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+          await this.$refs.diyDesigner.addColorImg(this.color_img_url)
+          // console.log(this.outline_img_url)
+
+          /**
+           * 回显ori_user_img
+           */
+          if (this.isEditShopcartGoods && this.ori_user_img_url) {
+            this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
+          }
+        })
+      },
+      deep: true
+    }
   },
   methods: {
     show() {
@@ -156,7 +227,7 @@ export default {
       const _this = this
       const fr = new FileReader()
 
-      fr.onload = function () {
+      fr.onload = function() {
         _this.ori_user_img_data = fr.result
 
         // <<<<<<<<<<<<<<<<<<
@@ -225,6 +296,62 @@ export default {
           resolve(resp.data.img_name)
         })
       })
+    },
+    async handlerAddCartClick() {
+      if (!this.ori_user_img) {
+        this.$message.error('DIY照片不能为空，请先上传')
+        return
+      }
+
+      this.loading = true
+      this.loadingTipText = '正在提交'
+
+      if (!this.preview_img) {
+        this.isShowDialog = false
+        await this.$refs.diyDesigner.preview()
+      }
+
+      /**
+       * 本地选择的图片需要先上传
+       */
+      if (this.picSource === 1) {
+        this.ori_user_img = await this.imgUpload(this.ori_user_img_data, 4)
+      }
+      this.preview_img = await this.imgUpload(this.preview_img_data, 5)
+      this.prune_img = await this.imgUpload(this.prune_img_data, 6)
+
+      const data = {
+        opr: 'put_to_buycart_diy',
+        goods_id: this.goodsInfo.goods_id, // 商品编号(ID)
+        num: 1, // 订购数量
+        color: this.opt_color_list[this.curPic].color_name, // 颜色分类("红色"、"绿色"...)
+        preview_img: this.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+        prune_img: this.prune_img, // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+        ori_user_img: this.ori_user_img // 用户上传的未经处理的原图
+      }
+
+      if (this.buycart_id) {
+        data.buycart_id = this.buycart_id
+      }
+
+      /**
+       * 编辑时候，把数据给父组件，前端更新
+       * 新增时候，掉接口更新
+       */
+      if (this.isEditShopcartGoods) {
+        data.index_id = this.index_id
+        this.$emit('diy-edit-suc', data)
+      } else {
+        console.log('diy加入购物车', data)
+        const resp = await buycartSave(data)
+        console.log('diy加入购物车', resp)
+        this.loading = false
+        if (resp.ret !== 0) return
+
+        this.$emit('diy-select-suc')
+      }
+
+      this.close()
     }
   }
 }
