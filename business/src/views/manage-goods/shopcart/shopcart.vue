@@ -143,7 +143,14 @@
       <img :src="dialogImageUrl" alt />
     </el-dialog>
 
-    <DialogDesigner ref="dialogDesinger" :designerGoods="designerGoods" :isEditShopcartGoods="isEditShopcartGoods" @diy-select-suc="handleDiySelectSuc" @diy-edit-suc="handleDiyEditSuc" />
+    <DialogDesigner
+      ref="dialogDesinger"
+      :designerGoods="designerGoods"
+      :isEditShopcartGoods="isEditShopcartGoods"
+      @diy-select-suc="handleDiySelectSuc"
+      @diy-edit-suc="handleDiyEditSuc"
+      @dialog-designer-close="handleDesignerClose"
+    />
   </div>
 </template>
 
@@ -618,6 +625,9 @@ export default {
     },
     handleDiySelectSuc() {
       this.getBuycartUpdateGoods()
+    },
+    handleDesignerClose() {
+      this.designerGoods = {}
     },
     handleShopcartGoodsEdit(row) {
       this.designerGoods = row

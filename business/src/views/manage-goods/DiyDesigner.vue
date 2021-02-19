@@ -135,6 +135,11 @@ export default {
       // 给 canvas添加路径
       // this.canvas.clipPath = this.clipPath
     },
+    disposeCanvas() {
+      if (this.canvas) {
+        this.canvas.dispose()
+      }
+    },
     addOutline(url) {
       return new Promise((resolve) => {
         if (this.outlineImg) {
@@ -281,6 +286,13 @@ export default {
     renderAll() {
       this.canvas.renderAll()
     },
+    removeAll() {
+      this.removeOutlineImg()
+      this.removeOriginImg()
+      this.canvas.remove(this.colorImg)
+      this.canvas.remove(this.rect)
+      this.canvas.renderAll()
+    },
     preview() {
       return new Promise((resolve) => {
         const canvas_crop = new fabric.Canvas('canvas_crop')
@@ -319,42 +331,39 @@ export default {
           this.canvas.setActiveObject(this.outlineImg)
           this.canvas.renderAll()
 
-          fabric.Image.fromURL(
-            this.canvas.toDataURL({ multiplier: 1 / this.scale }),
-            async (img) => {
-              canvas_crop.add(img)
-              canvas_crop.setHeight(this.outlineHeight)
-              canvas_crop.setWidth(this.outlineWidth)
-              canvas_crop.setBackgroundColor('rgba(	255,255,255,1)')
+          fabric.Image.fromURL(this.canvas.toDataURL({ multiplier: 1 / this.scale }), async (img) => {
+            canvas_crop.add(img)
+            canvas_crop.setHeight(this.outlineHeight)
+            canvas_crop.setWidth(this.outlineWidth)
+            canvas_crop.setBackgroundColor('rgba(	255,255,255,1)')
 
-              const top = 100 - (this.outlineHeight - this.height) / 2
-              const left = 100 - (this.outlineWidth - this.width) / 2
+            const top = 100 - (this.outlineHeight - this.height) / 2
+            const left = 100 - (this.outlineWidth - this.width) / 2
 
-              img.set('top', -top || 100)
-              img.set('left', -left || 100)
-              canvas_crop.renderAll()
+            img.set('top', -top || 100)
+            img.set('left', -left || 100)
+            canvas_crop.renderAll()
 
-              /**
-               * 生成第二张图片 和轮廓图合并后的图
-               */
-              this.preview_img_data = canvas_crop.toDataURL({ format: 'jpeg' })
+            /**
+             * 生成第二张图片 和轮廓图合并后的图
+             */
+            this.preview_img_data = canvas_crop.toDataURL({ format: 'jpeg' })
 
-              // this.preview_img = await this.imgUpload(this.preview_img_data, 5)
-              // this.prune_img = await this.imgUpload(this.prune_img_data, 6)
+            // this.preview_img = await this.imgUpload(this.preview_img_data, 5)
+            // this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
-              this.canvas.add(this.rect)
-              this.canvas.setActiveObject(this.originImg)
-              this.canvas.renderAll()
+            this.canvas.add(this.rect)
+            this.canvas.setActiveObject(this.originImg)
+            this.canvas.renderAll()
 
-              this.$emit('preview-success', {
-                preview_img_data: this.preview_img_data,
-                prune_img_data: this.prune_img_data
-              })
-              // this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
-              canvas_crop.dispose()
-              resolve()
-            }
-          )
+            this.$emit('preview-success', {
+              preview_img_data: this.preview_img_data,
+              prune_img_data: this.prune_img_data
+            })
+            // this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
+            canvas_crop.dispose()
+            resolve()
+          })
         })
       })
     }

@@ -149,45 +149,37 @@ export default {
     designerGoods: {
       handler: function(val, oldVal) {
         console.log(val, oldVal)
+        if (JSON.stringify(val) === '{}') return
 
         this.picHeight = (val.img_print_param || {}).height
         this.picWidth = (val.img_print_param || {}).width
         this.picRadius = (val.img_print_param || {}).radius_adjius
-
         this.opt_color_list = (val.opt_color_list || []).map((item, index) => {
           item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${item.color_img}`
           item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${item.outline_img}`
-
           if (this.curPic === index) {
             this.color_img_url = item.color_img_url
             this.outline_img_url = item.outline_img_url
           }
-
           return item
         })
-
         if (this.isEditShopcartGoods) {
           const ori_user_img = val.ori_user_img
           this.ori_user_img = ori_user_img
           this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${ori_user_img}`
-
           this.num = val.num
           this.index_id = val.index_id
           this.curPic = (val.opt_color_list || []).findIndex((item) => item.color_name === val.color)
-
           // console.log('goods', goods)
         }
-
         this.$nextTick(async () => {
           this.$refs.diyDesigner.init()
-
           /**
            * 默认选中第一张地图
            */
           await this.$refs.diyDesigner.addOutline(this.outline_img_url)
           await this.$refs.diyDesigner.addColorImg(this.color_img_url)
           // console.log(this.outline_img_url)
-
           /**
            * 回显ori_user_img
            */
@@ -199,6 +191,44 @@ export default {
       deep: true
     }
   },
+  mounted() {
+    // this.picHeight = (this.designerGoods.img_print_param || {}).height
+    // this.picWidth = (this.designerGoods.img_print_param || {}).width
+    // this.picRadius = (this.designerGoods.img_print_param || {}).radius_adjius
+    // this.opt_color_list = (this.designerGoods.opt_color_list || []).map((item, index) => {
+    //   item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${item.color_img}`
+    //   item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${item.outline_img}`
+    //   if (this.curPic === index) {
+    //     this.color_img_url = item.color_img_url
+    //     this.outline_img_url = item.outline_img_url
+    //   }
+    //   return item
+    // })
+    // if (this.isEditShopcartGoods) {
+    //   const ori_user_img = this.designerGoods.ori_user_img
+    //   this.ori_user_img = ori_user_img
+    //   this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${ori_user_img}`
+    //   this.num = this.designerGoods.num
+    //   this.index_id = this.designerGoods.index_id
+    //   this.curPic = (this.designerGoods.opt_color_list || []).findIndex((item) => item.color_name === this.designerGoods.color)
+    //   // console.log('goods', goods)
+    // }
+    // this.$nextTick(async () => {
+    //   this.$refs.diyDesigner.init()
+    //   /**
+    //    * 默认选中第一张地图
+    //    */
+    //   await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+    //   await this.$refs.diyDesigner.addColorImg(this.color_img_url)
+    //   // console.log(this.outline_img_url)
+    //   /**
+    //    * 回显ori_user_img
+    //    */
+    //   if (this.isEditShopcartGoods && this.ori_user_img_url) {
+    //     this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
+    //   }
+    // })
+  },
   methods: {
     show() {
       this.$refs.dialogDesigner.show()
@@ -207,7 +237,12 @@ export default {
       this.$refs.dialogDesigner.hide()
     },
     handleDialogClose() {
-      console.log('close')
+      console.log(this.$refs.diyDesigner)
+      this.$refs.diyDesigner.disposeCanvas()
+      this.ori_user_img = '' // 用户上传的未经处理的原图
+      this.prune_img = '' // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+      this.preview_img = '' // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+      this.$emit('dialog-designer-close')
     },
     handlerPicSourceChange() {
       if (this.picSource === 2) {
