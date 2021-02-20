@@ -129,13 +129,13 @@ export const constantRoutes = [
         component: () => import('@/views/manage-order/orderinfo/orderinfo'),
         meta: { title: '订单详情', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
       },
-      {
-        path: 'orderedit/:order_id',
-        name: 'orderedit',
-        hidden: true,
-        component: () => import('@/views/manage-order/edit/shopcart'),
-        meta: { title: '订单编辑', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
-      },
+      // {
+      //   path: 'orderedit/:order_id',
+      //   name: 'orderedit',
+      //   hidden: true,
+      //   component: () => import('@/views/manage-order/edit/shopcart'),
+      //   meta: { title: '订单编辑', icon: 'dingdanchaxun', activeMenu: '/manage-order/list' }
+      // },
       {
         path: 'tborderedit/:order_id',
         name: 'tborderedit',
@@ -199,7 +199,7 @@ export const constantRoutes = [
       }
     ]
   },
-  { path: '/diy', component: () => import('@/views/manage-goods/DiyDesigner'), hidden: true },
+  // { path: '/diy', component: () => import('@/views/manage-goods/DiyDesigner'), hidden: true },
   // { path: '/test', component: () => import('@/views/test/test'), hidden: true },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

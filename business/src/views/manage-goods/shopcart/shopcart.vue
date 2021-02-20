@@ -7,7 +7,7 @@
           <el-button class="continue-shop" type="primary" plain @click="goGoodsList">继续选购</el-button>
         </div>
         <div class="select-goods-table-wrapper">
-          <el-table ref="selectGoodsTable" class="select-goods-table" border :data="goodsList" @selection-change="handleSelectionChange">
+          <el-table ref="selectGoodsTable" class="select-goods-table" height="480" border :data="goodsList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
               <template slot-scope="scope">
@@ -176,7 +176,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function (code) {
+  toString: function(code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -272,7 +272,7 @@ export default {
   },
   watch: {
     goodsList: {
-      handler: function () {
+      handler: function() {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
@@ -280,7 +280,7 @@ export default {
       deep: true
     },
     remark_img_list: {
-      handler: function () {
+      handler: function() {
         this.getPriceSave()
       },
       deep: true
@@ -689,6 +689,9 @@ export default {
 }
 .gifs-form-wrapper {
   margin: 0 140px;
+  overflow-y: auto;
+  max-height: 114px;
+
   .gifs-item {
     float: left;
     margin-bottom: 20px;
@@ -885,6 +888,15 @@ export default {
       max-height: 80vh;
       max-width: 70vh;
     }
+  }
+}
+
+/deep/ .select-goods-table {
+  max-height: 480px !important;
+  height: auto !important;
+  .el-table__body-wrapper {
+    max-height: 430px !important;
+    height: auto !important;
   }
 }
 </style>

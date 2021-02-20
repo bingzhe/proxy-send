@@ -26,10 +26,16 @@
         <el-form-item label="商品名称" prop="goods_name" label-width="70px">
           <el-input v-model.trim="searchForm.goods_name" placeholder="请输入" />
         </el-form-item>
+        <el-form-item label="颜色" prop="color" label-width="45px">
+          <el-input v-model.trim="searchForm.color" placeholder="请输入" />
+        </el-form-item>
         <el-form-item>
           <el-button class="btn-h-38" type="primary" @click="handleSearchClick">查询</el-button>
         </el-form-item>
       </el-form>
+      <div>
+        <el-button v-for="item in raw_material_list" :key="item" size="mini" plain type="primary">{{ item }}</el-button>
+      </div>
 
       <div class="table-content default-table-change">
         <el-table :data="list" stripe>
@@ -89,14 +95,15 @@ export default {
         type: '', // 类型
         brand: '', // 品牌
         model: '', // 型号
-        goods_name: '' // 商品名称
+        goods_name: '', // 商品名称
+        color: '' // 颜色
       },
       list: [],
       // 分页
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 20
+        limit: 5
       },
 
       goodsTypeOptions: [
@@ -136,6 +143,7 @@ export default {
       const data = {
         opr: 'get_goods_list',
         page_no: this.listQuery.page,
+        page_size: this.listQuery.limit,
         from: 'buycart'
       }
       // 材质
@@ -157,6 +165,10 @@ export default {
       // 商品名称
       if (this.searchForm.goods_name) {
         data.goods_name = this.searchForm.goods_name
+      }
+      // 颜色
+      if (this.searchForm.color) {
+        data.color = this.searchForm.color
       }
 
       console.log('商品列表 req=>', data)
