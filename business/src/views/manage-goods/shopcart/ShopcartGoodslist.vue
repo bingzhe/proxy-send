@@ -203,17 +203,21 @@ export default {
       }
     },
     async handleDiySelect(row) {
+      const color_name = (row.opt_color_list || [])[0].color_name
+
       const data = {
         opr: 'put_to_buycart_diy', // diy品加入购物车
         goods_id: row.goods_id, // 商品编号(ID)
-        num: 1 // 订购数量
+        num: 1, // 订购数量
+        color: color_name
       }
       if (this.buycart_id) {
         data.buycart_id = this.buycart_id // 购物车id（值为空时是新购物车）
       }
 
       // console.log('diy加入购物车 req', data)
-      await buycartSave(data)
+      const resp = await buycartSave(data)
+      if (resp.ret !== 0) return
       this.$emit('goodslist-diy-select-suc', row)
     },
     async handleNormSelect(row) {
@@ -231,7 +235,8 @@ export default {
       }
 
       // console.log('标品加入购物车 req', data)
-      await buycartSave(data)
+      const resp = await buycartSave(data)
+      if (resp.ret !== 0) return
       // console.log('标品加入购物车 res', resp)
       this.$emit('goodslist-norm-select-suc')
     },
