@@ -24,14 +24,15 @@
         <div class="pagination-total">
           <span>
             共
-            <span class="num-text">{{ pageTotal }}</span>页/
-            <span class="num-text">{{ total }}</span>条数据
+            <span class="num-text">{{ pageTotal }}</span
+            >页/ <span class="num-text">{{ total }}</span
+            >条数据
           </span>
         </div>
         <el-pagination
           class="sl-pagination"
           :current-page.sync="listQuery.page"
-          :page-sizes="[10,20,40]"
+          :page-sizes="[10, 20, 40]"
           :page-size="listQuery.limit"
           layout="prev, pager, next, jumper"
           :total="total"
@@ -73,12 +74,11 @@ export default {
       },
 
       list: []
-
     }
   },
   computed: {
     ...mapState({
-      theme_list: state => state.user.theme_list
+      theme_list: (state) => state.user.theme_list
     }),
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
@@ -111,14 +111,10 @@ export default {
       this.list = resp.data.list || []
       this.total = resp.data.total
 
-      this.list = this.list.map(item => {
-        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&type=1&width=168&height=120&img_name=${item.material_img}`
+      this.list = this.list.map((item) => {
+        item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=168&height=120&img_name=${item.material_img}`
 
-        item.material_img_url_ori = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&type=1&img_name=${item.material_img}`
+        item.material_img_url_ori = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${item.material_img}`
 
         return item
       })
@@ -146,11 +142,13 @@ export default {
 <style lang="scss" scoped>
 .material-list-wrapper {
   position: relative;
-  box-shadow: 0px 0px 6px 0px rgba(37, 132, 249, 0.15);
-  width: 936px;
-  height: 466px;
+  // box-shadow: 0px 0px 6px 0px rgba(37, 132, 249, 0.15);
+  border: 1px solid #e6e6e6;
+  // width: 936px;
+  width: 100%;
+  height: 600px;
   border-radius: 2px;
-  padding: 16px 0 0 16px;
+  padding: 16px;
 }
 
 .material-list {

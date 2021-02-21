@@ -2,12 +2,12 @@
   <div class="goodslist-search-wrapper">
     <div class="table-wrapper table-wrapper-default">
       <el-form ref="searchForm" :model="searchForm" :inline="true">
-        <el-form-item label="材质" prop="goods_material" label-width="45px">
+        <!-- <el-form-item label="材质" prop="goods_material" label-width="45px">
           <el-select v-model="searchForm.goods_material" clearable placeholder="请选择" @change="getGoodsList">
             <el-option key="全部" label="全部" value />
             <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="品牌" prop="brand" label-width="45px">
           <el-select v-model="searchForm.brand" clearable placeholder="请选择" @change="getGoodsList">
             <el-option key="全部" label="全部" value />
@@ -26,15 +26,24 @@
         <el-form-item label="商品名称" prop="goods_name" label-width="70px">
           <el-input v-model.trim="searchForm.goods_name" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="颜色" prop="color" label-width="45px">
-          <el-input v-model.trim="searchForm.color" placeholder="请输入" />
+        <el-form-item label="颜色" prop="color_name" label-width="45px">
+          <el-input v-model.trim="searchForm.color_name" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handleSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="getGoodsList">查询</el-button>
         </el-form-item>
       </el-form>
-      <div>
-        <el-button v-for="item in raw_material_list" :key="item" size="mini" plain type="primary">{{ item }}</el-button>
+      <div class="raw-material-wrapper">
+        <el-button size="mini" :type="searchForm.goods_material === '' ? 'primary' : ''" :plain="searchForm.goods_material !== ''" @click="handleMaterialSelect('')"> 全部</el-button>
+        <el-button
+          v-for="item in raw_material_list"
+          :key="item"
+          size="mini"
+          :type="searchForm.goods_material === item ? 'primary' : ''"
+          :plain="searchForm.goods_material !== item"
+          @click="handleMaterialSelect(item)"
+          >{{ item }}</el-button
+        >
       </div>
 
       <div class="table-content default-table-change">
@@ -96,7 +105,7 @@ export default {
         brand: '', // 品牌
         model: '', // 型号
         goods_name: '', // 商品名称
-        color: '' // 颜色
+        color_name: '' // 颜色
       },
       list: [],
       // 分页
@@ -137,9 +146,6 @@ export default {
       }
     },
     async getGoodsList() {
-      /**
-       * TODO  缺少参数 标品根据颜色拆成两条
-       */
       const data = {
         opr: 'get_goods_list',
         page_no: this.listQuery.page,
@@ -167,13 +173,13 @@ export default {
         data.goods_name = this.searchForm.goods_name
       }
       // 颜色
-      if (this.searchForm.color) {
-        data.color = this.searchForm.color
+      if (this.searchForm.color_name) {
+        data.color_name = this.searchForm.color_name
       }
 
-      console.log('商品列表 req=>', data)
+      // console.log('商品列表 req=>', data)
       const resp = await goodsGet(data)
-      console.log('商品列表 res=>', resp)
+      // console.log('商品列表 res=>', resp)
 
       if (resp.ret !== 0) return
 
@@ -196,8 +202,19 @@ export default {
         this.handleNormSelect(row)
       }
     },
-    handleDiySelect(row) {
-      this.$emit('goodslist-diy-select', row)
+    async handleDiySelect(row) {
+      const data = {
+        opr: 'put_to_buycart_diy', // diy品加入购物车
+        goods_id: row.goods_id, // 商品编号(ID)
+        num: 1 // 订购数量
+      }
+      if (this.buycart_id) {
+        data.buycart_id = this.buycart_id // 购物车id（值为空时是新购物车）
+      }
+
+      // console.log('diy加入购物车 req', data)
+      await buycartSave(data)
+      this.$emit('goodslist-diy-select-suc', row)
     },
     async handleNormSelect(row) {
       const color_name = (row.opt_color_list || [])[0].color_name
@@ -214,12 +231,13 @@ export default {
       }
 
       // console.log('标品加入购物车 req', data)
-      // const resp =
       await buycartSave(data)
       // console.log('标品加入购物车 res', resp)
       this.$emit('goodslist-norm-select-suc')
     },
-    handleSearchClick() {
+
+    handleMaterialSelect(item) {
+      this.searchForm.goods_material = item
       this.getGoodsList()
     }
   }
@@ -239,5 +257,15 @@ export default {
 }
 .el-select {
   width: 150px;
+}
+/deep/ .raw-material-wrapper {
+  padding: 0 45px;
+  max-height: 114px;
+  overflow-y: auto;
+  .el-button.is-plain {
+    margin-bottom: 10px;
+    color: #2584f9;
+    border-color: #2584f9;
+  }
 }
 </style>

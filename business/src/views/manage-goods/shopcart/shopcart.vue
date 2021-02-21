@@ -4,28 +4,30 @@
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
-          <el-button class="continue-shop" type="primary" plain @click="goGoodsList">继续选购</el-button>
+          <!-- <el-button class="continue-shop" type="primary" plain @click="goGoodsList">继续选购</el-button> -->
         </div>
         <div class="select-goods-table-wrapper">
           <el-table ref="selectGoodsTable" class="select-goods-table" height="480" border :data="goodsList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" align="center" width="55" />
-            <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
+            <el-table-column prop="goods_img" align="center" label="图片" width="100">
               <template slot-scope="scope">
-                <img class="table-img" :src="scope.row.goods_img_url" />
+                <el-image class="table-img" :src="scope.row.goods_img_url">
+                  <div slot="error" class="image-slot">暂无图片</div>
+                </el-image>
               </template>
             </el-table-column>
-            <el-table-column prop="type_str" label="商品类型" min-width="50" />
-            <el-table-column prop="goods_info_str" label="材质_品牌_型号_边框_商品编号" width="300" />
-            <el-table-column prop="num" label="数量" width="150">
+            <el-table-column prop="type_str" align="center" label="商品类型" width="100" />
+            <el-table-column prop="goods_info_str" align="center" label="材质_品牌_型号_边框_商品编号" min-width="100" />
+            <el-table-column prop="num" label="数量" align="center" width="150">
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.num" :min="1" size="small" @change="getPriceSave" />
               </template>
             </el-table-column>
-            <el-table-column prop="price" label="单价" min-width="50" />
-            <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
+            <el-table-column prop="price" align="center" label="单价" width="100" />
+            <el-table-column prop="goodsSumPrice" align="center" label="小计" width="120" />
             <el-table-column prop="opr" label="操作" min-width="50" align="center">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.type === GOODS_TYPE.DIY" type="text" @click="handleShopcartGoodsEdit(scope.row)">编辑</el-button>
+                <el-button v-if="scope.row.type === GOODS_TYPE.DIY" type="text" @click="handleShopcartGoodsEdit(scope)">编辑</el-button>
                 <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
               </template>
             </el-table-column>
@@ -50,7 +52,7 @@
           <baseinfo-title color="#FB7474" text="商品列表" />
         </div>
         <div>
-          <ShopcartGoodslist @goodslist-norm-select-suc="handleNormSelectSuc" @goodslist-diy-select="handleDiySelect" />
+          <ShopcartGoodslist @goodslist-norm-select-suc="getBuycartUpdateGoods" @goodslist-diy-select-suc="getBuycartUpdateGoods" />
         </div>
       </div>
       <div class="consignee-wrapper">
@@ -143,14 +145,7 @@
       <img :src="dialogImageUrl" alt />
     </el-dialog>
 
-    <DialogDesigner
-      ref="dialogDesinger"
-      :designerGoods="designerGoods"
-      :isEditShopcartGoods="isEditShopcartGoods"
-      @diy-select-suc="handleDiySelectSuc"
-      @diy-edit-suc="handleDiyEditSuc"
-      @dialog-designer-close="handleDesignerClose"
-    />
+    <DialogDesigner ref="dialogDesinger" :designerGoods="designerGoods" @diy-edit-suc="handleDiyEditSuc" @dialog-designer-close="handleDesignerClose" />
   </div>
 </template>
 
@@ -176,7 +171,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function(code) {
+  toString: function (code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -244,8 +239,8 @@ export default {
 
       GOODS_TYPE,
 
-      isEditShopcartGoods: false, // 是否是购物车商品里的编辑
-      designerGoods: {} // 设计器正在处理的商品
+      designerGoods: {}, // 设计器正在处理的商品
+      shopCartGoodsIndex: 0 // 购物车商品下标
     }
   },
   computed: {
@@ -272,7 +267,7 @@ export default {
   },
   watch: {
     goodsList: {
-      handler: function() {
+      handler: function () {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
@@ -280,7 +275,7 @@ export default {
       deep: true
     },
     remark_img_list: {
-      handler: function() {
+      handler: function () {
         this.getPriceSave()
       },
       deep: true
@@ -602,9 +597,9 @@ export default {
         buycart_id: this.buycart_id // 购物车id
       }
 
-      console.log('购物车 req=>', data)
+      // console.log('购物车 req=>', data)
       const resp = await buycartGet(data)
-      console.log('购物车 res=>', resp)
+      // console.log('购物车 res=>', resp)
 
       if (resp.ret !== 0) return
 
@@ -618,42 +613,30 @@ export default {
         return item
       })
     },
-    handleNormSelectSuc() {
-      this.getBuycartUpdateGoods()
-    },
-    handleDiySelect(row) {
-      this.designerGoods = row
-      this.isEditShopcartGoods = false
-      this.$refs.dialogDesinger.show()
-    },
-    handleDiySelectSuc() {
-      this.getBuycartUpdateGoods()
-    },
     handleDesignerClose() {
       this.designerGoods = {}
+      this.shopCartGoodsIndex = 0
     },
-    handleShopcartGoodsEdit(row) {
-      this.designerGoods = row
-      this.isEditShopcartGoods = true
+    handleShopcartGoodsEdit(scope) {
+      console.log(scope)
+      this.designerGoods = scope.row
+      this.shopCartGoodsIndex = scope.$index
       this.$refs.dialogDesinger.show()
     },
     handleDiyEditSuc(updateData) {
-      const index = this.goodsList.findIndex((item) => item.index_id === updateData.index_id)
+      const i = this.shopCartGoodsIndex
 
-      console.log('更新的数据', updateData)
-      this.goodsList[index].ori_user_img = updateData.ori_user_img
-      this.goodsList[index].preview_img = updateData.preview_img
-      this.goodsList[index].prune_img = updateData.prune_img
-      this.goodsList[index].color = updateData.color
-      this.goodsList[index].goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${updateData.preview_img}`
+      console.log('编辑更新的数据', updateData)
+      this.goodsList[i].ori_user_img = updateData.ori_user_img
+      this.goodsList[i].preview_img = updateData.preview_img
+      this.goodsList[i].prune_img = updateData.prune_img
+      this.goodsList[i].color = updateData.color
+      this.goodsList[i].goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${updateData.preview_img}`
 
       /**
        * 后台更新一下
        */
       this.getPriceSave()
-      /**
-       * TODO 可能需要更新预览图片
-       */
     }
   }
 }

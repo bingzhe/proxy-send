@@ -63,10 +63,10 @@ export default {
        */
 
       if (this.height >= 1000 && this.height < 1500) {
-        this.scale = 0.5
+        this.scale = 0.4
       }
       if (this.height >= 1500) {
-        this.scale = 0.4
+        this.scale = 0.3
       }
 
       /**
@@ -376,7 +376,7 @@ export default {
 
 <style lang="scss" scoped>
 #designer-canvas {
-  border: 1px solid #ccc;
+  border: 1px solid #e6e6e6;
 }
 .canvas-bg-wrapper {
   background: url('../../assets/images/canvas_bg.jpg') repeat;

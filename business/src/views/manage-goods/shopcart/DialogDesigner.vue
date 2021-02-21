@@ -1,57 +1,51 @@
 <template>
-  <sl-dialog
-    ref="dialogDesigner"
-    title="设计器"
-    :showFooter="true"
-    :showClose="false"
-    :closeOnClickModal="false"
-    :closeOnPressEscape="false"
-    :validate="true"
-    top="5vh"
-    width="90vw"
-    @close="handleDialogClose"
-    @confirm="handlerAddCartClick"
-  >
-    <div class="opr-item clearfix pic-source">
-      <div class="opr-lable">图片来源</div>
-      <div class="opr-value">
-        <el-radio-group v-model="picSource" @change="handlerPicSourceChange">
-          <el-radio :label="1">本地图片</el-radio>
-          <el-radio :label="2">图库来源</el-radio>
-        </el-radio-group>
-      </div>
-    </div>
-
-    <div v-show="picSource === 1" class="upload-img-wrapper opr-item clearfix">
-      <div class="opr-lable">选择图片</div>
-      <div class="opr-value">
-        <el-input v-model="ori_user_img" placeholder="请选择DIY图片" />
-      </div>
-      <sl-upload class="outline-uploader" :type="4" :get-file="true" @get-file="handlerGetUploadFile">
-        <el-button type="primary">选择</el-button>
-      </sl-upload>
-    </div>
-
-    <div v-show="picSource === 1 || !showPicList" class="color-diy-wrapper clearfix">
-      <div class="pic-list-wrapper">
-        <div class="pic-list-title">选择边框颜色</div>
-        <div v-for="(item, index) in opt_color_list" :key="index" class="pic-item" :class="{ active: curPic === index }" @click="handlerPicItemClick(item, index)">
-          <el-button>{{ item.color_name }}</el-button>
+  <sl-dialog ref="dialogDesigner" title="设计器" :showFooter="false" :showClose="false" :closeOnClickModal="false" :closeOnPressEscape="false" :validate="true" top="5vh" width="80vw">
+    <div class="dialog-designer-content">
+      <div class="left-content">
+        <div class="opr-item clearfix pic-source">
+          <div class="opr-lable">图片来源</div>
+          <div class="opr-value">
+            <el-radio-group v-model="picSource" @change="handlerPicSourceChange">
+              <el-radio :label="1">本地图片</el-radio>
+              <el-radio :label="2">图库来源</el-radio>
+            </el-radio-group>
+          </div>
         </div>
-      </div>
-      <div class="diy-content-wrapper">
-        <div class="diy-designer-wrapper">
-          <DiyDesigner ref="diyDesigner" :height="picHeight" :width="picWidth" :radius="picRadius" @preview-success="handlerPreviewSuc" />
+
+        <div v-show="picSource === 1" class="upload-img-wrapper opr-item clearfix">
+          <div class="opr-lable">选择图片</div>
+          <div class="opr-value">
+            <el-input v-model="ori_user_img" placeholder="请选择DIY图片" />
+          </div>
+          <sl-upload class="outline-uploader" :type="4" :get-file="true" @get-file="handlerGetUploadFile">
+            <el-button type="primary">选择</el-button>
+          </sl-upload>
         </div>
+
+        <material-list v-show="picSource === 2" @on-select="selectMaterialPic" />
+
         <div class="button-group">
-          <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
-          <br />
-          <el-button :disabled="!ori_user_img" type="text" @click="handlerPreviewClick">预览</el-button>
+          <el-button @click="handleDialogClose">取消</el-button>
+          <el-button type="primary" :disabled="!ori_user_img" @click="handlerPreviewClick">预览</el-button>
+          <el-button type="primary" @click="handleConfirmClick">确定</el-button>
+        </div>
+      </div>
+      <div style="width: 1%"></div>
+      <div class="right-content">
+        <div class="color-diy-wrapper">
+          <div class="pic-list-wrapper">
+            <div v-for="(item, index) in opt_color_list" :key="index" class="pic-item" :class="{ active: curPic === index }" @click="handlerPicItemClick(item, index)">
+              <el-button>{{ item.color_name }}</el-button>
+            </div>
+          </div>
+          <div class="diy-content-wrapper">
+            <div class="diy-designer-wrapper">
+              <DiyDesigner ref="diyDesigner" :height="picHeight" :width="picWidth" :radius="picRadius" @preview-success="handlerPreviewSuc" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    <material-list v-if="picSource === 2 && showPicList" @on-select="selectMaterialPic" />
 
     <el-dialog class="preview-dialog preview-pic-wrapper" :visible.sync="dialogVisible" title="预览图">
       <div class="img-wrapper">
@@ -63,12 +57,11 @@
 
 <script>
 import SlDialog from '@/components/Dialog/Dialog'
-import { buycartSave } from '@/api/api'
-import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
-import DiyDesigner from '../PictureDesigner'
 import Http from '@/config/encsubmit'
+import DiyDesigner from '../PictureDesigner'
 import MaterialList from '../components/MaterialList'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -86,7 +79,7 @@ export default {
     },
     isEditShopcartGoods: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
@@ -107,7 +100,7 @@ export default {
       prune_img_rul: '',
 
       picSource: 1, // 1.本地 2.图库
-      showPicList: false, // 是否显示图库
+      // showPicList: false, // 是否显示图库
       // 底图颜色
       curPic: 0, // 底图颜色index
       opt_color_list: [
@@ -149,7 +142,7 @@ export default {
   watch: {
     designerGoods: {
       handler: function (val) {
-        console.log('设计器处理的goods', val)
+        // console.log('设计器处理的goods', val)
         if (JSON.stringify(val) === '{}') return
 
         this.picHeight = (val.img_print_param || {}).height
@@ -190,50 +183,9 @@ export default {
       deep: true
     }
   },
-  mounted() {
-    // this.picHeight = (this.designerGoods.img_print_param || {}).height
-    // this.picWidth = (this.designerGoods.img_print_param || {}).width
-    // this.picRadius = (this.designerGoods.img_print_param || {}).radius_adjius
-    // this.opt_color_list = (this.designerGoods.opt_color_list || []).map((item, index) => {
-    //   item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${item.color_img}`
-    //   item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${item.outline_img}`
-    //   if (this.curPic === index) {
-    //     this.color_img_url = item.color_img_url
-    //     this.outline_img_url = item.outline_img_url
-    //   }
-    //   return item
-    // })
-    // if (this.isEditShopcartGoods) {
-    //   const ori_user_img = this.designerGoods.ori_user_img
-    //   this.ori_user_img = ori_user_img
-    //   this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${ori_user_img}`
-    //   this.num = this.designerGoods.num
-    //   this.index_id = this.designerGoods.index_id
-    //   this.curPic = (this.designerGoods.opt_color_list || []).findIndex((item) => item.color_name === this.designerGoods.color)
-    //   // console.log('goods', goods)
-    // }
-    // this.$nextTick(async () => {
-    //   this.$refs.diyDesigner.init()
-    //   /**
-    //    * 默认选中第一张地图
-    //    */
-    //   await this.$refs.diyDesigner.addOutline(this.outline_img_url)
-    //   await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-    //   // console.log(this.outline_img_url)
-    //   /**
-    //    * 回显ori_user_img
-    //    */
-    //   if (this.isEditShopcartGoods && this.ori_user_img_url) {
-    //     this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
-    //   }
-    // })
-  },
   methods: {
     show() {
       this.$refs.dialogDesigner.show()
-    },
-    close() {
-      this.$refs.dialogDesigner.hide()
     },
     handleDialogClose() {
       this.$refs.diyDesigner.disposeCanvas()
@@ -242,22 +194,11 @@ export default {
       this.ori_user_img_url = ''
       this.prune_img = '' // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
       this.preview_img = '' // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+      this.$refs.dialogDesigner.hide()
       this.$emit('dialog-designer-close')
     },
-    handlerPicSourceChange() {
-      if (this.picSource === 2) {
-        this.showPicList = true
-      }
-      this.$refs.diyDesigner.removeOriginImg()
-      this.ori_user_img = ''
-      this.ori_user_img_url = ''
-      this.ori_user_img_data = ''
-      // this.outline_img_url = ''
-    },
+    handlerPicSourceChange() {},
     handlerGetUploadFile({ file }) {
-      // this.loading = true
-      // this.loadingTipText = '正在加载'
-
       this.ori_user_img = file.name
 
       const _this = this
@@ -265,12 +206,7 @@ export default {
 
       fr.onload = function () {
         _this.ori_user_img_data = fr.result
-
-        // <<<<<<<<<<<<<<<<<<
         _this.$refs.diyDesigner.addOriginImg(fr.result)
-        // _this.$refs.diyDesigner.addOriginImg(require('@/assets/images/origin.jpg'))
-
-        // _this.loading = false
       }
 
       fr.readAsDataURL(file)
@@ -281,14 +217,10 @@ export default {
       this.outline_img_url = item.outline_img_url
       this.curPic = i
 
-      // <<<<<<<<<<<<<<<<<<
       this.$refs.diyDesigner.removeOriginImg()
 
       await this.$refs.diyDesigner.addOutline(this.outline_img_url)
       await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-
-      // await this.$refs.diyDesigner.addColorImg(require('@/assets/images/color.png'))
-      // await this.$refs.diyDesigner.addOutline(require('@/assets/images/outline.png'))
 
       this.$refs.diyDesigner.addOriginImgAgain()
       this.$refs.diyDesigner.renderAll()
@@ -311,7 +243,6 @@ export default {
     selectMaterialPic(img) {
       this.ori_user_img = img.material_img
       this.ori_user_img_url = img.material_img_url_ori
-      this.showPicList = false
       this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
     },
     base64ToFile(urlData) {
@@ -327,7 +258,6 @@ export default {
       for (var i = 0; i < bytes.length; i++) {
         ia[i] = bytes.charCodeAt(i)
       }
-
       // return new Blob([ab], {
       //   type: mime
       // })
@@ -354,7 +284,7 @@ export default {
         })
       })
     },
-    async handlerAddCartClick() {
+    async handleConfirmClick() {
       if (!this.ori_user_img) {
         this.$message.error('DIY照片不能为空，请先上传')
         return
@@ -376,7 +306,6 @@ export default {
       }
 
       this.preview_img = await this.imgUpload(this.preview_img_data, 5)
-
       this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
       const data = {
@@ -397,20 +326,20 @@ export default {
        * 编辑时候，把数据给父组件，前端更新
        * 新增时候，掉接口更新
        */
-      if (this.isEditShopcartGoods) {
-        data.index_id = this.index_id
-        this.$emit('diy-edit-suc', data)
-      } else {
-        console.log('diy加入购物车', data)
-        const resp = await buycartSave(data)
-        console.log('diy加入购物车', resp)
-        this.loading = false
-        if (resp.ret !== 0) return
+      // if (this.isEditShopcartGoods) {
+      data.index_id = this.index_id
+      this.$emit('diy-edit-suc', data)
+      // } else {
+      //   console.log('diy加入购物车', data)
+      //   const resp = await buycartSave(data)
+      //   console.log('diy加入购物车', resp)
+      //   this.loading = false
+      //   if (resp.ret !== 0) return
 
-        this.$emit('diy-select-suc')
-      }
+      //   this.$emit('diy-select-suc')
+      // }
 
-      this.close()
+      this.handleDialogClose()
     }
   }
 }
@@ -453,7 +382,7 @@ export default {
 .upload-img-wrapper {
   margin-bottom: 18px;
   .opr-value {
-    width: 520px;
+    width: 300px;
     margin-right: 14px;
   }
   .outline-uploader {
@@ -464,28 +393,20 @@ export default {
   }
 }
 .color-diy-wrapper {
-  min-width: 950px;
+  min-width: 600px;
   min-height: 465px;
-  box-shadow: 0px 0px 6px 0px rgba(37, 132, 249, 0.15);
   border-radius: 2px;
-  padding-left: 170px;
-  position: relative;
 }
+
 .pic-list-wrapper {
-  text-align: center;
-  width: 170px;
-  border-right: 1px solid #eff4f9;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  .pic-list-title {
-    color: #6d7585;
-    margin: 20px 0;
-    font-size: 14px;
-  }
+  // border-right: 1px solid #eff4f9;
+  // .pic-list-title {
+  //   color: #6d7585;
+  //   margin: 20px 0;
+  //   font-size: 14px;
+  // }
   .pic-item {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     .el-button {
       height: 38px;
       width: 90px;
@@ -503,15 +424,7 @@ export default {
 }
 .diy-content-wrapper {
   position: relative;
-  .diy-designer-wrapper {
-    margin: 20px 0 20px 0;
-  }
-  .button-group {
-    position: absolute;
-    width: 90px;
-    top: 0;
-    right: 0;
-  }
+  // .diy-designer-wrapper {}
 }
 /deep/ .preview-pic-wrapper {
   .el-dialog__body {
@@ -522,6 +435,32 @@ export default {
       max-height: 70vh;
       max-width: 70vh;
     }
+  }
+}
+
+.dialog-designer-content {
+  display: flex;
+
+  .left-content {
+    position: relative;
+    width: 49%;
+  }
+  .right-content {
+    width: 50%;
+  }
+}
+
+.button-group {
+  position: absolute;
+  bottom: 100px;
+  right: 20px;
+  left: 0;
+  text-align: right;
+  .el-button {
+    width: 100px;
+  }
+  .el-button + .el-button {
+    margin-left: 30px;
   }
 }
 </style>
