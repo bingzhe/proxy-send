@@ -4,52 +4,30 @@
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
-          <el-button
-            class="continue-shop"
-            type="primary"
-            plain
-            @click="goGoodsList"
-          >继续选购</el-button>
         </div>
         <div class="select-goods-table-wrapper">
-          <el-table
-            ref="selectGoodsTable"
-            class="select-goods-table"
-            border
-            :data="goodsList"
-            @selection-change="handleSelectionChange"
-          >
+          <el-table ref="selectGoodsTable" class="select-goods-table" height="480" border :data="goodsList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" align="center" width="55" />
-            <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
+            <el-table-column prop="goods_img" align="center" label="图片" width="100">
               <template slot-scope="scope">
-                <img class="table-img" :src="scope.row.goods_img_url" />
+                <el-image class="table-img" :src="scope.row.goods_img_url">
+                  <div slot="error" class="image-slot">暂无图片</div>
+                </el-image>
               </template>
             </el-table-column>
-            <el-table-column prop="type_str" label="商品类型" min-width="50" />
-            <el-table-column
-              prop="goods_info_str"
-              label="材质_品牌_型号_边框_商品编号"
-              width="300"
-            />
-            <el-table-column prop="num" label="数量" width="150">
+            <el-table-column prop="type_str" align="center" label="商品类型" width="100" />
+            <el-table-column prop="goods_info_str" align="center" label="材质_品牌_型号_边框_商品编号" min-width="100" />
+            <el-table-column prop="num" label="数量" align="center" width="150">
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.num" :min="1" size="small" @change="getPrice" />
               </template>
             </el-table-column>
-            <el-table-column prop="price" label="单价" min-width="50" />
-            <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
-            <el-table-column prop="opr" label="操作" width="85" align="center">
+            <el-table-column prop="price" align="center" label="单价" width="100" />
+            <el-table-column prop="goodsSumPrice" align="center" label="小计" width="120" />
+            <el-table-column prop="opr" label="操作" min-width="50" align="center">
               <template slot-scope="scope">
-                <el-button
-                  v-if="scope.row.type === GOODS_TYPE.DIY"
-                  type="text"
-                  @click="handleGoodsEditClick(scope.row)"
-                >编辑</el-button>
-                <el-button
-                  class="del-btn"
-                  type="text"
-                  @click="delShopcart(scope.$index)"
-                >删除</el-button>
+                <el-button v-if="scope.row.type === GOODS_TYPE.DIY" type="text" @click="handleGoodsEditClick(scope)">编辑</el-button>
+                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -62,14 +40,17 @@
         <div class="gifs-form-wrapper clearfix">
           <div v-for="(item, index) in attachList" :key="index" class="gifs-item">
             <span class="gifs-label">{{ item.goods_name }}</span>
-            <el-input-number
-              v-model="item.num"
-              controls-position="right"
-              :min="0"
-              @change="getPrice"
-            />
+            <el-input-number v-model="item.num" controls-position="right" :min="0" @change="getPrice" />
             <span class="gifs-price">（&yen; {{ item.price }}）</span>
           </div>
+        </div>
+      </div>
+      <div class="goodslist-wrapper">
+        <div class="baseinfo-title-wrapper">
+          <baseinfo-title color="#FB7474" text="商品列表" />
+        </div>
+        <div>
+          <ShopcartGoodslist @goodslist-norm-select-suc="handleNormalSelect" @goodslist-diy-select-suc="handleDiySelect" />
         </div>
       </div>
       <div class="consignee-wrapper">
@@ -77,56 +58,20 @@
           <baseinfo-title color="#FBBD74" text="配送信息" />
         </div>
         <div class="consignee-form-wrapper">
-          <el-form
-            ref="consigneeFrom"
-            :model="consigneeFrom"
-            :rules="consigeneeFromRules"
-            :inline="true"
-            label-width="80px"
-          >
+          <el-form ref="consigneeFrom" :model="consigneeFrom" :rules="consigeneeFromRules" :inline="true" label-width="80px">
             <el-form-item label="仓库" prop="warehouse_id" label-width="130px">
-              <el-select
-                v-model="consigneeFrom.warehouse_id"
-                placeholder="请选择"
-                filterable
-                @change="handleWarehouseChange"
-              >
-                <el-option
-                  v-for="(item, index) in warehouseList"
-                  :key="index"
-                  :label="item.warehouse_name"
-                  :value="item.warehouse_id"
-                />
+              <el-select v-model="consigneeFrom.warehouse_id" placeholder="请选择" filterable @change="handleWarehouseChange">
+                <el-option v-for="(item, index) in warehouseList" :key="index" :label="item.warehouse_name" :value="item.warehouse_id" />
               </el-select>
             </el-form-item>
             <el-form-item label="物流" prop="delivery_company_name" label-width="110px">
-              <el-select
-                v-model="consigneeFrom.delivery_company_name"
-                placeholder="请选择"
-                filterable
-                @change="getPrice"
-              >
-                <el-option
-                  v-for="(item, index) in deliveryCompanyList"
-                  :key="index"
-                  :label="item.company_name"
-                  :value="item.company_name"
-                />
+              <el-select v-model="consigneeFrom.delivery_company_name" placeholder="请选择" filterable @change="getPrice">
+                <el-option v-for="(item, index) in deliveryCompanyList" :key="index" :label="item.company_name" :value="item.company_name" />
               </el-select>
             </el-form-item>
             <el-form-item label="下单店铺" prop="tshop_id" label-width="130px">
-              <el-select
-                v-model="consigneeFrom.tshop_id"
-                class="full-width"
-                placeholder="请选择"
-                @change="getPrice"
-              >
-                <el-option
-                  v-for="(item, index) in tshopList"
-                  :key="index"
-                  :label="item.tshop_name"
-                  :value="item.tshop_id"
-                />
+              <el-select v-model="consigneeFrom.tshop_id" class="full-width" placeholder="请选择" @change="getPrice">
+                <el-option v-for="(item, index) in tshopList" :key="index" :label="item.tshop_name" :value="item.tshop_id" />
               </el-select>
             </el-form-item>
             <br />
@@ -145,63 +90,31 @@
             </el-form-item>
             <br />
             <el-form-item label="省/直辖市" prop="province" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.province"
-                v-trim="consigneeFrom.province"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.province" v-trim="consigneeFrom.province" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="市" prop="city" label-width="110px">
-              <el-input
-                v-model.trim="consigneeFrom.city"
-                v-trim="consigneeFrom.city"
-                placeholder="请输入"
-                @change="getPrice"
-              />
+              <el-input v-model.trim="consigneeFrom.city" v-trim="consigneeFrom.city" placeholder="请输入" @change="getPrice" />
             </el-form-item>
             <br />
             <el-form-item label="区/县" prop="area" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.area"
-                v-trim="consigneeFrom.area"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.area" v-trim="consigneeFrom.area" placeholder="请输入" />
             </el-form-item>
             <el-form-item label="乡/镇/街道" prop="street" label-width="110px">
-              <el-input
-                v-model.trim="consigneeFrom.street"
-                v-trim="consigneeFrom.street"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.street" v-trim="consigneeFrom.street" placeholder="请输入" />
             </el-form-item>
             <br />
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.address"
-                v-trim="consigneeFrom.address"
-                type="textarea"
-                placeholder="请输入"
-              />
+              <el-input v-model.trim="consigneeFrom.address" v-trim="consigneeFrom.address" type="textarea" placeholder="请输入" />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
               <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
-              <el-input
-                v-model.trim="consigneeFrom.remark"
-                type="textarea"
-                placeholder="请输入"
-                maxlength="150"
-                show-word-limit
-              />
+              <el-input v-model.trim="consigneeFrom.remark" type="textarea" placeholder="请输入" maxlength="150" show-word-limit />
             </el-form-item>
             <el-form-item label="附图" prop="remark_img_list" label-width="130px">
               <div class="remark-img-wrapper">
-                <div
-                  v-for="(item, index) in remarkImgPreviewList"
-                  :key="index"
-                  class="remark-img-item"
-                >
+                <div v-for="(item, index) in remarkImgPreviewList" :key="index" class="remark-img-item">
                   <img :src="item" @click="handleRemarkImgClick(item)" />
                   <i class="el-icon-error" @click="handleRemarkImgRemoveClick(index)"></i>
                 </div>
@@ -226,6 +139,8 @@
     <el-dialog class="preview-pic-wrapper" :visible.sync="dialogVisible">
       <img :src="dialogImageUrl" alt />
     </el-dialog>
+
+    <DialogDesigner ref="dialogDesinger" :designerGoods="designerGoods" @diy-edit-suc="handleDiyEditSuc" @dialog-designer-close="handleDesignerClose" />
   </div>
 </template>
 
@@ -235,7 +150,8 @@ import SlUpload from '@/components/upload/index'
 import { orderGet, orderSave, tshopGet, warehouseGet } from '@/api/api'
 import { mapState } from 'vuex'
 import { ORDER_STATUS } from '@/config/cfg'
-import _ from 'lodash'
+import DialogDesigner from '../../manage-goods/shopcart/DialogDesigner'
+import ShopcartGoodslist from './ShopcartGoodslist'
 
 export const GOODS_TYPE = {
   DIY: 1,
@@ -257,7 +173,9 @@ export const GOODS_TYPE = {
 export default {
   components: {
     BaseinfoTitle,
-    SlUpload
+    SlUpload,
+    DialogDesigner,
+    ShopcartGoodslist
   },
   data() {
     return {
@@ -270,32 +188,28 @@ export default {
       order_status: '',
       ORDER_STATUS,
 
-      //   goodsList: [],
-      goodsList: _.cloneDeep(this.$store.state.orderEdit.goodsList),
-      //   attachList: [],
-      attachList: _.cloneDeep(this.$store.state.orderEdit.attachList),
+      goodsList: [],
+      attachList: [],
       //   收货人信息
-      //   consigneeFrom: {
-      //     person: '', // 收货人名
-      //     phone: '', // 手机号码
-      //     address: '', // 收货地址
-      //     province: '', // 省
-      //     city: '', // 市
-      //     area: '', // 区县
-      //     street: '', // 街道
-      //     company_name: '',
-      //     remark: '', // 留言
-      //     telephone: '', // 固定电话
-      //     order_id_3rd: '', // 第三平台订单号
-      //     tshop_id: '' // 下单店铺
-      //       delivery_company_name: '', // 物流公司
-      // warehouse_id: '', // 仓库ID
-      // warehouse_name: '' // 仓库名称
-      //   },
-      consigneeFrom: _.cloneDeep(this.$store.state.orderEdit.consigneeFrom),
-      // remark_img_list: [],
-      remark_img_list: _.cloneDeep(this.$store.state.orderEdit.remark_img_list),
+      consigneeFrom: {
+        person: '', // 收货人名
+        phone: '', // 手机号码
+        address: '', // 收货地址
+        province: '', // 省
+        city: '', // 市
+        area: '', // 区县
+        street: '', // 街道
+        company_name: '',
+        remark: '', // 留言
+        telephone: '', // 固定电话
+        order_id_3rd: '', // 第三平台订单号
+        tshop_id: '', // 下单店铺
 
+        delivery_company_name: '', // 物流公司
+        warehouse_id: '', // 仓库ID
+        warehouse_name: '' // 仓库名称
+      },
+      remark_img_list: [],
       multipleSelection: [],
 
       consigeneeFromRules: {
@@ -323,13 +237,15 @@ export default {
       GOODS_TYPE,
 
       warehouseList: [], // 店铺下仓库列表
-      deliveryCompanyList: [] // 仓库下可以发货物流公司的列表
+      deliveryCompanyList: [], // 仓库下可以发货物流公司的列表
+
+      designerGoods: {}, // 设计器正在处理的商品
+      shopCartGoodsIndex: 0 // 购物车商品下标
     }
   },
   computed: {
     ...mapState({
       delivery_list: (state) => state.user.delivery_list,
-      orderIsEdit: (state) => state.orderEdit.isEdit,
       business_info: (state) => state.user.business_info
     }),
     total() {
@@ -354,25 +270,6 @@ export default {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
-        this.$store.commit('orderEdit/updateGoodsList', val)
-      },
-      deep: true
-    },
-    consigneeFrom: {
-      handler: function (val) {
-        this.$store.commit('orderEdit/updateconsigneeFrom', val)
-      },
-      deep: true
-    },
-    attachList: {
-      handler: function (val) {
-        this.$store.commit('orderEdit/updateAttachlist', val)
-      },
-      deep: true
-    },
-    remark_img_list: {
-      handler: function (val) {
-        this.$store.commit('orderEdit/updateRemarkImgList', val)
       },
       deep: true
     }
@@ -380,9 +277,7 @@ export default {
   async mounted() {
     this.order_id = this.$route.params.order_id
     if (this.order_id) {
-      if (!this.orderIsEdit) {
-        await this.getOrderinfo()
-      }
+      await this.getOrderinfo()
 
       // 选中所有商品
       setTimeout(() => {
@@ -411,7 +306,7 @@ export default {
 
       // console.log('订单详情 req=>', data)
       const resp = await orderGet(data)
-      console.log('订单详情 res=>', resp)
+      // console.log('订单详情 res=>', resp)
 
       if (resp.ret !== 0) return
 
@@ -458,14 +353,23 @@ export default {
       this.consigneeFrom.warehouse_id = info.warehouse_id
       this.consigneeFrom.delivery_company_name = info.delivery_company_name
     },
-    autoSplit() {
-      const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
-      const res = this.consigneeFrom.address.match(reg) || []
+    async autoSplit() {
+      const data = {
+        opr: 'order_address_parse',
+        address: this.consigneeFrom.address // 订单详细地址
+      }
 
-      this.consigneeFrom.province = res[0] || ''
-      this.consigneeFrom.city = res[1] || ''
-      this.consigneeFrom.area = res[2] || ''
-      this.consigneeFrom.street = res[3] || ''
+      const resp = await orderGet(data)
+      if (resp.ret !== 0) return
+
+      const info = resp.data || {}
+      this.consigneeFrom.address = info.address
+      this.consigneeFrom.province = info.province
+      this.consigneeFrom.city = info.city
+      this.consigneeFrom.area = info.area
+      this.consigneeFrom.street = info.street
+      this.consigneeFrom.person = info.person
+      this.consigneeFrom.telephone = info.telephone
     },
     async getPrice() {
       // 只计算选中的 multipleSelection
@@ -524,23 +428,16 @@ export default {
      *
      * ---- 2020.9.27
      * 编辑商品直接进diy商品页面,goodsList后面
+     *
+     * ---- 2021.2.21
+     * 编辑商品修改为在当前页面编辑
+     * TODO
      */
-    handleGoodsEditClick(row) {
-      this.$store.commit('orderEdit/updateIsOrderEdit', true)
-      this.$store.commit('orderEdit/updateEditOrderId', this.order_id)
-      this.$store.commit('orderEdit/updateEditDiyGoodsId', row.goods_id)
-      this.$store.commit('orderEdit/updateEditIndexId', row.index_id)
-
-      this.$router.push({
-        path: `/manage-goods/tbdiy/${row.goods_id}`,
-        query: {
-          source: 'shopcartTb'
-        }
-      })
-
-      // this.$router.push({
-      //   path: '/manage-goods/goodslist'
-      // })
+    handleGoodsEditClick(scope) {
+      console.log(scope)
+      this.designerGoods = scope.row
+      this.shopCartGoodsIndex = scope.$index
+      this.$refs.dialogDesinger.show()
     },
     handlerSaveOrderClick() {
       if (this.multipleSelection.length === 0) {
@@ -615,22 +512,6 @@ export default {
         this.$router.push('/manage-order/list')
       }, 2000)
     },
-    goGoodsList() {
-      this.$store.commit('orderEdit/updateIsOrderEdit', true)
-      this.$store.commit('orderEdit/updateEditOrderId', this.order_id)
-      this.$router.push('/manage-goods/goodslist')
-
-      //   if (this.order_status === ORDER_STATUS.REPLENISH_WAIT) {
-      //     this.$router.push({
-      //       path: '/manage-goods/goodslist',
-      //       query: {
-      //         source: 'tborder'
-      //       }
-      //     })
-      //   } else {
-      //     this.$router.push('/manage-goods/goodslist')
-      //   }
-    },
     async getTshopList() {
       const data = {
         opr: 'get_tshop_list',
@@ -690,6 +571,47 @@ export default {
         }
       })
       this.getPrice()
+    },
+    handleDesignerClose() {
+      this.designerGoods = {}
+      this.shopCartGoodsIndex = 0
+    },
+    handleDiyEditSuc(updateData) {
+      const i = this.shopCartGoodsIndex
+
+      console.log('编辑更新的数据', updateData)
+      this.goodsList[i].ori_user_img = updateData.ori_user_img
+      this.goodsList[i].preview_img = updateData.preview_img
+      this.goodsList[i].prune_img = updateData.prune_img
+      this.goodsList[i].color = updateData.color
+      this.goodsList[i].goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${updateData.preview_img}`
+
+      // /**
+      //  * 后台更新一下
+      //  */
+      // this.getPriceSave()
+    },
+    handleNormalSelect(row) {
+      console.log('normal选购', row)
+      const img = (row.opt_color_list[0] || {}).color_img
+
+      row.num = 1
+      row.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${img}`
+      row.type_str = GOODS_TYPE.toString(row.type)
+      row.goods_info_str = `${row.raw_material}_${row.brand_txt}_${row.model_txt}_${row.color}_${row.goods_id}`
+      row.goodsSumPrice = row.num * row.price
+      // 前端页面假更新
+      this.goodsList.push(row)
+    },
+    handleDiySelect(row) {
+      console.log('diy选购', row)
+      row.num = 1
+      // row.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${img}`
+      row.type_str = GOODS_TYPE.toString(row.type)
+      row.goods_info_str = `${row.raw_material}_${row.brand_txt}_${row.model_txt}_${row.color}_${row.goods_id}`
+      row.goodsSumPrice = row.num * row.price
+      // 前端页面假更新
+      this.goodsList.push(row)
     }
   }
 }
@@ -729,6 +651,9 @@ export default {
 }
 .gifs-form-wrapper {
   margin: 0 140px;
+  overflow-y: auto;
+  max-height: 114px;
+
   .gifs-item {
     float: left;
     margin-bottom: 20px;
@@ -924,6 +849,15 @@ export default {
       max-height: 80vh;
       max-width: 70vh;
     }
+  }
+}
+
+/deep/ .select-goods-table {
+  max-height: 480px !important;
+  height: auto !important;
+  .el-table__body-wrapper {
+    max-height: 430px !important;
+    height: auto !important;
   }
 }
 </style>
