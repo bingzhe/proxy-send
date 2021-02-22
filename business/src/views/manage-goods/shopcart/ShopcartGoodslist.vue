@@ -218,6 +218,7 @@ export default {
       // console.log('diy加入购物车 req', data)
       const resp = await buycartSave(data)
       if (resp.ret !== 0) return
+      this.$store.dispatch('user/getUserInfo')
       this.$emit('goodslist-diy-select-suc', row)
     },
     async handleNormSelect(row) {
@@ -238,6 +239,7 @@ export default {
       const resp = await buycartSave(data)
       if (resp.ret !== 0) return
       // console.log('标品加入购物车 res', resp)
+      this.$store.dispatch('user/getUserInfo')
       this.$emit('goodslist-norm-select-suc')
     },
 

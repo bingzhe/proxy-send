@@ -293,6 +293,10 @@ export default {
       const resp = await buycartSave(data)
       if (resp.ret !== 0) return
 
+      /**
+       * 更新页面全局数据
+       */
+      this.$store.dispatch('user/getUserInfo')
       this.$router.push({ path: `/manage-goods/shopcart` })
     },
     async handleNormSelect(row) {
@@ -313,6 +317,11 @@ export default {
       const resp = await buycartSave(data)
       if (resp.ret !== 0) return
       // console.log('标品加入购物车 res', resp)
+
+      /**
+       * 更新页面全局数据
+       */
+      this.$store.dispatch('user/getUserInfo')
       this.$router.push({ path: `/manage-goods/shopcart` })
     }
   }
@@ -356,4 +365,3 @@ export default {
   color: #e33119;
 }
 </style>
-

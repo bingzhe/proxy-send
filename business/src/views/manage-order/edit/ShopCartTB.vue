@@ -106,7 +106,7 @@
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
               <el-input v-model.trim="consigneeFrom.address" v-trim="consigneeFrom.address" type="textarea" placeholder="请输入" />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
-              <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
+              <el-button :disabled="!consigneeFrom.address" class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
@@ -368,8 +368,12 @@ export default {
       this.consigneeFrom.city = info.city
       this.consigneeFrom.area = info.area
       this.consigneeFrom.street = info.street
-      this.consigneeFrom.person = info.person
-      this.consigneeFrom.telephone = info.telephone
+      if (!this.consigneeFrom.person) {
+        this.consigneeFrom.person = info.person
+      }
+      if (!this.consigneeFrom.telephone) {
+        this.consigneeFrom.telephone = info.telephone
+      }
     },
     async getPrice() {
       // 只计算选中的 multipleSelection

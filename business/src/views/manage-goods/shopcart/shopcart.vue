@@ -109,7 +109,7 @@
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
               <el-input v-model.trim="consigneeFrom.address" v-trim="consigneeFrom.address" type="textarea" placeholder="请输入" @change="getPriceSave" />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
-              <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
+              <el-button :disabled="!consigneeFrom.address" class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
@@ -171,7 +171,7 @@ export const GOODS_TYPE = {
     3: '礼品'
   },
 
-  toString: function (code) {
+  toString: function(code) {
     code = parseInt(code || 0)
     return this.code[code] || '未知[' + code + ']'
   }
@@ -267,7 +267,7 @@ export default {
   },
   watch: {
     goodsList: {
-      handler: function () {
+      handler: function() {
         this.goodsList.forEach((item) => {
           item.goodsSumPrice = item.num * item.price
         })
@@ -275,7 +275,7 @@ export default {
       deep: true
     },
     remark_img_list: {
-      handler: function () {
+      handler: function() {
         this.getPriceSave()
       },
       deep: true
@@ -380,8 +380,13 @@ export default {
       this.consigneeFrom.city = info.city
       this.consigneeFrom.area = info.area
       this.consigneeFrom.street = info.street
-      this.consigneeFrom.person = info.person
-      this.consigneeFrom.telephone = info.telephone
+
+      if (!this.consigneeFrom.person) {
+        this.consigneeFrom.person = info.person
+      }
+      if (!this.consigneeFrom.telephone) {
+        this.consigneeFrom.telephone = info.telephone
+      }
     },
     async getPriceSave() {
       const goods_list = this.goodsList.map((goods) => {
