@@ -204,7 +204,7 @@
                 @change="getPriceSave"
               />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
-              <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
+              <el-button :disabled="!consigneeFrom.address" class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
             </el-form-item>
             <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
@@ -257,7 +257,7 @@
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import ShopcartEmpty from './ShopcartEmpty'
 import SlUpload from '@/components/upload/index'
-import { orderSave, buycartGet, buycartSave, tshopGet, warehouseGet } from '@/api/api'
+import { orderSave, buycartGet, buycartSave, tshopGet, warehouseGet, orderGet } from '@/api/api'
 import { mapState } from 'vuex'
 import { setTimeout } from 'timers'
 // import { GOODS_TYPE } from '@/config/cfg'
@@ -452,14 +452,36 @@ export default {
         })
       }, 500)
     },
-    autoSplit() {
-      const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
-      const res = this.consigneeFrom.address.match(reg) || []
+    async autoSplit() {
+      // const reg = /.+?(省|市|自治区|自治州|县|区|街道)/g
+      // const res = this.consigneeFrom.address.match(reg) || []
 
-      this.consigneeFrom.province = res[0] || ''
-      this.consigneeFrom.city = res[1] || ''
-      this.consigneeFrom.area = res[2] || ''
-      this.consigneeFrom.street = res[3] || ''
+      // this.consigneeFrom.province = res[0] || ''
+      // this.consigneeFrom.city = res[1] || ''
+      // this.consigneeFrom.area = res[2] || ''
+      // this.consigneeFrom.street = res[3] || ''
+
+      const data = {
+        opr: 'order_address_parse',
+        address: this.consigneeFrom.address // 订单详细地址
+      }
+
+      const resp = await orderGet(data)
+      if (resp.ret !== 0) return
+
+      const info = resp.data || {}
+      this.consigneeFrom.address = info.address
+      this.consigneeFrom.province = info.province
+      this.consigneeFrom.city = info.city
+      this.consigneeFrom.area = info.area
+      this.consigneeFrom.street = info.street
+
+      if (!this.consigneeFrom.person) {
+        this.consigneeFrom.person = info.person
+      }
+      if (!this.consigneeFrom.telephone) {
+        this.consigneeFrom.telephone = info.telephone
+      }
     },
     async getPriceSave() {
       const goods_list = this.goodsList.map((goods) => {

@@ -12,23 +12,13 @@
         <el-form-item label="品牌" prop="brand" label-width="70px">
           <el-select v-model="searchForm.brand" placeholder="请选择" @change="getGoodsList">
             <el-option key="全部" label="全部" value />
-            <el-option
-              v-for="item in phone_brand_list"
-              :key="item.brand_id"
-              :label="item.brand_name"
-              :value="item.brand_id"
-            />
+            <el-option v-for="item in phone_brand_list" :key="item.brand_id" :label="item.brand_name" :value="item.brand_id" />
           </el-select>
         </el-form-item>
         <el-form-item label="类型" prop="type" label-width="70px">
           <el-select v-model="searchForm.type" placeholder="请选择" @change="getGoodsList">
             <el-option key="全部" label="全部" value />
-            <el-option
-              v-for="item in goodsTypeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
+            <el-option v-for="item in goodsTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
 
@@ -42,6 +32,9 @@
         <el-form-item label="商品编号" prop="goods_id" label-width="70px">
           <el-input v-model.trim="searchForm.goods_id" placeholder="请输入" />
         </el-form-item>
+        <el-form-item label="颜色" prop="color_name" label-width="70px">
+          <el-input v-model.trim="searchForm.color_name" placeholder="请输入" />
+        </el-form-item>
         <el-form-item>
           <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
         </el-form-item>
@@ -49,11 +42,7 @@
     </div>
     <!-- search end -->
 
-    <div
-      v-loading="tableLoading"
-      element-loading-text="拼命加载中"
-      class="table-wrapper table-wrapper-default"
-    >
+    <div v-loading="tableLoading" element-loading-text="拼命加载中" class="table-wrapper table-wrapper-default">
       <div class="table-title clearfix">
         <div class="table-title__lable">
           <span>
@@ -71,19 +60,19 @@
         <!-- table-content start -->
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
           <!-- <el-table-column type="selection" align="center" width="55" /> -->
-          <el-table-column prop="goods_id" label="序号" min-width="60" align="center">
+          <el-table-column prop="goods_id" label="序号" width="80" align="center">
             <template slot-scope="scope">
               <span>{{ scope.$index + 1 }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="goods_id" label="商品编号" min-width="60" />
+          <el-table-column prop="goods_id" label="商品编号" min-width="40" />
           <el-table-column prop="goods_name" label="商品名称" min-width="80" />
-          <el-table-column prop="raw_material" label="材质" min-width="60" />
+          <!-- <el-table-column prop="raw_material" label="材质" min-width="60" />
           <el-table-column prop="brand_txt" label="品牌" min-width="60" />
-          <el-table-column prop="model_txt" label="型号" min-width="80" />
+          <el-table-column prop="model_txt" label="型号" min-width="80" /> -->
           <el-table-column prop="sku_list_str" label="sku" min-width="80" />
-          <el-table-column prop="type_txt" label="类型" min-width="60" />
-          <el-table-column prop="opr" label="操作" min-width="60" align="center">
+          <el-table-column prop="type_txt" label="类型" min-width="30" />
+          <el-table-column prop="opr" label="操作" min-width="40" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="handlerOrderBtnClick(scope.row)">下单</el-button>
             </template>
@@ -96,14 +85,15 @@
           <div class="pagination-total">
             <span>
               共
-              <span class="num-text">{{ pageTotal }}</span>页/
-              <span class="num-text">{{ total }}</span>条数据
+              <span class="num-text">{{ pageTotal }}</span
+              >页/ <span class="num-text">{{ total }}</span
+              >条数据
             </span>
           </div>
           <el-pagination
             class="sl-pagination"
             :current-page.sync="listQuery.page"
-            :page-sizes="[10,20,40]"
+            :page-sizes="[10, 20, 40]"
             :page-size="listQuery.limit"
             layout="prev, pager, next, jumper"
             :total="total"
@@ -139,7 +129,8 @@ export default {
         brand: '', // 品牌
         model: '', // 型号
         goods_name: '', // 商品名称
-        goods_id: '' // 商品编号
+        goods_id: '', // 商品编号
+        color_name: ''
       },
 
       list: [],
@@ -212,6 +203,10 @@ export default {
       // 商品编号
       if (this.searchForm.goods_id) {
         data.goods_id = this.searchForm.goods_id
+      }
+      // 商品编号
+      if (this.searchForm.color_name) {
+        data.color_name = this.searchForm.color_name
       }
 
       this.tableLoading = true
