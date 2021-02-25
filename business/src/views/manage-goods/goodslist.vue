@@ -106,6 +106,9 @@
     </div>
     <GoodsExportDialog ref="goodsExportDialog" :searchForm="searchForm" />
     <CheckGoodsDialog ref="checkGoodsDialog" />
+
+    <el-button @click="test">test</el-button>
+    <DialogDesigner ref="test" />
   </div>
 </template>
 <script>
@@ -114,11 +117,13 @@ import { goodsGet } from '@/api/api'
 import { mapState } from 'vuex'
 import GoodsExportDialog from './components/GoodsExportDialog'
 import CheckGoodsDialog from './components/CheckGoodsDialog'
+import DialogDesigner from './DialogDesigner'
 
 export default {
   components: {
     GoodsExportDialog,
-    CheckGoodsDialog
+    CheckGoodsDialog,
+    DialogDesigner
   },
   data() {
     return {
@@ -271,6 +276,9 @@ export default {
     },
     handleCheckGoodsClick() {
       this.$refs.checkGoodsDialog.show()
+    },
+    test() {
+      this.$refs.test.show()
     }
   }
 }
@@ -313,4 +321,3 @@ export default {
   color: #e33119;
 }
 </style>
-

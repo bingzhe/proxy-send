@@ -63,10 +63,10 @@ export default {
        */
 
       if (this.height >= 1000 && this.height < 1500) {
-        this.scale = 0.5
+        this.scale = 0.4
       }
       if (this.height >= 1500) {
-        this.scale = 0.4
+        this.scale = 0.3
       }
 
       /**

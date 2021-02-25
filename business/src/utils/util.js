@@ -5,7 +5,7 @@ const Util = {
   // 取[begin, end]间的数据整数
   GetRandom: function(begin, end) {
     var num = Math.random() * 100000000
-    return Math.floor(num % (end - begin + 1) + begin)
+    return Math.floor((num % (end - begin + 1)) + begin)
   },
 
   // 取len长的随机字符串
@@ -34,10 +34,7 @@ const Util = {
   },
   // isPrimitive
   isPrimitive: function(v) {
-    typeof v === 'string' ||
-      typeof v === 'number' ||
-      typeof v === 'symbol' ||
-      typeof v === 'boolean'
+    typeof v === 'string' || typeof v === 'number' || typeof v === 'symbol' || typeof v === 'boolean'
   },
   isObject: function(obj) {
     return obj !== null && typeof obj === 'object'
@@ -60,11 +57,7 @@ const Util = {
    * null 和 undefined 转成空字符转，对象转成格式化的JSON字符串，其他调用String()
    */
   toString: function(val) {
-    return val === null
-      ? ''
-      : typeof val === 'object'
-        ? JSON.stringify(val, null, 2)
-        : String(val)
+    return val === null ? '' : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)
   },
   /**
    * 字符串转化为数字
@@ -116,7 +109,9 @@ const Util = {
   },
   // 检测两个变量是否相等
   looseEqual: function(a, b) {
-    if (a === b) { return true }
+    if (a === b) {
+      return true
+    }
     var isObjectA = Util.isObject(a)
     var isObjectB = Util.isObject(b)
     if (isObjectA && isObjectB) {
@@ -124,15 +119,21 @@ const Util = {
         var isArrayA = Array.isArray(a)
         var isArrayB = Array.isArray(b)
         if (isArrayA && isArrayB) {
-          return a.length === b.length && a.every(function(e, i) {
-            return Util.looseEqual(e, b[i])
-          })
+          return (
+            a.length === b.length &&
+            a.every(function(e, i) {
+              return Util.looseEqual(e, b[i])
+            })
+          )
         } else if (!isArrayA && !isArrayB) {
           var keysA = Object.keys(a)
           var keysB = Object.keys(b)
-          return keysA.length === keysB.length && keysA.every(function(key) {
-            return Util.looseEqual(a[key], b[key])
-          })
+          return (
+            keysA.length === keysB.length &&
+            keysA.every(function(key) {
+              return Util.looseEqual(a[key], b[key])
+            })
+          )
         } else {
           /* istanbul ignore next */
           return false
@@ -150,7 +151,9 @@ const Util = {
   // 检测arr数组中是否包含与val变量相等的项
   looseIndexOf: function(arr, val) {
     for (var i = 0; i < arr.length; i++) {
-      if (Util.looseEqual(arr[i], val)) { return i }
+      if (Util.looseEqual(arr[i], val)) {
+        return i
+      }
     }
     return -1
   },
@@ -202,7 +205,8 @@ const Util = {
   parseQueryString: function(url) {
     var str = url.split('?')[1] || ''
     var iterms = str.split('&')
-    var arr; var Json = {}
+    var arr
+    var Json = {}
     for (var i = 0; i < iterms.length; i++) {
       arr = iterms[i].split('=')
       if (arr[1]) {
@@ -217,11 +221,11 @@ const Util = {
     return Json
   },
   /**
- * 遍历对象自身可枚举的属性
- * @param {Object} objItem 要遍历的对象
- * @param {Function} func 迭代是调用的函数，传入3个参数：(value, key, object)
- * @author RR
- */
+   * 遍历对象自身可枚举的属性
+   * @param {Object} objItem 要遍历的对象
+   * @param {Function} func 迭代是调用的函数，传入3个参数：(value, key, object)
+   * @author RR
+   */
   forOwn: function(objItem, func) {
     const obj = objItem || {}
 
@@ -265,7 +269,9 @@ const Util = {
     if (!endTime) {
       endTime = new Date().getTime()
     }
-    if (!endTime || !type) { return }
+    if (!endTime || !type) {
+      return
+    }
     var end_date = new Date(endTime).getTime()
     var interval = 24 * 60 * 60 * 1000
     var i = 0
@@ -284,9 +290,9 @@ const Util = {
       var date = new Date(end_date)
       var y = date.getFullYear()
       var m = date.getMonth() + 1
-      m = m < 10 ? ('0' + m) : m
+      m = m < 10 ? '0' + m : m
       var d = date.getDate()
-      d = d < 10 ? ('0' + d) : d
+      d = d < 10 ? '0' + d : d
       end_date -= interval
       var str = `${y}-${m}-${d}`
 
@@ -303,7 +309,7 @@ const Util = {
     var script = document.createElement('script')
     script.type = 'text/javascript'
     script.src = url
-    if (typeof (callback) === 'function') {
+    if (typeof callback === 'function') {
       script.onload = script.onreadystatechange = function() {
         if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
           callback()
@@ -326,6 +332,26 @@ const Util = {
     }
 
     return token
+  },
+  base64ToFile(urlData) {
+    var arr = urlData.split(',')
+    var mime = arr[0].match(/:(.*?);/)[1] || 'image/png'
+    // 去掉url的头，并转化为byte
+    var bytes = window.atob(arr[1])
+    // 处理异常,将ascii码小于0的转换为大于0
+    var ab = new ArrayBuffer(bytes.length)
+    // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
+    var ia = new Uint8Array(ab)
+
+    for (var i = 0; i < bytes.length; i++) {
+      ia[i] = bytes.charCodeAt(i)
+    }
+    // return new Blob([ab], {
+    //   type: mime
+    // })
+    return new File([ab], 'preview.png', {
+      type: mime
+    })
   }
 }
 
