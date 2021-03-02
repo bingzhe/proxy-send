@@ -485,8 +485,8 @@ export default {
       if (!this.consigneeFrom.person) {
         this.consigneeFrom.person = info.person
       }
-      if (!this.consigneeFrom.telephone) {
-        this.consigneeFrom.telephone = info.telephone
+      if (!this.consigneeFrom.phone) {
+        this.consigneeFrom.phone = info.telephone
       }
     },
     async getPrice() {
