@@ -2,6 +2,9 @@
   <div class="app-container">
     <div class="title-wrapper">
       <baseinfo-title color="#FB7474" text="编辑商品" />
+      <div>
+        <el-button type="primary" @click="openSkuSearchDialog">编辑</el-button>
+      </div>
     </div>
 
     <div v-loading="loading" class="goodsinfo-wrapper" :element-loading-text="loadingTipText">
@@ -12,12 +15,7 @@
           <div class="opr-item clearfix">
             <div class="opr-lable">订购数量</div>
             <div class="opr-value">
-              <el-input-number
-                v-model="num"
-                controls-position="right"
-                :min="1"
-                :max="maxInventory"
-              />
+              <el-input-number v-model="num" controls-position="right" :min="1" :max="maxInventory" />
             </div>
             <div class="opr-suffix">件</div>
           </div>
@@ -40,12 +38,7 @@
         <div class="opr-value">
           <el-input v-model="ori_user_img" placeholder="请选择DIY图片" />
         </div>
-        <sl-upload
-          class="outline-uploader"
-          :type="4"
-          :get-file="true"
-          @get-file="handlerGetUploadFile"
-        >
+        <sl-upload class="outline-uploader" :type="4" :get-file="true" @get-file="handlerGetUploadFile">
           <el-button type="primary">选择</el-button>
         </sl-upload>
       </div>
@@ -53,25 +46,13 @@
       <div v-show="picSource === 1 || !showPicList" class="color-diy-wrapper clearfix">
         <div class="pic-list-wrapper">
           <div class="pic-list-title">选择边框颜色</div>
-          <div
-            v-for="(item, index) in opt_color_list"
-            :key="index"
-            class="pic-item"
-            :class="{'active': curPic === index}"
-            @click="handlerPicItemClick(item, index)"
-          >
+          <div v-for="(item, index) in opt_color_list" :key="index" class="pic-item" :class="{ active: curPic === index }" @click="handlerPicItemClick(item, index)">
             <el-button>{{ item.color_name }}</el-button>
           </div>
         </div>
         <div class="diy-content-wrapper">
           <div class="diy-designer-wrapper">
-            <diy-designer
-              ref="diyDesigner"
-              :height="picHeight"
-              :width="picWidth"
-              :radius="picRadius"
-              @preview-success="handlerPreviewSuc"
-            />
+            <diy-designer ref="diyDesigner" :height="picHeight" :width="picWidth" :radius="picRadius" @preview-success="handlerPreviewSuc" />
           </div>
           <div class="button-group">
             <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
@@ -99,10 +80,13 @@
       </div>
       <!-- </div> -->
     </el-dialog>
+
+    <SkuSearchDialog ref="skuSearchDialog" />
   </div>
 </template>
 
 <script>
+import SkuSearchDialog from './components/SkuSearchDialog'
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
 import SkuBaseinfo from './components/SkuBaseinfo'
 import MaterialList from './components/MaterialList'
@@ -119,7 +103,8 @@ export default {
     SkuBaseinfo,
     MaterialList,
     SlUpload,
-    DiyDesigner
+    DiyDesigner,
+    SkuSearchDialog
   },
 
   data() {
@@ -200,8 +185,12 @@ export default {
     })
   },
   mounted() {
-    this.goodsInfo.goods_id = this.$route.params.goods_id
-    this.getGoodsInfo()
+    const goodsId = this.$route.params.goods_id
+
+    if (goodsId !== 'placeholderGoods') {
+      this.goodsInfo.goods_id = this.$route.params.goods_id
+      this.getGoodsInfo()
+    }
 
     /**
      * 直接是商品编辑的时候，从vuex中同步下数据。
@@ -258,9 +247,7 @@ export default {
         this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${ori_user_img}`
 
         this.num = goods.num
-        this.curPic = (info.opt_color_list || []).findIndex(
-          (item) => item.color_name === goods.color
-        )
+        this.curPic = (info.opt_color_list || []).findIndex((item) => item.color_name === goods.color)
 
         console.log('goods', goods)
       }
@@ -373,9 +360,7 @@ export default {
         num: this.num,
         type_str: 'DIY',
         color: color.color_name,
-        goods_info_str: `${goodsInfo.raw_material}_${goodsInfo.brand || goodsInfo.brand_id}_${
-          goodsInfo.model
-        }_${color.color_name}_${goodsInfo.goods_id}`,
+        goods_info_str: `${goodsInfo.raw_material}_${goodsInfo.brand || goodsInfo.brand_id}_${goodsInfo.model}_${color.color_name}_${goodsInfo.goods_id}`,
         goods_img_url: `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=5&img_name=${this.preview_img}`,
         price: goodsInfo.price,
         goodsSumPrice: goodsInfo.price * this.num,
@@ -498,6 +483,9 @@ export default {
         e.returnValue = '关闭提示'
       }
       return '关闭提示'
+    },
+    openSkuSearchDialog() {
+      this.$refs.skuSearchDialog.show()
     }
   }
 }
@@ -510,6 +498,8 @@ export default {
   min-width: 1080px;
 }
 .title-wrapper {
+  display: flex;
+  justify-content: space-between;
   height: 54px;
   line-height: 54px;
   padding: 0 90px;

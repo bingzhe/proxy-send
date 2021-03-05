@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <el-row :gutter="10" class="order-status-wrapper clearfix">
-      <el-col v-for="(item, key) in statusList" :key="key" :span="2" class="status-item" :class="{ 'status-item--active': searchForm.order_status === item.value }">
+      <div v-for="(item, key) in statusList" :key="key" :span="2" class="status-item" :class="{ 'status-item--active': searchForm.order_status === item.value }">
         <div class="status-text" @click="handlerStatusCardClick(item)">
           {{ item.label }}
           (
           <span class="status-num">{{ item.num }}</span>
           )
         </div>
-      </el-col>
+      </div>
     </el-row>
     <div class="app-wrapper">
       <!-- search start -->
@@ -93,7 +93,7 @@
 
                   <el-button v-if="scope.row.order_status === ORDER_STATUS.AUDIT_WAIT" type="text" @click="openUndoDialogTip(scope.row.order_id)">撤销订单</el-button>
                   <el-button
-                    v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL || scope.row.order_status === ORDER_STATUS.REPLENISH_WAIT"
+                    v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL || scope.row.order_status === ORDER_STATUS.REPLENISH_WAIT || scope.row.order_status === ORDER_STATUS.REVOCAT"
                     type="text"
                     @click="handlerEditBtnClick(scope.row.order_id)"
                     >编辑订单</el-button
@@ -442,6 +442,8 @@ export default {
 .order-status-wrapper {
   // max-width: 1300px;
   .status-item {
+    float: left;
+    margin-right: 10px;
     .status-text {
       height: 64px;
       min-width: 120px;
