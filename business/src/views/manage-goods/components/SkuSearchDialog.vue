@@ -1,5 +1,5 @@
 <template>
-  <sl-dialog ref="skuSearchDialog" title="查询SKU" width="900px" top="8vh" @confirm="handleSkuSearchDialogConfirm" @close="handleSkuSearchDialogClose">
+  <sl-dialog ref="skuSearchDialog" title="查询SKU" width="900px" top="8vh" :validate="true" @confirm="handleSkuSearchDialogConfirm" @close="handleSkuSearchDialogClose">
     <div class="search-wrapper sku-search-wrapper">
       <el-form ref="skuSearchForm" class="su-search-form" :model="skuSearchForm" :inline="true">
         <el-form-item label="材质" prop="goods_material" label-width="70px">
@@ -30,8 +30,8 @@
 
       <div v-loading="skuTableLoading" element-loading-text="拼命加载中">
         <div class="table-content default-table-change sku-table">
-          <el-table ref="skuTable" :data="skuList" stripe height="350" class="sku-table" @selection-change="handleSkuSelectionChange">
-            <el-table-column type="selection" align="center" width="55" />
+          <el-table ref="skuTable" :data="skuList" highlight-current-row height="350" class="sku-table" @current-change="handleSkuSelect">
+            <el-table-column type="index" align="center" width="55" />
             <el-table-column align="center" prop="sku" label="sku" />
           </el-table>
         </div>
@@ -62,7 +62,9 @@ export default {
       skuList: [],
       skuTableLoading: false,
       skuMultipleSelection: [],
-      data_model_list: []
+      data_model_list: [],
+
+      selectRow: {} // 选中的项
     }
   },
   computed: {
@@ -80,17 +82,18 @@ export default {
       this.$refs.skuSearchForm.resetFields()
       this.skuList = []
       this.skuMultipleSelection = []
+      this.selectRow = {}
     },
     handleSkuSearchDialogConfirm() {
-      if (this.skuMultipleSelection.length === 0) return
+      // if (this.skuMultipleSelection.length === 0) return
 
-      const skuStr = this.skuMultipleSelection
-        .map((item) => {
-          return item.sku
-        })
-        .join('\n')
+      if (JSON.stringify(this.selectRow) === '{}') {
+        this.$message.error('还未选择商品')
+        return
+      }
 
-      this.pictureForm.sku_list_str = this.pictureForm.sku_list_str === '' ? skuStr : this.pictureForm.sku_list_str + '\n' + skuStr
+      this.$emit('select-goods', this.selectRow.goods_id)
+
       this.handleSkuSearchDialogClose()
       this.$refs.skuSearchDialog.hide()
     },
@@ -123,12 +126,16 @@ export default {
 
       this.skuList = resp.data.list
 
-      this.$nextTick(() => {
-        this.$refs.skuTable.toggleAllSelection()
-      })
+      // this.$nextTick(() => {
+      //   this.$refs.skuTable.toggleAllSelection()
+      // })
     },
     handleSkuSelectionChange(val) {
       this.skuMultipleSelection = val
+    },
+    handleSkuSelect(row) {
+      this.selectRow = row
+      console.log('select row', row)
     }
   }
 }

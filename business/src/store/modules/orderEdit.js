@@ -94,6 +94,7 @@ const mutations = {
 
     console.log('goodsList index_id', index)
 
+    state.goodsList[index].goods_id = payload.goods_id
     state.goodsList[index].ori_user_img = payload.ori_user_img
     state.goodsList[index].preview_img = payload.preview_img
     state.goodsList[index].prune_img = payload.prune_img

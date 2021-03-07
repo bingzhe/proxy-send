@@ -111,6 +111,11 @@ export default {
       // 给 canvas添加路径
       // this.canvas.clipPath = this.clipPath
     },
+    disposeCanvas() {
+      if (this.canvas) {
+        this.canvas.dispose()
+      }
+    },
     addOutlineImg(img) {
       return new Promise((resolve) => {
         this.canvas.setOverlayImage(img, () => {

@@ -81,7 +81,7 @@
       <!-- </div> -->
     </el-dialog>
 
-    <SkuSearchDialog ref="skuSearchDialog" />
+    <SkuSearchDialog ref="skuSearchDialog" @select-goods="handleSelectGoods" />
   </div>
 </template>
 
@@ -486,6 +486,60 @@ export default {
     },
     openSkuSearchDialog() {
       this.$refs.skuSearchDialog.show()
+    },
+    async handleSelectGoods(goodsid) {
+      // console.log('goodsid', goodsid)
+      this.ori_user_img = ''
+      this.goodsInfo.goods_id = goodsid
+      this.$refs.diyDesigner.disposeCanvas()
+      const data = {
+        opr: 'get_goods_info',
+        goods_id: this.goodsInfo.goods_id
+      }
+
+      const resp = await goodsGet(data)
+      console.log('商品信息 res=>', resp)
+
+      if (resp.ret !== 0) return
+
+      const info = resp.data.info
+
+      this.goodsInfo.goods_name = info.goods_name
+      this.goodsInfo.raw_material = info.raw_material
+      this.goodsInfo.brand = info.brand_name
+      this.goodsInfo.model = info.model_name
+      this.goodsInfo.price = info.price
+      this.goodsInfo.remark = info.remark
+      this.goodsInfo.brand_id = info.brand
+
+      this.picHeight = (info.img_print_param || {}).height
+      this.picWidth = (info.img_print_param || {}).width
+      this.picRadius = (info.img_print_param || {}).radius_adjius
+
+      this.opt_color_list = (info.opt_color_list || []).map((item, index) => {
+        item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${item.color_img}`
+        item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${item.outline_img}`
+
+        if (this.curPic === index) {
+          this.color_img_url = item.color_img_url
+          this.outline_img_url = item.outline_img_url
+        }
+
+        return item
+      })
+
+      this.maxInventory = ((this.opt_color_list || [])[this.curPic] || {}).inventory
+
+      this.$nextTick(async () => {
+        this.$refs.diyDesigner.init()
+
+        /**
+         * 默认选中第一张地图
+         */
+        await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+        await this.$refs.diyDesigner.addColorImg(this.color_img_url)
+        // console.log(this.outline_img_url)
+      })
     }
   }
 }
