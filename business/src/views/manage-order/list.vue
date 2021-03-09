@@ -69,6 +69,9 @@
             </span>
             <span>订单审核列表</span>
           </div>
+          <div class="add-button-group">
+            <el-button class="goods-add btn-h-38" type="primary" @click="openHandleOrderDialog">提交</el-button>
+          </div>
         </div>
 
         <div class="table-content default-table-change">
@@ -163,9 +166,12 @@
       @confirm="deleteOrderOpr"
       @close="handlerDeleteDialogClose"
     />
+
+    <HandleOrderDialog ref="handleOrderDialog" :selectOrderIdList="selectOrderIdList" />
   </div>
 </template>
 <script>
+import HandleOrderDialog from './components/HandleOrderDialog'
 import { orderGet, orderSave } from '@/api/api'
 import { ORDER_STATUS, pickerOptions } from '@/config/cfg'
 import DialogTip from '@/components/Dialog/DialogTip'
@@ -173,7 +179,8 @@ import moment from 'moment'
 
 export default {
   components: {
-    DialogTip
+    DialogTip,
+    HandleOrderDialog
   },
 
   data() {
@@ -261,6 +268,9 @@ export default {
   computed: {
     pageTotal() {
       return Math.ceil(this.total / this.listQuery.limit)
+    },
+    selectOrderIdList() {
+      return this.multipleSelection.map((item) => item.order_id)
     }
   },
   mounted() {
@@ -426,6 +436,16 @@ export default {
     },
     handlerEditBtnClick(id) {
       this.$router.push({ path: `/manage-order/tborderedit/${id}` })
+    },
+    openHandleOrderDialog() {
+      if (this.selectOrderIdList.length === 0) {
+        this.$message({
+          message: '请选择要处理的订单',
+          type: 'warning'
+        })
+        return
+      }
+      this.$refs.handleOrderDialog.show()
     }
   }
 }
