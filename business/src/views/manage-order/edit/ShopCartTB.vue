@@ -15,7 +15,7 @@
               </template>
             </el-table-column>
             <el-table-column prop="type_str" label="商品类型" min-width="50" />
-            <el-table-column prop="goods_info_str" label="材质_品牌_型号_边框_商品编号" width="300" />
+            <el-table-column prop="sku" label="sku" width="300" />
             <el-table-column prop="num" label="数量" width="150">
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.num" :min="1" size="small" @change="getPrice" />

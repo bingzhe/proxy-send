@@ -161,11 +161,12 @@
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column prop="opr" label="操作" min-width="45" align="center">
+            <el-table-column prop="opr" label="操作" min-width="55" align="center">
               <template slot-scope="scope">
                 <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopSaveClick(scope.row)">保存</el-button>
-                <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopCancelClick(scope.row)">取消</el-button>
                 <el-button v-if="!scope.row.isEdit" class="text-btn edit-btn" type="text" @click="handleTshopEditClick(scope.row)">编辑</el-button>
+                <el-button class="text-btn edit-btn" type="text" @click="handleSetParam(scope.row.tshop_id)">配置</el-button>
+                <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopCancelClick(scope.row)">取消</el-button>
                 <el-button v-if="!scope.row.isEdit" class="text-btn del-btn" type="text" @click="handleDelTshopClick(scope.row)">删除</el-button>
               </template>
             </el-table-column>
@@ -173,6 +174,8 @@
         </el-form>
       </div>
     </div>
+
+    <ShopParam :paramList="paramList" :oprtshopId="oprtshopId" :paramTableLoading="paramTableLoading" @suc-save="handleParamSave" />
 
     <div class="gray-border-bottom" />
 
@@ -185,13 +188,15 @@
 
 <script>
 import BaseinfoTitle from '@/components/BaseinfoTitle/BaseinfoTitle'
+import ShopParam from './ShopParam'
 import { businessSave, businessGet, tshopSave, tshopGet, warehouseGet } from '@/api/api'
 import { BUSINESS_STATUS, CANUSE_DESIGNERDIV } from '@/config/cfg'
 import { mapState } from 'vuex'
 
 export default {
   components: {
-    BaseinfoTitle
+    BaseinfoTitle,
+    ShopParam
   },
   data() {
     const validatePass = (rule, value, callback) => {
@@ -267,7 +272,12 @@ export default {
         tshopList: []
       },
       tshopTableLoading: false,
-      warehouseList: []
+      warehouseList: [],
+
+      //店铺参数配置
+      paramList: [],
+      paramTableLoading: false,
+      oprtshopId: ''
     }
   },
   computed: {
@@ -392,7 +402,7 @@ export default {
         closeOnClickModal: false,
         closeOnPressEscape: false
       })
-        .then(async() => {
+        .then(async () => {
           const data = {
             opr: 'delete_tshop',
             tshop_id: row.tshop_id // 淘宝店铺ID
@@ -480,6 +490,23 @@ export default {
       this.tshopTableLoading = false
 
       this.warehouseList = resp.data.list || []
+    },
+    async handleSetParam(tshop_id) {
+      const data = {
+        opr: 'get_tshop_cfg_list',
+        tshop_id: tshop_id // 参数ID
+      }
+      this.paramTableLoading = true
+
+      const resp = await tshopGet(data)
+      if (resp.ret !== 0) return
+
+      this.paramTableLoading = false
+      this.paramList = resp.data.list || []
+      this.oprtshopId = tshop_id
+    },
+    handleParamSave() {
+      this.handleSetParam(this.oprtshopId)
     }
   }
 }

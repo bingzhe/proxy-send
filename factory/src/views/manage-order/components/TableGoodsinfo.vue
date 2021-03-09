@@ -12,7 +12,7 @@
       </el-table-column>
       <el-table-column prop="goods_name" label="商品名称" min-width="160" align="center" />
       <el-table-column prop="type_str" label="商品类型" min-width="80" align="center" />
-      <el-table-column prop="desc_str" label="材质_品牌_型号_边框_商品编号" min-width="320" align="center" />
+      <el-table-column prop="sku" label="sku" min-width="320" align="center" />
       <el-table-column prop="color" label="颜色分类" min-width="80" align="center" />
       <el-table-column prop="num" label="数量" min-width="80" align="center" />
       <el-table-column prop="warehouse_name" label="发货仓库" min-width="80" align="center" />
