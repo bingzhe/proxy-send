@@ -100,6 +100,7 @@ export default {
       const data = {
         opr: 'save_tshop_cfg',
         tshop_id: this.oprtshopId,
+        cfg_id: this.cfgEditForm.cfg_id,
         cfg_name: this.cfgEditForm.cfg_name, // 参数名称
         cfg_value: this.cfgEditForm.cfg_value // 参数值(json格式串)
       }
