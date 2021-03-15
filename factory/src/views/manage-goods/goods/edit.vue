@@ -2,7 +2,9 @@
   <div id="goods-edit-page" class="app-container">
     <div class="title-wrapper">
       <span class="title-text">{{ goods_id ? '编辑商品' : '添加新商品' }}</span>
-      <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
+      <el-button class="btn-bd-primary" @click="handlerGoBackClick">
+        返回
+      </el-button>
     </div>
     <div class="baseinfo-form-wrapper">
       <div class="baseinfo-title-wrapper">
@@ -525,7 +527,9 @@
     <div class="gray-border-bottom" />
 
     <div class="button-group-wrapper">
-      <el-button class="btn-h-44-w-100 btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
+      <el-button class="btn-h-44-w-100 btn-bd-primary" @click="handlerGoBackClick">
+        取消
+      </el-button>
       <el-button class="btn-h-44-w-100" type="primary" @click="handlerSaveBtnClick">{{
         goods_id ? '保存' : '提交'
       }}</el-button>

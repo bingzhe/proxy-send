@@ -4,7 +4,9 @@
       <div class="order-title-wrapper">
         <div class="order-title-left">
           <div class="order-status-wrapper">
-            <div class="order-status">订单信息</div>
+            <div class="order-status">
+              订单信息
+            </div>
           </div>
         </div>
         <div class="btn-group-wrapper">
@@ -12,8 +14,12 @@
             class="btn-bd-primary"
             @click="openChangeAddressDialog"
           >修改收货人信息</el-button>
-          <el-button class="btn-bd-primary" @click="oprAdjustFeeDialog">调整订单金额</el-button>
-          <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
+          <el-button class="btn-bd-primary" @click="oprAdjustFeeDialog">
+            调整订单金额
+          </el-button>
+          <el-button class="btn-bd-primary" @click="handlerGoBackClick">
+            返回
+          </el-button>
         </div>
       </div>
       <!-- 基本信息 -->
@@ -67,7 +73,9 @@
       </div>-->
     </div>
     <div v-loading="tableLoading" class="audit-wrapper" element-loading-text="拼命加载中">
-      <div class="audit-title">审单处理</div>
+      <div class="audit-title">
+        审单处理
+      </div>
       <div class="audit-form-wrapper">
         <el-form ref="auditForm" :model="auditForm" label-width="107px" :rules="auditFormRules">
           <el-form-item label="结论：" prop="pass">
@@ -76,7 +84,9 @@
               :disabled="order_status === ORDER_STATUS.DELIVERY_WAIT"
               :label="1"
             >通过</el-radio>
-            <el-radio v-model="auditForm.pass" :label="0">不通过</el-radio>
+            <el-radio v-model="auditForm.pass" :label="0">
+              不通过
+            </el-radio>
           </el-form-item>
           <el-form-item label="原因：" prop="remark">
             <el-input
@@ -91,8 +101,12 @@
         </el-form>
       </div>
       <div class="audit-opr">
-        <el-button class="btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
-        <el-button type="primary" @click="handlerAuditOprClick">提交</el-button>
+        <el-button class="btn-bd-primary" @click="handlerGoBackClick">
+          取消
+        </el-button>
+        <el-button type="primary" @click="handlerAuditOprClick">
+          提交
+        </el-button>
         <el-button
           class="btn-bd-primary"
           @click="handlerAuditOprAndNextClick"

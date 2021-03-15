@@ -168,7 +168,9 @@
           </el-table-column>
           <el-table-column prop="num" label="操作" width="60" align="center">
             <template slot-scope="scope">
-              <el-button class="text-btn" type="text" @click="handleDelPriceClick(scope.$index)">删除</el-button>
+              <el-button class="text-btn" type="text" @click="handleDelPriceClick(scope.$index)">
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>

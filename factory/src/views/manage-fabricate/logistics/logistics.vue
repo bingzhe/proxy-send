@@ -57,7 +57,9 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -76,7 +78,9 @@
           <span>物流单列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="goods-add btn-h-38" type="primary" @click="handlerDeliverSucClick">发货成功</el-button>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handlerDeliverSucClick">
+            发货成功
+          </el-button>
           <el-button
             v-if="multipleSelectionLength === 0"
             class="goods-add btn-h-38"
@@ -90,7 +94,9 @@
           <a :href="exportOrderAllUrl" target="_black">
             <el-button class="goods-add btn-h-38" type="primary">全部导出</el-button>
           </a>
-          <el-button class="goods-add btn-h-38" type="primary" @click="handlerImportClick">导入</el-button>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handlerImportClick">
+            导入
+          </el-button>
           <input
             ref="uploadFile"
             style="display:none"
@@ -116,8 +122,12 @@
           <el-table-column prop="status_txt" label="物流单状态" min-width="60" />
           <el-table-column prop="opr" label="操作" width="200" align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)">订单详情</el-button>
-              <el-button type="text" @click="openChangeDelivery(scope.row)">修改物流单号</el-button>
+              <el-button type="text" @click="goSearchOrderinfo(scope.row.order_id)">
+                订单详情
+              </el-button>
+              <el-button type="text" @click="openChangeDelivery(scope.row)">
+                修改物流单号
+              </el-button>
             </template>
           </el-table-column>
         </el-table>

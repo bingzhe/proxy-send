@@ -14,8 +14,12 @@
       <slot />
     </div>
     <div v-if="showFooter" slot="footer" class="dialog-footer">
-      <el-button class="btn-bd-primary" @click="hide">{{ cancelText }}</el-button>
-      <el-button type="primary" @click="confirm">{{ confirmText }}</el-button>
+      <el-button class="btn-bd-primary" @click="hide">
+        {{ cancelText }}
+      </el-button>
+      <el-button type="primary" @click="confirm">
+        {{ confirmText }}
+      </el-button>
     </div>
   </el-dialog>
 </template>

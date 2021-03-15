@@ -7,7 +7,9 @@
           <el-input v-model.trim="searchForm.cfg_name" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -41,7 +43,9 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" min-width="60" align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="openCfgEditDialog(scope.row)">编辑</el-button>
+              <el-button type="text" @click="openCfgEditDialog(scope.row)">
+                编辑
+              </el-button>
             </template>
           </el-table-column>
         </el-table>

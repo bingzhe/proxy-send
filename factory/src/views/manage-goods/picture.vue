@@ -24,7 +24,9 @@
           <el-input v-model="searchForm.material_name" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -94,7 +96,9 @@
                 class="btn-green"
                 type="text"
               >停用</el-button>-->
-              <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
+              <el-button type="text" @click="handlerMaterialEditClick(scope.row)">
+                编辑
+              </el-button>
               <el-button
                 class="btn-red"
                 type="text danger"
@@ -240,7 +244,9 @@
               <el-input v-model.trim="skuSearchForm.goods_name" placeholder="请输入" />
             </el-form-item>
             <el-form-item>
-              <el-button class="btn-h-38" type="primary" @click="getSkuList">查询</el-button>
+              <el-button class="btn-h-38" type="primary" @click="getSkuList">
+                查询
+              </el-button>
             </el-form-item>
           </el-form>
 

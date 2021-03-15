@@ -43,7 +43,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick"> 查询 </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -62,30 +62,30 @@
           <span>订单审核列表</span>
         </div>
         <div class="add-button-group">
-          <el-button
-            class="goods-add btn-h-38"
-            type="primary"
-            @click="handleToggleFreeze"
-          >冻结/解冻</el-button>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handleToggleFreeze">
+            冻结/解冻
+          </el-button>
           <el-button
             class="goods-add btn-h-38"
             type="primary"
             @click="handleOpenSelectIdAuditDialog"
-          >审核</el-button>
+          >
+            审核
+          </el-button>
           <el-button
             class="goods-add btn-h-38"
             type="primary"
             @click="handleOpenQueryOrderAuditDialog"
-          >全部审核</el-button>
+          >
+            全部审核
+          </el-button>
 
           <!-- <el-button class="goods-add btn-h-38" type="primary" @click="handlerMuAuditClick"
             >审核通过</el-button
           > -->
-          <el-button
-            class="goods-add btn-h-38"
-            type="primary"
-            @click="hanldeQmClick"
-          >抓单</el-button>
+          <el-button class="goods-add btn-h-38" type="primary" @click="hanldeQmClick">
+            抓单
+          </el-button>
         </div>
       </div>
 
@@ -145,13 +145,17 @@
                 v-if="ORDER_STATUS.ERROR === scope.row.order_status"
                 type="text"
                 @click="handleErrorOrder(scope.row.order_id)"
-              >处理</el-button>
+              >
+                处理
+              </el-button>
               <el-button
                 v-if="ORDER_STATUS.ERROR === scope.row.order_status"
                 type="text"
                 class="btn-red"
                 @click="handleDelErrorDialog(scope.row.order_id)"
-              >删除</el-button>
+              >
+                删除
+              </el-button>
               <el-button
                 v-if="ORDER_STATUS.ERROR !== scope.row.order_status"
                 type="text"
@@ -172,12 +176,12 @@
               <span class="num-text"> {{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
             </span>
           </div>
-          <!-- :page-sizes="[10, 20, 40]" -->
           <el-pagination
             class="sl-pagination"
             :current-page.sync="listQuery.page"
-            :page-size="audit_list_page_limit"
-            layout="prev, pager, next, jumper"
+            :page-size="listQuery.limit"
+            :page-sizes="[10, 20, 50, 100, 500]"
+            layout="prev,pager, next, sizes,jumper"
             :total="total"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -203,8 +207,8 @@
         label-width="130px"
       >
         <el-form-item label="操作" prop="freeze">
-          <el-radio v-model="freezeDialogForm.freeze" :label="1">冻结</el-radio>
-          <el-radio v-model="freezeDialogForm.freeze" :label="0">解冻</el-radio>
+          <el-radio v-model="freezeDialogForm.freeze" :label="1"> 冻结 </el-radio>
+          <el-radio v-model="freezeDialogForm.freeze" :label="0"> 解冻 </el-radio>
         </el-form-item>
         <el-form-item label="原因" prop="remark">
           <el-input
@@ -235,8 +239,8 @@
         label-width="130px"
       >
         <el-form-item label="操作" prop="pass">
-          <el-radio v-model="selectIdAuditForm.pass" :label="1">审核通过</el-radio>
-          <el-radio v-model="selectIdAuditForm.pass" :label="0">审核不通过</el-radio>
+          <el-radio v-model="selectIdAuditForm.pass" :label="1"> 审核通过 </el-radio>
+          <el-radio v-model="selectIdAuditForm.pass" :label="0"> 审核不通过 </el-radio>
         </el-form-item>
         <el-form-item label="原因" prop="remark">
           <el-input
@@ -267,8 +271,8 @@
         label-width="130px"
       >
         <el-form-item label="操作" prop="pass">
-          <el-radio v-model="queryOrderAuditForm.pass" :label="1">审核通过</el-radio>
-          <el-radio v-model="queryOrderAuditForm.pass" :label="0">审核不通过</el-radio>
+          <el-radio v-model="queryOrderAuditForm.pass" :label="1"> 审核通过 </el-radio>
+          <el-radio v-model="queryOrderAuditForm.pass" :label="0"> 审核不通过 </el-radio>
         </el-form-item>
         <el-form-item label="原因" prop="remark">
           <el-input
@@ -294,7 +298,9 @@
     >
       <div class="error-dialog-item">
         <div class="label">订单号</div>
-        <div class="value">{{ handle_orderid }}</div>
+        <div class="value">
+          {{ handle_orderid }}
+        </div>
       </div>
       <div class="error-dialog-item">
         <div class="label">异常说明</div>
@@ -303,6 +309,10 @@
     </sl-dialog>
 
     <DialogOrderFromQm ref="dialogOrderFromQm" />
+
+    <DialogAllAudit ref="dialogAllAudit" :searchForm="searchForm" />
+
+    <DialogSelectAudit ref="dialogSelectAudit" :multipleSelection="multipleSelection" />
   </div>
 </template>
 <script>
@@ -312,11 +322,15 @@ import { ORDER_STATUS, pickerOptions } from '@/config/cfg'
 import SlDialog from '@/components/Dialog/Dialog'
 import { mapState } from 'vuex'
 import DialogOrderFromQm from './components/DialogOrderFromQm'
+import DialogAllAudit from './components/DialogAllAudit'
+import DialogSelectAudit from './components/DialogSelectAudit'
 
 export default {
   components: {
     SlDialog,
-    DialogOrderFromQm
+    DialogOrderFromQm,
+    DialogAllAudit,
+    DialogSelectAudit
   },
   data() {
     return {
@@ -341,7 +355,7 @@ export default {
       total: 100, // 分页总条数
       listQuery: {
         page: 1,
-        limit: 20
+        limit: 50
       },
 
       orderStausOptions: [
@@ -403,10 +417,14 @@ export default {
       audit_list_page_limit: (state) => state.user.audit_list_page_limit
     }),
     pageTotal() {
-      return Math.ceil(this.total / this.audit_list_page_limit)
+      return Math.ceil(this.total / this.listQuery.limit)
     }
   },
   mounted() {
+    const pageSize = window.localStorage.getItem('auditListPage')
+    if (pageSize) {
+      this.listQuery.limit = Number(pageSize)
+    }
     this.getList()
     document.addEventListener('keydown', this.handleKeydownEvent, false)
   },
@@ -423,7 +441,7 @@ export default {
       const data = {
         opr: 'get_audit_order_list',
         page_no: this.listQuery.page,
-        page_size: this.audit_list_page_limit
+        page_size: this.listQuery.limit
       }
 
       // 订单状态
@@ -485,7 +503,8 @@ export default {
     },
     handleSizeChange(val) {
       this.listQuery.page = 1
-      this.listQuery.audit_list_page_limit = val
+      this.listQuery.limit = val
+      window.localStorage.setItem('auditListPage', val)
       this.getList()
     },
     handleCurrentChange(val) {
@@ -606,8 +625,8 @@ export default {
         })
         return
       }
-
-      this.$refs.selectIdAuditDialog.show()
+      this.$refs.dialogSelectAudit.show()
+      // this.$refs.selectIdAuditDialog.show()
     },
 
     handleSelectIdAuditDialogClose() {
@@ -644,7 +663,8 @@ export default {
       })
     },
     handleOpenQueryOrderAuditDialog() {
-      this.$refs.queryOrderAuditDialog.show()
+      // this.$refs.queryOrderAuditDialog.show()
+      this.$refs.dialogAllAudit.show()
     },
     handleQueryOrderAuditDialogClose() {
       this.$refs.queryOrderAuditForm.resetFields()
@@ -822,6 +842,16 @@ export default {
 
   /deep/ a {
     color: #2584f9;
+  }
+}
+
+.sl-pagination {
+  /deep/ .el-select .el-input .el-input__inner {
+    height: 28px;
+    line-height: 28px;
+  }
+  /deep/ .el-pagination__jump {
+    margin-left: 8px;
   }
 }
 </style>

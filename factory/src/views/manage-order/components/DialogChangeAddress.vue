@@ -10,7 +10,9 @@
     @confirm="handlerDialogConfirm"
     @open="handlerDialogOpen"
   >
-    <div class="change-tip">* 修改收货人信息将会作废已打印物流单，请谨慎修改。</div>
+    <div class="change-tip">
+      * 修改收货人信息将会作废已打印物流单，请谨慎修改。
+    </div>
 
     <el-form
       ref="changeAddressForm"
@@ -45,8 +47,12 @@
       <br>
       <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
         <el-input v-model="changeAddressForm.address" :rows="3" type="textarea" placeholder="请输入" />
-        <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
-        <el-button class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
+        <div class="gray-tip">
+          * 自动拆解不正确时请手工填写以下信息
+        </div>
+        <el-button class="split-btn" type="primary" @click="autoSplit">
+          自动拆解
+        </el-button>
       </el-form-item>
       <br>
       <el-form-item label="省份" prop="province" label-width="130px">

@@ -15,8 +15,12 @@
       label-width="130px"
     >
       <el-form-item label="调整方式" prop="way">
-        <el-radio v-model="adjustOrderFeeForm.way" :label="1">减免</el-radio>
-        <el-radio v-model="adjustOrderFeeForm.way" :label="2">增加</el-radio>
+        <el-radio v-model="adjustOrderFeeForm.way" :label="1">
+          减免
+        </el-radio>
+        <el-radio v-model="adjustOrderFeeForm.way" :label="2">
+          增加
+        </el-radio>
       </el-form-item>
       <el-form-item label="调整金额" prop="fee">
         <el-input

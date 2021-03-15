@@ -4,14 +4,22 @@
       <el-input v-model="oriname" readonly></el-input>
 
       <el-upload :show-file-list="false" :http-request="upload" :action="url">
-        <el-button class="select-file-btn" type="primary" :disabled="showProgress">选择</el-button>
+        <el-button class="select-file-btn" type="primary" :disabled="showProgress">
+          选择
+        </el-button>
       </el-upload>
     </div>
     <div class="handle-file-process-text" v-html="progressContent" />
     <div class="footer-content">
-      <el-button type="primary" :disabled="disabledButton" @click="starHandle">开始处理</el-button>
-      <el-button type="primary" @click="stopHandleFile">中止处理</el-button>
-      <el-button type="primary" :disabled="disabledButton" @click="handleCloseClick">关闭</el-button>
+      <el-button type="primary" :disabled="disabledButton" @click="starHandle">
+        开始处理
+      </el-button>
+      <el-button type="primary" @click="stopHandleFile">
+        中止处理
+      </el-button>
+      <el-button type="primary" :disabled="disabledButton" @click="handleCloseClick">
+        关闭
+      </el-button>
     </div>
     <div v-if="showProgress" class="progress-wrapper">
       <el-progress :text-inside="true" :stroke-width="36" :percentage="progressPercent"></el-progress>
