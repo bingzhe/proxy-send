@@ -1,10 +1,21 @@
 <template>
-  <sl-dialog ref="handleOrder" title="提交订单" :showFooter="false" :showClose="false" :closeOnClickModal="false" :closeOnPressEscape="false">
+  <sl-dialog
+    ref="handleOrder"
+    title="提交订单"
+    :showFooter="false"
+    :showClose="false"
+    :closeOnClickModal="false"
+    :closeOnPressEscape="false"
+  >
     <div class="handle-file-process-text" v-html="progressContent"></div>
     <div class="footer-content">
       <el-button type="primary" :disabled="disabledButton" @click="handleStart">开始处理</el-button>
       <el-button type="primary" @click="stopHandle">中止处理</el-button>
-      <el-button type="primary" :disabled="disabledButton" @click="handleCloseClick">关闭</el-button>
+      <el-button
+        type="primary"
+        :disabled="disabledButton"
+        @click="handleCloseClick"
+      >关闭</el-button>
     </div>
   </sl-dialog>
 </template>
@@ -56,7 +67,9 @@ export default {
       const data = {
         opr: 'create_task',
         type: 11,
-        order_id_list: this.selectOrderIdList
+        data: {
+          order_id_list: this.selectOrderIdList
+        }
       }
 
       console.log('订单处理 req=>', data)

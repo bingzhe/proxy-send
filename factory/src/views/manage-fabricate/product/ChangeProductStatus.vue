@@ -8,7 +8,9 @@
     @open="handlerDialogOpen"
     @confirm="handlerDialogConfirm"
   >
-    <div class="change-tip">* 调整生产单状态有可能导致重复生产，请谨慎操作。</div>
+    <div class="change-tip">
+      * 调整生产单状态有可能导致重复生产，请谨慎操作。
+    </div>
     <el-form ref="changeStatusForm" :model="changeForm" label-width="130px">
       <el-form-item label="状态" prop="status_txt">
         <el-select v-model="changeForm.status_txt" placeholder="请选择">

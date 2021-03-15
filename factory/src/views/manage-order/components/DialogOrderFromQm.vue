@@ -20,9 +20,15 @@
 
     <div class="handle-file-process-text" v-html="progressContent" />
     <div class="footer-content">
-      <el-button type="primary" :disabled="disabledButton" @click="starHandle">开始抓单</el-button>
-      <el-button type="primary" @click="stopHandleFile">中止抓单</el-button>
-      <el-button type="primary" :disabled="disabledButton" @click="handleCloseClick">关闭</el-button>
+      <el-button type="primary" :disabled="disabledButton" @click="starHandle">
+        开始抓单
+      </el-button>
+      <el-button type="primary" @click="stopHandleFile">
+        中止抓单
+      </el-button>
+      <el-button type="primary" :disabled="disabledButton" @click="handleCloseClick">
+        关闭
+      </el-button>
     </div>
   </sl-dialog>
 </template>

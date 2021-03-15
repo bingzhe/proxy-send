@@ -13,7 +13,9 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handlerSearchClick">搜索</el-button>
+          <el-button type="primary" @click="handlerSearchClick">
+            搜索
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -38,13 +40,17 @@
         <!-- 搜索前显示 -->
         <div v-if="displayStatus === 1" class="search-before-wraper">
           <img class="deliver-icon" src="@/assets/images/deliver.png">
-          <div class="deliver-tip">请手工输入物流单号或使用扫描枪查找发货商品</div>
+          <div class="deliver-tip">
+            请手工输入物流单号或使用扫描枪查找发货商品
+          </div>
         </div>
 
         <!-- 没有找打订单号 -->
         <div v-if="displayStatus === 2" class="no-order-wrapper">
           <img class="no-order-icon" src="@/assets/images/deliver-no-search.png">
-          <div class="no-order-tip">无效物流单，未找到关联订单</div>
+          <div class="no-order-tip">
+            无效物流单，未找到关联订单
+          </div>
         </div>
 
         <!-- 审核未通过 -->
@@ -53,7 +59,9 @@
           class="invalid-order-wrapper"
         >
           <img class="invalid-order-icon" src="@/assets/images/invalid.png">
-          <div class="invalid-order-tip">订单审核未通过</div>
+          <div class="invalid-order-tip">
+            订单审核未通过
+          </div>
         </div>
 
         <!-- 已作废-->
@@ -62,7 +70,9 @@
           class="invalid-order-wrapper"
         >
           <img class="invalid-order-icon" src="@/assets/images/invalid.png">
-          <div class="invalid-order-tip">该物流单已作废</div>
+          <div class="invalid-order-tip">
+            该物流单已作废
+          </div>
         </div>
 
         <div v-if="displayStatus === 3 && showGoodsList" class="goods-info-content">

@@ -33,7 +33,9 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>

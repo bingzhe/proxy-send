@@ -9,8 +9,12 @@
   >
     <div class="handle-file-process-text" v-html="progressContent"></div>
     <div class="footer-content">
-      <el-button type="primary" :disabled="disabledButton" @click="handleStartExport">开始导出</el-button>
-      <el-button type="primary" @click="stopHandle">中止处理</el-button>
+      <el-button type="primary" :disabled="disabledButton" @click="handleStartExport">
+        开始导出
+      </el-button>
+      <el-button type="primary" @click="stopHandle">
+        中止处理
+      </el-button>
       <el-button
         type="primary"
         :disabled="disabledButton"

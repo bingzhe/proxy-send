@@ -28,8 +28,12 @@
       label-width="134px"
     >
       <el-form-item label="处理结果" prop="pass">
-        <el-radio v-model="rechargeForm.pass" :label="1">通过</el-radio>
-        <el-radio v-model="rechargeForm.pass" :label="0">未通过</el-radio>
+        <el-radio v-model="rechargeForm.pass" :label="1">
+          通过
+        </el-radio>
+        <el-radio v-model="rechargeForm.pass" :label="0">
+          未通过
+        </el-radio>
       </el-form-item>
       <el-form-item label="充值金额" prop="delivery_number">
         <el-input

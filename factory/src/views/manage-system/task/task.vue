@@ -14,7 +14,9 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -29,7 +31,9 @@
           <span>任务列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="btn-h-38" type="danger" @click="handleMuDelClick">删除</el-button>
+          <el-button class="btn-h-38" type="danger" @click="handleMuDelClick">
+            删除
+          </el-button>
         </div>
       </div>
 
@@ -50,7 +54,9 @@
           <el-table-column prop="opr_person" label="操作人" min-width="60" />
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
-              <el-button v-if="scope.row.task_status === 1 || scope.row.task_status === 2" type="text" @click="handleStopClick(scope.row)">中止</el-button>
+              <el-button v-if="scope.row.task_status === 1 || scope.row.task_status === 2" type="text" @click="handleStopClick(scope.row)">
+                中止
+              </el-button>
               <el-button
                 v-if="scope.row.task_status === 3 || scope.row.task_status === 4 || scope.row.task_status === 5"
                 class="btn-red"

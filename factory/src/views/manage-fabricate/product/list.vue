@@ -70,7 +70,9 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+            <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+              查询
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -89,7 +91,9 @@
             <span>生产单列表</span>
           </div>
           <div class="add-button-group">
-            <el-button class="goods-add btn-h-38" type="primary" @click="handlerDownloadClick">下载</el-button>
+            <el-button class="goods-add btn-h-38" type="primary" @click="handlerDownloadClick">
+              下载
+            </el-button>
             <el-button
               class="goods-add btn-h-38"
               type="primary"
@@ -114,8 +118,12 @@
             <el-table-column prop="status_txt" label="生产单状态" min-width="60" />
             <el-table-column prop="opr" label="操作" width="200" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="openProductInfo(scope.row)">生产单详情</el-button>
-                <el-button type="text" @click="handlerChangeStatusClick(scope.row)">修改状态</el-button>
+                <el-button type="text" @click="openProductInfo(scope.row)">
+                  生产单详情
+                </el-button>
+                <el-button type="text" @click="handlerChangeStatusClick(scope.row)">
+                  修改状态
+                </el-button>
               </template>
             </el-table-column>
           </el-table>

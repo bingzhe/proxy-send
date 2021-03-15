@@ -7,7 +7,9 @@
           <el-input v-model.trim="searchForm.role_name" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -26,7 +28,9 @@
           <span>已有角色列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddRowlClick">新增</el-button>
+          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddRowlClick">
+            新增
+          </el-button>
         </div>
       </div>
 
@@ -46,8 +50,12 @@
           </el-table-column>
           <el-table-column prop="opr" label="操作" width="120" align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="openRoleEditDialog(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text" @click="handlerDelClick(scope.row)">删除</el-button>
+              <el-button type="text" @click="openRoleEditDialog(scope.row)">
+                编辑
+              </el-button>
+              <el-button class="btn-red" type="text" @click="handlerDelClick(scope.row)">
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>

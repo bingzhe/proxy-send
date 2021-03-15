@@ -33,7 +33,9 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -52,7 +54,9 @@
           <span>充值申请</span>
         </div>
         <div class="add-button-group">
-          <el-button class="add-btn" type="primary" @click="openAdjustBalanceDialog">调整账户余额</el-button>
+          <el-button class="add-btn" type="primary" @click="openAdjustBalanceDialog">
+            调整账户余额
+          </el-button>
         </div>
       </div>
 
@@ -73,7 +77,9 @@
           <el-table-column prop="status_str" label="状态" min-width="60" />
           <el-table-column prop="opr" label="操作" width="80" align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="openHandlerRechargeApply(scope.row)">受理</el-button>
+              <el-button type="text" @click="openHandlerRechargeApply(scope.row)">
+                受理
+              </el-button>
             </template>
           </el-table-column>
         </el-table>

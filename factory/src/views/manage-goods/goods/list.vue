@@ -78,7 +78,9 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -97,15 +99,21 @@
           <span>商品列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="goods-add btn-h-38" type="primary" @click="handleInventoryAdjustClick">库存调整</el-button>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handleInventoryAdjustClick">
+            库存调整
+          </el-button>
           <el-button
             class="goods-add btn-h-38"
             type="primary"
             @click="handleUploadGoodsClick"
           >导入商品</el-button>
-          <el-button class="goods-add btn-h-38" type="primary" @click="handleExportGoodsClick">导出商品</el-button>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handleExportGoodsClick">
+            导出商品
+          </el-button>
           <router-link to="/manage-goods/goods/edit">
-            <el-button class="goods-add btn-h-38" type="primary">新增商品</el-button>
+            <el-button class="goods-add btn-h-38" type="primary">
+              新增商品
+            </el-button>
           </router-link>
         </div>
       </div>

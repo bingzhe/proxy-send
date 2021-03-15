@@ -48,7 +48,9 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -67,7 +69,9 @@
           <span>商户列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="goods-add btn-h-38" type="primary" @click="handlerAddBusinessClick">新增商户</el-button>
+          <el-button class="goods-add btn-h-38" type="primary" @click="handlerAddBusinessClick">
+            新增商户
+          </el-button>
         </div>
       </div>
 
@@ -84,8 +88,12 @@
           <el-table-column prop="create_time_str" label="开户时间" min-width="80" />
           <el-table-column prop="opr" label="操作" min-width="80" align="center">
             <template slot-scope="scope">
-              <el-button type="text" @click="handlerShopEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text" @click="handlerDelClick(scope.row)">删除</el-button>
+              <el-button type="text" @click="handlerShopEditClick(scope.row)">
+                编辑
+              </el-button>
+              <el-button class="btn-red" type="text" @click="handlerDelClick(scope.row)">
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>

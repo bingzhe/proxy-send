@@ -6,11 +6,17 @@
           <img src="@/assets/images/error-tip.png" />
         </div>
         <div class="order-status-wrapper">
-          <div class="order-status">当前订单状态：{{ ORDER_STATUS.toString(order_status) }}</div>
-          <div v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="order-status-reason">{{ status_remark }}</div>
+          <div class="order-status">
+            当前订单状态：{{ ORDER_STATUS.toString(order_status) }}
+          </div>
+          <div v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="order-status-reason">
+            {{ status_remark }}
+          </div>
         </div>
       </div>
-      <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
+      <el-button class="btn-bd-primary" @click="handlerGoBackClick">
+        返回
+      </el-button>
     </div>
     <!-- 基本信息 -->
     <div class="info-wrapper baseinfo-wrapper">

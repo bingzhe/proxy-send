@@ -10,7 +10,9 @@
           <el-input v-model.trim="searchForm.model_name" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
-          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">查询</el-button>
+          <el-button class="btn-h-38" type="primary" @click="handlerSearchClick">
+            查询
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -84,7 +86,9 @@
                 class="btn-green"
                 type="text"
               >停用</el-button>-->
-              <el-button type="text" @click="handlerModelEditClick(scope.row)">编辑</el-button>
+              <el-button type="text" @click="handlerModelEditClick(scope.row)">
+                编辑
+              </el-button>
               <el-button
                 class="btn-red"
                 type="text danger"
@@ -195,7 +199,9 @@
         </el-form-item>
       </el-form>
       <div class="brand-wrapper">
-        <div class="brand-wrapper-title">已有品牌</div>
+        <div class="brand-wrapper-title">
+          已有品牌
+        </div>
         <div class="brand-wrapper-list">
           <el-button v-for="brand in phoneBrandOptions" :key="brand.brand_id">
             {{ brand.brand_name }}

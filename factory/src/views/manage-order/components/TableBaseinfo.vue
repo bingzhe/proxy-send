@@ -4,7 +4,9 @@
       <el-table-column prop="order_id" label="订单编号" min-width="100" align="center" />
       <el-table-column prop="company_name" label="物流公司" min-width="100" align="center">
         <template slot-scope="scope">
-          <div v-if="[0, 1, 2].includes(scope.$index)">{{ scope.row.company_name }}</div>
+          <div v-if="[0, 1, 2].includes(scope.$index)">
+            {{ scope.row.company_name }}
+          </div>
           <div v-else>
             <div class="remark-img-list">
               <div v-for="(img, i) in scope.row.company_name" :key="i" class="remark-img-item">

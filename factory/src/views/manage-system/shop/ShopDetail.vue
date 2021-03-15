@@ -2,7 +2,9 @@
   <div id="shop-edit-page" class="app-container">
     <div class="title-wrapper">
       <span class="title-text">{{ businessId ? '编辑商户' : '添加商户' }}</span>
-      <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
+      <el-button class="btn-bd-primary" @click="handlerGoBackClick">
+        返回
+      </el-button>
     </div>
     <div class="baseinfo-form-wrapper">
       <div class="baseinfo-title-wrapper">
@@ -83,13 +85,15 @@
 
           <el-col :span="11" :xs="20">
             <el-form-item label="图片和sku最大组合数" prop="sku_max">
-              <el-input v-model.trim="shopEditForm.sku_max" v-limit-input-number="shopEditForm.sku_max" data-dotrange="{0,0}" placeholder="请输入"> </el-input>
+              <el-input v-model.trim="shopEditForm.sku_max" v-limit-input-number="shopEditForm.sku_max" data-dotrange="{0,0}" placeholder="请输入">
+              </el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="11" :xs="20">
             <el-form-item label="图片和sku已组合数" prop="sku_used">
-              <el-input v-model.trim="shopEditForm.sku_used" v-limit-input-number="shopEditForm.sku_max" data-dotrange="{0,0}" placeholder="请输入"> </el-input>
+              <el-input v-model.trim="shopEditForm.sku_used" v-limit-input-number="shopEditForm.sku_max" data-dotrange="{0,0}" placeholder="请输入">
+              </el-input>
             </el-form-item>
           </el-col>
 
@@ -163,11 +167,21 @@
             </el-table-column>
             <el-table-column prop="opr" label="操作" min-width="55" align="center">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopSaveClick(scope.row)">保存</el-button>
-                <el-button v-if="!scope.row.isEdit" class="text-btn edit-btn" type="text" @click="handleTshopEditClick(scope.row)">编辑</el-button>
-                <el-button class="text-btn edit-btn" type="text" @click="handleSetParam(scope.row.tshop_id)">配置</el-button>
-                <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopCancelClick(scope.row)">取消</el-button>
-                <el-button v-if="!scope.row.isEdit" class="text-btn del-btn" type="text" @click="handleDelTshopClick(scope.row)">删除</el-button>
+                <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopSaveClick(scope.row)">
+                  保存
+                </el-button>
+                <el-button v-if="!scope.row.isEdit" class="text-btn edit-btn" type="text" @click="handleTshopEditClick(scope.row)">
+                  编辑
+                </el-button>
+                <el-button class="text-btn edit-btn" type="text" @click="handleSetParam(scope.row.tshop_id)">
+                  配置
+                </el-button>
+                <el-button v-if="scope.row.isEdit" class="text-btn save-btn" type="text" @click="handleTshopCancelClick(scope.row)">
+                  取消
+                </el-button>
+                <el-button v-if="!scope.row.isEdit" class="text-btn del-btn" type="text" @click="handleDelTshopClick(scope.row)">
+                  删除
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -180,8 +194,12 @@
     <div class="gray-border-bottom" />
 
     <div class="button-group-wrapper">
-      <el-button class="btn-h-44-w-100 btn-bd-primary" @click="handlerGoBackClick">取消</el-button>
-      <el-button class="btn-h-44-w-100" type="primary" @click="handlerSaveBtnClick">{{ businessId ? '保存' : '提交' }}</el-button>
+      <el-button class="btn-h-44-w-100 btn-bd-primary" @click="handlerGoBackClick">
+        取消
+      </el-button>
+      <el-button class="btn-h-44-w-100" type="primary" @click="handlerSaveBtnClick">
+        {{ businessId ? '保存' : '提交' }}
+      </el-button>
     </div>
   </div>
 </template>
@@ -274,7 +292,7 @@ export default {
       tshopTableLoading: false,
       warehouseList: [],
 
-      //店铺参数配置
+      // 店铺参数配置
       paramList: [],
       paramTableLoading: false,
       oprtshopId: ''
@@ -402,7 +420,7 @@ export default {
         closeOnClickModal: false,
         closeOnPressEscape: false
       })
-        .then(async () => {
+        .then(async() => {
           const data = {
             opr: 'delete_tshop',
             tshop_id: row.tshop_id // 淘宝店铺ID

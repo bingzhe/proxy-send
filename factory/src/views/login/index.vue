@@ -65,11 +65,17 @@
             <div class="check-img" @click="getVerifyCodeImg">
               <img :src="codeimgurl" alt="验证图片">
             </div>
-            <el-checkbox v-model="loginForm.checked" class="remeber-box">记住密码</el-checkbox>
-            <el-button class="change-code-img" type="text" @click="getVerifyCodeImg">看不清，换一张</el-button>
+            <el-checkbox v-model="loginForm.checked" class="remeber-box">
+              记住密码
+            </el-checkbox>
+            <el-button class="change-code-img" type="text" @click="getVerifyCodeImg">
+              看不清，换一张
+            </el-button>
           </el-form-item>
 
-          <div class="login-tip">{{ errTipMsg }}</div>
+          <div class="login-tip">
+            {{ errTipMsg }}
+          </div>
 
           <el-button
             :loading="loading"
