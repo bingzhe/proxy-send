@@ -81,13 +81,14 @@
 
             <el-table-column prop="order_id" label="订单编号" min-width="60" />
             <el-table-column prop="goods_name" label="商品名称" min-width="60" />
-            <el-table-column prop="consignee_person" label="收货人" min-width="60" />
-            <el-table-column prop="consignee_phone" label="手机号码" min-width="60" />
-            <el-table-column prop="order_fee" label="订单金额" min-width="60" />
-            <el-table-column prop="order_status_str" label="订单状态" min-width="60" />
-            <el-table-column prop="delivery_company_name" label="物流公司" min-width="60" />
-            <el-table-column prop="delivery_number" label="物流单号" min-width="60" />
+            <el-table-column prop="consignee_person" label="收货人" min-width="30" />
+            <el-table-column prop="consignee_phone" label="手机号码" min-width="40" />
+            <el-table-column prop="order_fee" label="订单金额" min-width="30" />
+            <el-table-column prop="order_status_str" label="订单状态" min-width="30" />
+            <el-table-column prop="delivery_company_name" label="物流公司" min-width="40" />
+            <el-table-column prop="delivery_number" label="物流单号" min-width="50" />
             <el-table-column prop="order_time_str" label="下单时间" min-width="60" />
+            <el-table-column prop="order_remark" label="备注" min-width="60" />
 
             <el-table-column prop="opr" label="操作" width="240">
               <template slot-scope="scope">
@@ -99,8 +100,7 @@
                     v-if="scope.row.order_status === ORDER_STATUS.AUDIT_FAIL || scope.row.order_status === ORDER_STATUS.REPLENISH_WAIT || scope.row.order_status === ORDER_STATUS.REVOCAT"
                     type="text"
                     @click="handlerEditBtnClick(scope.row.order_id)"
-                    >编辑订单</el-button
-                  >
+                  >编辑订单</el-button>
                   <a href="https://www.kuaidi100.com/" target="_black">
                     <el-button v-if="scope.row.order_status === ORDER_STATUS.DELIVERY_SUC" type="text">物流跟踪</el-button>
                   </a>
@@ -109,8 +109,7 @@
                     type="text"
                     class="red-btn"
                     @click="openDeleteDialogTip(scope.row.order_id)"
-                    >删除订单</el-button
-                  >
+                  >删除订单</el-button>
                 </div>
               </template>
             </el-table-column>
@@ -122,9 +121,7 @@
             <div class="pagination-total">
               <span>
                 共
-                <span class="num-text">{{ pageTotal }}</span
-                >页/ <span class="num-text">{{ total }}</span
-                >条数据
+                <span class="num-text">{{ pageTotal }}</span>页/ <span class="num-text">{{ total }}</span>条数据
               </span>
             </div>
             <el-pagination
