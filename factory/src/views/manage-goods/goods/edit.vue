@@ -2,9 +2,7 @@
   <div id="goods-edit-page" class="app-container">
     <div class="title-wrapper">
       <span class="title-text">{{ goods_id ? '编辑商品' : '添加新商品' }}</span>
-      <el-button class="btn-bd-primary" @click="handlerGoBackClick">
-        返回
-      </el-button>
+      <el-button class="btn-bd-primary" @click="handlerGoBackClick"> 返回 </el-button>
     </div>
     <div class="baseinfo-form-wrapper">
       <div class="baseinfo-title-wrapper">
@@ -128,7 +126,11 @@
           <el-col v-if="goodsType === GOODS_TYPE.GIFT" :span="11" :xs="20">
             <el-form-item label="sku编码" label-width="160px" prop="sku">
               <el-tooltip effect="dark" :content="baseinfoForm.sku" placement="top">
-                <el-input v-model.trim="baseinfoForm.sku" placeholder="请输入" @change="getSkuGift"></el-input>
+                <el-input
+                  v-model.trim="baseinfoForm.sku"
+                  placeholder="请输入"
+                  @change="getSkuGift"
+                ></el-input>
               </el-tooltip>
             </el-form-item>
           </el-col>
@@ -590,6 +592,42 @@ export default {
         pos: '', // 定位角
         x_offset: '', // 与横边距离
         y_offset: '' // 与纵边距离
+      },
+      printinfoLeftForm: {
+        height: '', // 图像高
+        width: '', // 图像宽
+        radius: '', // 四角弧度
+        pos: '', // 定位角
+        x_offset: '', // 与横边距离
+        y_offset: '', // 与纵边距离
+        price: '' // 打印价（元）
+      },
+      printinfoRightForm: {
+        height: '', // 图像高
+        width: '', // 图像宽
+        radius: '', // 四角弧度
+        pos: '', // 定位角
+        x_offset: '', // 与横边距离
+        y_offset: '', // 与纵边距离
+        price: '' // 打印价（元）
+      },
+      printinfoTopForm: {
+        height: '', // 图像高
+        width: '', // 图像宽
+        radius: '', // 四角弧度
+        pos: '', // 定位角
+        x_offset: '', // 与横边距离
+        y_offset: '', // 与纵边距离
+        price: '' // 打印价（元）
+      },
+      printinfoBottomForm: {
+        height: '', // 图像高
+        width: '', // 图像宽
+        radius: '', // 四角弧度
+        pos: '', // 定位角
+        x_offset: '', // 与横边距离
+        y_offset: '', // 与纵边距离
+        price: '' // 打印价（元）
       },
 
       // opt_color_list : [{ color_name: '', inventory: '', color_img: '', outline_img: '', } ]
