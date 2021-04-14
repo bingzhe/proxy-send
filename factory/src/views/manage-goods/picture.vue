@@ -491,8 +491,6 @@ export default {
       return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=${width}&height=${height}&img_name=${img_name}`
     },
     handlerOutlineImgSuccess(e, type) {
-      console.log(e)
-      console.log(type)
       const img_name = e.img_name
 
       switch (type) {

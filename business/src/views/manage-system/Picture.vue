@@ -30,7 +30,11 @@
     </div>
     <!-- search end -->
 
-    <div v-loading="tableLoading" element-loading-text="拼命加载中" class="table-wrapper table-wrapper-default">
+    <div
+      v-loading="tableLoading"
+      element-loading-text="拼命加载中"
+      class="table-wrapper table-wrapper-default"
+    >
       <div class="table-title clearfix">
         <div class="table-title__lable">
           <span>
@@ -39,8 +43,16 @@
           <span>图库列表</span>
         </div>
         <div class="add-button-group">
-          <el-button class="add-btn btn-h-38" type="primary" @click="handleUploadClick">导入sku组合</el-button>
-          <el-button class="add-btn btn-h-38" type="primary" @click="handlerAddPicClick">新增</el-button>
+          <el-button
+            class="add-btn btn-h-38"
+            type="primary"
+            @click="handleUploadClick"
+          >导入sku组合</el-button>
+          <el-button
+            class="add-btn btn-h-38"
+            type="primary"
+            @click="handlerAddPicClick"
+          >新增</el-button>
         </div>
       </div>
 
@@ -88,7 +100,11 @@
                 type="text"
               >停用</el-button>-->
               <el-button type="text" @click="handlerMaterialEditClick(scope.row)">编辑</el-button>
-              <el-button class="btn-red" type="text danger" @click="handlerDelClick(scope.row)">删除</el-button>
+              <el-button
+                class="btn-red"
+                type="text danger"
+                @click="handlerDelClick(scope.row)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -122,11 +138,17 @@
         :title="editPictureId ? '编辑图片' : '新增图片'"
         :confirm-text="editPictureId ? '保存' : '提交'"
         :validate="true"
-        top="10vh"
+        top="6vh"
         @confirm="handlerPicEditDialogConfirm"
         @close="handlerPicEditDialogClose"
       >
-        <el-form ref="pictureForm" :rules="pictureFormRules" :model="pictureForm" class="picture-form" label-width="130px">
+        <el-form
+          ref="pictureForm"
+          :rules="pictureFormRules"
+          :model="pictureForm"
+          class="picture-form"
+          label-width="130px"
+        >
           <el-form-item label="图片名称" prop="material_name">
             <el-input v-model="pictureForm.material_name" placeholder="请输入" />
           </el-form-item>
@@ -149,30 +171,113 @@
             </el-select>
           </el-form-item>-->
           <el-form-item label="组合sku" prop="sku_list_str" class="sku-form-item">
-            <el-input v-model="pictureForm.sku_list_str" :rows="5" type="textarea" placeholder="请输入" />
-            <el-button class="search-sku-btn" size="mini" type="primary" @click="handleOpenSkuSearchDialog">查询sku</el-button>
+            <el-input
+              v-model="pictureForm.sku_list_str"
+              :rows="5"
+              type="textarea"
+              placeholder="请输入"
+            />
+            <el-button
+              class="search-sku-btn"
+              size="mini"
+              type="primary"
+              @click="handleOpenSkuSearchDialog"
+            >查询sku</el-button>
           </el-form-item>
           <el-form-item label="图片" prop="material_img">
-            <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
-              <img v-if="pictureForm.material_img" :src="pictureForm.material_img_url" class="upload-preview" />
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </sl-upload>
+            <div class="meterial-img-upload-wrapper">
+              <sl-upload
+                class="outline-uploader outline-uploader-left"
+                @on-success="handlerOutlineImgSuccess($event, 'left')"
+              >
+                <img
+                  v-if="pictureForm.material_img_left"
+                  class="upload-preview"
+                  :src="pictureForm.material_img_left_url"
+                />
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </sl-upload>
+              <sl-upload
+                class="outline-uploader outline-uploader-right"
+                @on-success="handlerOutlineImgSuccess($event, 'right')"
+              >
+                <img
+                  v-if="pictureForm.material_img_right"
+                  class="upload-preview"
+                  :src="pictureForm.material_img_right_url"
+                />
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </sl-upload>
+              <sl-upload
+                class="outline-uploader outline-uploader-top"
+                @on-success="handlerOutlineImgSuccess($event, 'top')"
+              >
+                <img
+                  v-if="pictureForm.material_img_top"
+                  class="upload-preview"
+                  :src="pictureForm.material_img_top_url"
+                />
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </sl-upload>
+              <sl-upload
+                class="outline-uploader outline-uploader-bottom"
+                @on-success="handlerOutlineImgSuccess($event, 'bottom')"
+              >
+                <img
+                  v-if="pictureForm.material_img_bottom"
+                  class="upload-preview"
+                  :src="pictureForm.material_img_bottom_url"
+                />
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </sl-upload>
+              <sl-upload class="outline-uploader" @on-success="handlerOutlineImgSuccess">
+                <img
+                  v-if="pictureForm.material_img"
+                  :src="pictureForm.material_img_url"
+                  class="upload-preview"
+                />
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </sl-upload>
+            </div>
           </el-form-item>
         </el-form>
       </sl-dialog>
       <!-- 图片编辑弹窗 end -->
 
-      <sl-dialog ref="skuSearchDialog" title="查询SKU" width="900px" top="8vh" @confirm="handleSkuSearchDialogConfirm" @close="handleSkuSearchDialogClose">
+      <sl-dialog
+        ref="skuSearchDialog"
+        title="查询SKU"
+        width="900px"
+        top="8vh"
+        @confirm="handleSkuSearchDialogConfirm"
+        @close="handleSkuSearchDialogClose"
+      >
         <div class="search-wrapper sku-search-wrapper">
           <el-form ref="skuSearchForm" class="su-search-form" :model="skuSearchForm" :inline="true">
             <el-form-item label="材质" prop="goods_material" label-width="70px">
               <el-select v-model="skuSearchForm.goods_material" placeholder="请选择" clearable>
-                <el-option v-for="item in raw_material_list" :key="item" :label="item" :value="item" />
+                <el-option
+                  v-for="item in raw_material_list"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="品牌" prop="brand" label-width="70px">
-              <el-select v-model="skuSearchForm.brand" filterable placeholder="请选择" clearable @change="handlerBrandChange">
-                <el-option v-for="item in phone_brand_list" :key="item.brand_id" :label="item.brand_name" :value="item.brand_id" />
+              <el-select
+                v-model="skuSearchForm.brand"
+                filterable
+                placeholder="请选择"
+                clearable
+                @change="handlerBrandChange"
+              >
+                <el-option
+                  v-for="item in phone_brand_list"
+                  :key="item.brand_id"
+                  :label="item.brand_name"
+                  :value="item.brand_id"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="颜色" prop="color_name" label-width="70px">
@@ -180,7 +285,12 @@
             </el-form-item>
             <el-form-item label="型号" prop="model" label-width="70px">
               <el-select v-model="skuSearchForm.model" filterable placeholder="请选择" clearable>
-                <el-option v-for="item in data_model_list" :key="item.model_id" :label="item.model_name" :value="item.model_id" />
+                <el-option
+                  v-for="item in data_model_list"
+                  :key="item.model_id"
+                  :label="item.model_name"
+                  :value="item.model_id"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="商品名称" prop="goods_name" label-width="70px">
@@ -193,7 +303,14 @@
 
           <div v-loading="skuTableLoading" element-loading-text="拼命加载中">
             <div class="table-content default-table-change sku-table">
-              <el-table ref="skuTable" :data="skuList" stripe height="350" class="sku-table" @selection-change="handleSkuSelectionChange">
+              <el-table
+                ref="skuTable"
+                :data="skuList"
+                stripe
+                height="350"
+                class="sku-table"
+                @selection-change="handleSkuSelectionChange"
+              >
                 <el-table-column type="selection" align="center" width="55" />
                 <el-table-column align="center" prop="sku" label="sku" />
               </el-table>
@@ -250,7 +367,15 @@ export default {
         // status: '',
         material_img: '',
         material_img_url: '',
-        sku_list_str: ''
+        sku_list_str: '',
+        material_img_left: '', // 左面图片文件名
+        material_img_left_url: '',
+        material_img_right: '', // 右面图片文件名
+        material_img_right_url: '',
+        material_img_top: '', // 上面（顶部）图片文件名
+        material_img_top_url: '',
+        material_img_bottom: '', // 下面（底部）图片文件名
+        material_img_bottom_url: ''
       },
       pictureFormRules: {
         material_name: [{ required: true, message: '请输入图片名称', trigger: 'blur' }],
@@ -344,10 +469,11 @@ export default {
           item.lastmodtime_str = moment(item.lastmodtime * 1000).format('YYYY-MM-DD HH:mm:ss')
         }
 
-        // if (item.status) {
-        //   item.status_str = PICTURE_STATUS.toString(item.status)
-        // }
-
+        item.material_img_url = this.getImgUrl(234, 280, item.material_img)
+        item.material_img_left_url = this.getImgUrl(234, 280, item.material_img_left)
+        item.material_img_right_url = this.getImgUrl(234, 280, item.material_img_right)
+        item.material_img_top_url = this.getImgUrl(234, 280, item.material_img_top)
+        item.material_img_bottom_url = this.getImgUrl(234, 280, item.material_img_bottom)
         item.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=44&height=64&img_name=${item.material_img}`
 
         return item
@@ -376,10 +502,34 @@ export default {
     handlerAddPicClick() {
       this.$refs.pictureEditDialog.show()
     },
-    handlerOutlineImgSuccess({ img_name }) {
-      this.pictureForm.material_img = img_name
-      // http://f.pso.rockyshi.cn/php/img_get.php?token=TestToken&opr=get_img&type=1&img_name=d508bf88200289028d152ace532dbc6a.jpg
-      this.pictureForm.material_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=117&height=140&img_name=${img_name}`
+    getImgUrl(width, height, img_name) {
+      return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=${width}&height=${height}&img_name=${img_name}`
+    },
+    handlerOutlineImgSuccess(e, type) {
+      const img_name = e.img_name
+
+      switch (type) {
+        case 'left':
+          this.pictureForm.material_img_left = img_name
+          this.pictureForm.material_img_left_url = this.getImgUrl(100, 280, img_name)
+          break
+        case 'right':
+          this.pictureForm.material_img_right = img_name
+          this.pictureForm.material_img_right_url = this.getImgUrl(100, 280, img_name)
+          break
+        case 'top':
+          this.pictureForm.material_img_top = img_name
+          this.pictureForm.material_img_top_url = this.getImgUrl(234, 100, img_name)
+          break
+        case 'bottom':
+          this.pictureForm.material_img_bottom = img_name
+          this.pictureForm.material_img_bottom_url = this.getImgUrl(234, 100, img_name)
+          break
+        default:
+          this.pictureForm.material_img = img_name
+          this.pictureForm.material_img_url = this.getImgUrl(234, 280, img_name)
+          break
+      }
     },
     handlerPicEditDialogConfirm() {
       this.$refs.pictureForm.validate((valid) => {
@@ -396,7 +546,11 @@ export default {
         sku_list_str: this.pictureForm.sku_list_str,
         theme: this.pictureForm.theme,
         material_img: this.pictureForm.material_img,
-        business_id: this.business_id
+        business_id: this.business_id,
+        material_img_left: this.pictureForm.material_img_left,
+        material_img_right: this.pictureForm.material_img_right,
+        material_img_top: this.pictureForm.material_img_top,
+        material_img_bottom: this.pictureForm.material_img_bottom
         // status: 1       // 默认启用
       }
 
@@ -428,6 +582,14 @@ export default {
       // this.pictureForm.status = row.status
       this.pictureForm.material_img = row.material_img
       this.pictureForm.material_img_url = row.material_img_url
+      this.pictureForm.material_img_left = row.material_img_left
+      this.pictureForm.material_img_left_url = row.material_img_left_url
+      this.pictureForm.material_img_right = row.material_img_right
+      this.pictureForm.material_img_right_url = row.material_img_right_url
+      this.pictureForm.material_img_top = row.material_img_top
+      this.pictureForm.material_img_top_url = row.material_img_top_url
+      this.pictureForm.material_img_bottom = row.material_img_bottom
+      this.pictureForm.material_img_bottom_url = row.material_img_bottom_url
       this.pictureForm.sku_list_str = row.sku_list_str
       this.$refs.pictureEditDialog.show()
     },
@@ -440,6 +602,14 @@ export default {
       // this.pictureForm.status = ''
       this.pictureForm.material_img = ''
       this.pictureForm.material_img_url = ''
+      this.pictureForm.material_img_left = ''
+      this.pictureForm.material_img_left_url = ''
+      this.pictureForm.material_img_right = ''
+      this.pictureForm.material_img_right_url = ''
+      this.pictureForm.material_img_top = ''
+      this.pictureForm.material_img_top_url = ''
+      this.pictureForm.material_img_bottom = ''
+      this.pictureForm.material_img_bottom_url = ''
       this.pictureForm.sku_list_str = ''
     },
     handlerDelClick(row) {
@@ -493,7 +663,10 @@ export default {
         })
         .join('\n')
 
-      this.pictureForm.sku_list_str = this.pictureForm.sku_list_str === '' ? skuStr : this.pictureForm.sku_list_str + '\n' + skuStr
+      this.pictureForm.sku_list_str =
+        this.pictureForm.sku_list_str === ''
+          ? skuStr
+          : this.pictureForm.sku_list_str + '\n' + skuStr
       this.handleSkuSearchDialogClose()
       this.$refs.skuSearchDialog.hide()
     },
@@ -580,7 +753,14 @@ export default {
 .picture-form {
   width: 530px;
 }
+.meterial-img-upload-wrapper {
+  position: relative;
+  height: 285px;
+}
 /deep/ .outline-uploader {
+  position: absolute;
+  left: 70px;
+  top: 70px;
   .el-upload {
     border: 1px dashed #e6e6e6;
     border-radius: 6px;
@@ -603,6 +783,62 @@ export default {
     width: 117px;
     height: 140px;
     display: block;
+  }
+  &.outline-uploader-left {
+    left: 0;
+    top: 70px;
+    .avatar-uploader-icon {
+      width: 50px;
+      height: 140px;
+      line-height: 140px;
+      font-size: 20px;
+    }
+    .upload-preview {
+      width: 50px;
+      height: 140px;
+    }
+  }
+
+  &.outline-uploader-right {
+    left: 207px;
+    top: 70px;
+    .avatar-uploader-icon {
+      width: 50px;
+      height: 140px;
+      line-height: 140px;
+      font-size: 20px;
+    }
+    .upload-preview {
+      width: 50px;
+      height: 140px;
+    }
+  }
+  &.outline-uploader-top {
+    left: 70px;
+    top: 0;
+    .avatar-uploader-icon {
+      height: 50px;
+      line-height: 50px;
+      font-size: 20px;
+    }
+    .upload-preview {
+      width: 117px;
+      height: 50px;
+    }
+  }
+
+  &.outline-uploader-bottom {
+    left: 70px;
+    top: 230px;
+    .avatar-uploader-icon {
+      height: 50px;
+      line-height: 50px;
+      font-size: 20px;
+    }
+    .upload-preview {
+      width: 117px;
+      height: 50px;
+    }
   }
 }
 
