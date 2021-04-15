@@ -1,0 +1,21 @@
+import { GOODS_PRINT_POSITION } from '@/config/cfg'
+
+// 打印参数定位角选项
+export const goodsPrintPositoinOptions = [
+  {
+    value: GOODS_PRINT_POSITION.LEFT_TOP,
+    label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.LEFT_TOP)
+  },
+  {
+    value: GOODS_PRINT_POSITION.LEFT_BOTTOM,
+    label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.LEFT_BOTTOM)
+  },
+  {
+    value: GOODS_PRINT_POSITION.RIGHT_TOP,
+    label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.RIGHT_TOP)
+  },
+  {
+    value: GOODS_PRINT_POSITION.RIGHT_BOTTOM,
+    label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.RIGHT_BOTTOM)
+  }
+]

@@ -241,75 +241,12 @@
       <div class="baseinfo-title-wrapper">
         <baseinfo-title color="#F348A1" text="打印参数" />
       </div>
-      <el-form ref="printinfoForm" :model="printinfoForm" :rules="printinfoFormRules">
-        <el-row>
-          <el-col :span="11" :xs="20">
-            <el-form-item label="图像高" label-width="160px" prop="height">
-              <el-input
-                v-model.trim="printinfoForm.height"
-                v-limit-input-number="printinfoForm.height"
-                placeholder="请输入"
-              >
-                <span slot="suffix" class="input-suffix-text">像素</span>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11" :xs="20">
-            <el-form-item label="四角弧度" label-width="160px" prop="radius">
-              <el-input v-model.trim="printinfoForm.radius" placeholder="请输入" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="11" :xs="20">
-            <el-form-item label="图像宽" label-width="160px" prop="width">
-              <el-input
-                v-model.trim="printinfoForm.width"
-                v-limit-input-number="printinfoForm.width"
-                placeholder="请输入"
-              >
-                <span slot="suffix" class="input-suffix-text">像素</span>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11" :xs="20">
-            <el-form-item label="定位角" label-width="160px" prop="pos">
-              <el-select v-model="printinfoForm.pos" placeholder="请选择">
-                <el-option
-                  v-for="item in goodsPrintPositoinOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="11" :xs="20">
-            <el-form-item label="与横边距离" label-width="160px" prop="x_offset ">
-              <el-input
-                v-model.trim="printinfoForm.x_offset"
-                v-limit-input-number="printinfoForm.x_offset"
-                placeholder="请输入"
-              >
-                <span slot="suffix" class="input-suffix-text">像素</span>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11" :xs="20">
-            <el-form-item label="与纵边距离" label-width="160px" prop="y_offset ">
-              <el-input
-                v-model.trim="printinfoForm.y_offset"
-                v-limit-input-number="printinfoForm.y_offset"
-                placeholder="请输入"
-              >
-                <span slot="suffix" class="input-suffix-text">像素</span>
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+
+      <PrintParam ref="backPrintParam" picPosition="背面图" :hasPriceItem="false" />
+      <PrintParam ref="leftPrintParam" picPosition="左面图" />
+      <PrintParam ref="rightPrintParam" picPosition="右面图" />
+      <PrintParam ref="topPrintParam" picPosition="上面图" />
+      <PrintParam ref="bottomPrintParam" picPosition="下面图" />
     </div>
 
     <div
@@ -326,7 +263,39 @@
       </div>
       <div class="base-pic-table-wrapper default-table-change">
         <el-form ref="basePicForm" :model="basePicForm">
-          <el-table :data="basePicForm.opt_color_list" stripe border>
+          <el-table :data="basePicForm.opt_color_list" stripe border :default-expand-all="true">
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+
+                <el-form-item
+                  class="pictable-form-item"
+                  label="左边轮廓图"
+                  label-width="70px"
+                  :rules="{
+                    required: true,
+                    message: `${goodsType === GOODS_TYPE.DIY ? '底图' : '图片'}不能为空`
+                  }"
+                  :prop="'opt_color_list.' + scope.$index + '.color_img'"
+                >
+                  <sl-upload
+                    class="outline-uploader"
+                    :type="7"
+                    @on-success="
+                      (res) => {
+                        return handlerOutlineImgSuccess(res, scope.row)
+                      }
+                    "
+                  >
+                    <img
+                      v-if="scope.row.color_img"
+                      :src="scope.row.color_img_url"
+                      class="upload-preview"
+                    />
+                    <i v-else class="el-icon-plus avatar-uploader-icon" />
+                  </sl-upload>
+                </el-form-item>
+              </template>
+            </el-table-column>
             <el-table-column prop="num" label="序号" width="80" align="center">
               <template slot-scope="scope">
                 <span>{{ scope.$index + 1 }}</span>
@@ -544,11 +513,13 @@ import { GOODS_TYPE, GOODS_PRINT_POSITION } from '@/config/cfg'
 import { goodsSave, goodsGet, warehouseGet } from '@/api/api'
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
+import PrintParam from './PrintParam'
 
 export default {
   components: {
     BaseinfoTitle,
-    SlUpload
+    SlUpload,
+    PrintParam
   },
   data() {
     const checkInventory = (rule, value, callback) => {
@@ -585,50 +556,6 @@ export default {
       attachListForm: {
         attach_list_str: ''
       },
-      printinfoForm: {
-        height: '', // 图像高
-        width: '', // 图像宽
-        radius: '', // 四角弧度
-        pos: '', // 定位角
-        x_offset: '', // 与横边距离
-        y_offset: '' // 与纵边距离
-      },
-      printinfoLeftForm: {
-        height: '', // 图像高
-        width: '', // 图像宽
-        radius: '', // 四角弧度
-        pos: '', // 定位角
-        x_offset: '', // 与横边距离
-        y_offset: '', // 与纵边距离
-        price: '' // 打印价（元）
-      },
-      printinfoRightForm: {
-        height: '', // 图像高
-        width: '', // 图像宽
-        radius: '', // 四角弧度
-        pos: '', // 定位角
-        x_offset: '', // 与横边距离
-        y_offset: '', // 与纵边距离
-        price: '' // 打印价（元）
-      },
-      printinfoTopForm: {
-        height: '', // 图像高
-        width: '', // 图像宽
-        radius: '', // 四角弧度
-        pos: '', // 定位角
-        x_offset: '', // 与横边距离
-        y_offset: '', // 与纵边距离
-        price: '' // 打印价（元）
-      },
-      printinfoBottomForm: {
-        height: '', // 图像高
-        width: '', // 图像宽
-        radius: '', // 四角弧度
-        pos: '', // 定位角
-        x_offset: '', // 与横边距离
-        y_offset: '', // 与纵边距离
-        price: '' // 打印价（元）
-      },
 
       // opt_color_list : [{ color_name: '', inventory: '', color_img: '', outline_img: '', } ]
       basePicForm: {
@@ -647,15 +574,6 @@ export default {
         warehouse_inventory: [{ required: true, type: 'array' }]
       },
 
-      printinfoFormRules: {
-        height: [{ required: true, message: '请输入图像高', trigger: 'blur' }],
-        width: [{ required: true, message: '请输入图像宽', trigger: 'blur' }],
-        radius: [{ required: true, message: '请输入四角弧度', trigger: 'blur' }],
-        pos: [{ required: true, message: '请选择定位角', trigger: 'change' }],
-        x_offset: [{ required: true, message: '请输入与横边距离', trigger: 'blur' }],
-        y_offset: [{ required: true, message: '请输入与纵边距离', trigger: 'blur' }]
-      },
-
       GOODS_TYPE,
       model_list: [], // 手机型号 list
 
@@ -672,26 +590,6 @@ export default {
         {
           value: GOODS_TYPE.GIFT,
           label: GOODS_TYPE.toString(GOODS_TYPE.GIFT)
-        }
-      ],
-
-      // 定位角选项
-      goodsPrintPositoinOptions: [
-        {
-          value: GOODS_PRINT_POSITION.LEFT_TOP,
-          label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.LEFT_TOP)
-        },
-        {
-          value: GOODS_PRINT_POSITION.LEFT_BOTTOM,
-          label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.LEFT_BOTTOM)
-        },
-        {
-          value: GOODS_PRINT_POSITION.RIGHT_TOP,
-          label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.RIGHT_TOP)
-        },
-        {
-          value: GOODS_PRINT_POSITION.RIGHT_BOTTOM,
-          label: GOODS_PRINT_POSITION.toString(GOODS_PRINT_POSITION.RIGHT_BOTTOM)
         }
       ],
 
@@ -770,12 +668,17 @@ export default {
       this.baseinfoForm.inventory = info.inventory || ''
 
       if (this.goodsType === GOODS_TYPE.DIY) {
-        this.printinfoForm.height = info.img_print_param.height
-        this.printinfoForm.width = info.img_print_param.width
-        this.printinfoForm.radius = info.img_print_param.radius
-        this.printinfoForm.pos = info.img_print_param.pos
-        this.printinfoForm.x_offset = info.img_print_param.x_offset
-        this.printinfoForm.y_offset = info.img_print_param.y_offset
+        // this.printinfoForm.height = info.img_print_param.height
+        // this.printinfoForm.width = info.img_print_param.width
+        // this.printinfoForm.radius = info.img_print_param.radius
+        // this.printinfoForm.pos = info.img_print_param.pos
+        // this.printinfoForm.x_offset = info.img_print_param.x_offset
+        // this.printinfoForm.y_offset = info.img_print_param.y_offset
+        this.$refs.backPrintParam.setPrintParam(info.img_print_param)
+        this.$refs.leftPrintParam.setPrintParam(info.img_print_param_left)
+        this.$refs.rightPrintParam.setPrintParam(info.img_print_param_right)
+        this.$refs.topPrintParam.setPrintParam(info.img_print_param_top)
+        this.$refs.bottomPrintParam.setPrintParam(info.img_print_param_bottom)
       }
 
       if (this.goodsType === GOODS_TYPE.DIY || this.goodsType === GOODS_TYPE.NORM) {
@@ -819,10 +722,27 @@ export default {
 
       if (this.goodsType === GOODS_TYPE.DIY) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
-        const printinfoValidate = await this.validateForm('printinfoForm')
+        // const printinfoValidate = await this.validateForm('printinfoForm')
         const basePicValidate = await this.validateForm('basePicForm')
 
-        if (!baseinfoValidate || !printinfoValidate || !basePicValidate) return
+        const img_print_param = await this.$refs.backPrintParam.getPrintParam()
+        const img_print_param_left = await this.$refs.leftPrintParam.getPrintParam()
+        const img_print_param_right = await this.$refs.rightPrintParam.getPrintParam()
+        const img_print_param_top = await this.$refs.topPrintParam.getPrintParam()
+        const img_print_param_bottom = await this.$refs.bottomPrintParam.getPrintParam()
+
+        if (
+          !baseinfoValidate ||
+          // !printinfoValidate ||
+          !basePicValidate ||
+          !img_print_param ||
+          !img_print_param_left ||
+          !img_print_param_right ||
+          !img_print_param_top ||
+          !img_print_param_bottom
+        ) {
+          return
+        }
 
         data.goods_name = this.baseinfoForm.goods_name
         data.type = this.baseinfoForm.type
@@ -832,7 +752,15 @@ export default {
         data.price = this.baseinfoForm.price
         data.remark = this.baseinfoForm.remark
 
-        data.img_print_param = this.printinfoForm
+        // data.img_print_param = this.printinfoForm
+
+        delete img_print_param.price
+        data.img_print_param = img_print_param
+        data.img_print_param_left = img_print_param_left
+        data.img_print_param_right = img_print_param_right
+        data.img_print_param_top = img_print_param_top
+        data.img_print_param_bottom = img_print_param_bottom
+
         this.basePicForm.opt_color_list.forEach((item) => {
           let inventory = 0
           item.warehouse_inventory.forEach((warehouse) => {
@@ -1056,6 +984,7 @@ export default {
 .app-container {
   background: rgba(255, 255, 255, 1);
   border-radius: 2px;
+  min-width: 1035px;
 }
 .title-wrapper {
   height: 54px;
@@ -1071,26 +1000,26 @@ export default {
 }
 
 .baseinfo-form-wrapper {
-  max-width: 1035px;
+  // max-width: 1035px;
   .baseinfo-title-wrapper {
     padding: 24px 30px;
   }
 }
 .attach-list-form-wrapper {
-  max-width: 1035px;
+  // max-width: 1035px;
   .baseinfo-title-wrapper {
     padding: 24px 30px;
   }
 }
 .printinfo-form-wrapper {
-  max-width: 1035px;
+  // max-width: 1035px;
   .baseinfo-title-wrapper {
     padding: 24px 30px;
   }
 }
 
 .base-pic-wrapper {
-  max-width: 1035px;
+  // max-width: 1035px;
   .base-pic-title-wrapper {
     display: flex;
     justify-content: space-between;
