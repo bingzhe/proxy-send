@@ -183,6 +183,7 @@
             <div class="meterial-img-upload-wrapper">
               <sl-upload
                 class="outline-uploader outline-uploader-left"
+                :type="11"
                 @on-success="handlerOutlineImgSuccess($event, 'left')"
               >
                 <img
@@ -194,6 +195,7 @@
               </sl-upload>
               <sl-upload
                 class="outline-uploader outline-uploader-right"
+                :type="12"
                 @on-success="handlerOutlineImgSuccess($event, 'right')"
               >
                 <img
@@ -205,6 +207,7 @@
               </sl-upload>
               <sl-upload
                 class="outline-uploader outline-uploader-top"
+                :type="13"
                 @on-success="handlerOutlineImgSuccess($event, 'top')"
               >
                 <img
@@ -216,6 +219,7 @@
               </sl-upload>
               <sl-upload
                 class="outline-uploader outline-uploader-bottom"
+                :type="14"
                 @on-success="handlerOutlineImgSuccess($event, 'bottom')"
               >
                 <img
@@ -456,10 +460,10 @@ export default {
         }
 
         item.material_img_url = this.getImgUrl(234, 280, item.material_img)
-        item.material_img_left_url = this.getImgUrl(234, 280, item.material_img_left)
-        item.material_img_right_url = this.getImgUrl(234, 280, item.material_img_right)
-        item.material_img_top_url = this.getImgUrl(234, 280, item.material_img_top)
-        item.material_img_bottom_url = this.getImgUrl(234, 280, item.material_img_bottom)
+        item.material_img_left_url = this.getImgUrl(234, 280, item.material_img_left, 11)
+        item.material_img_right_url = this.getImgUrl(234, 280, item.material_img_right, 12)
+        item.material_img_top_url = this.getImgUrl(234, 280, item.material_img_top, 13)
+        item.material_img_bottom_url = this.getImgUrl(234, 280, item.material_img_bottom, 14)
 
         return item
       })
@@ -487,8 +491,8 @@ export default {
     handlerAddPicClick() {
       this.$refs.pictureEditDialog.show()
     },
-    getImgUrl(width, height, img_name) {
-      return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&width=${width}&height=${height}&img_name=${img_name}`
+    getImgUrl(width, height, img_name, type = 1) {
+      return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=${type}&width=${width}&height=${height}&img_name=${img_name}`
     },
     handlerOutlineImgSuccess(e, type) {
       const img_name = e.img_name
@@ -496,19 +500,19 @@ export default {
       switch (type) {
         case 'left':
           this.pictureForm.material_img_left = img_name
-          this.pictureForm.material_img_left_url = this.getImgUrl(100, 280, img_name)
+          this.pictureForm.material_img_left_url = this.getImgUrl(100, 280, img_name, 11)
           break
         case 'right':
           this.pictureForm.material_img_right = img_name
-          this.pictureForm.material_img_right_url = this.getImgUrl(100, 280, img_name)
+          this.pictureForm.material_img_right_url = this.getImgUrl(100, 280, img_name, 12)
           break
         case 'top':
           this.pictureForm.material_img_top = img_name
-          this.pictureForm.material_img_top_url = this.getImgUrl(234, 100, img_name)
+          this.pictureForm.material_img_top_url = this.getImgUrl(234, 100, img_name, 13)
           break
         case 'bottom':
           this.pictureForm.material_img_bottom = img_name
-          this.pictureForm.material_img_bottom_url = this.getImgUrl(234, 100, img_name)
+          this.pictureForm.material_img_bottom_url = this.getImgUrl(234, 100, img_name, 14)
           break
         default:
           this.pictureForm.material_img = img_name

@@ -266,34 +266,224 @@
           <el-table :data="basePicForm.opt_color_list" stripe border :default-expand-all="true">
             <el-table-column type="expand">
               <template slot-scope="scope">
-
-                <el-form-item
-                  class="pictable-form-item"
-                  label="左边轮廓图"
-                  label-width="70px"
-                  :rules="{
-                    required: true,
-                    message: `${goodsType === GOODS_TYPE.DIY ? '底图' : '图片'}不能为空`
-                  }"
-                  :prop="'opt_color_list.' + scope.$index + '.color_img'"
-                >
-                  <sl-upload
-                    class="outline-uploader"
-                    :type="7"
-                    @on-success="
-                      (res) => {
-                        return handlerOutlineImgSuccess(res, scope.row)
-                      }
-                    "
+                <div class="lrtb-upload-wrapper">
+                  <el-form-item
+                    class="pictable-form-item lrtb-form-item"
+                    label="左侧底图"
+                    label-width="60px"
+                    :rules="{
+                      required: true,
+                      message: `底图不能为空`
+                    }"
+                    :prop="`opt_color_list.${scope.$index}.left.color_img`"
                   >
-                    <img
-                      v-if="scope.row.color_img"
-                      :src="scope.row.color_img_url"
-                      class="upload-preview"
-                    />
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </sl-upload>
-                </el-form-item>
+                    <sl-upload
+                      class="outline-uploader"
+                      :type="7"
+                      @on-success="
+                        (res) => {
+                          return handleLeftColorImgSuc(res, scope.row)
+                        }
+                      "
+                    >
+                      <img
+                        v-if="scope.row.left.color_img"
+                        :src="scope.row.left.color_img_url"
+                        class="upload-preview"
+                      />
+                      <i v-else class="el-icon-plus avatar-uploader-icon" />
+                    </sl-upload>
+                  </el-form-item>
+                  <el-form-item
+                    class="pictable-form-item lrtb-form-item"
+                    label="左侧轮廓图"
+                    label-width="60px"
+                    :rules="{
+                      required: true,
+                      message: `轮廓图不能为空`
+                    }"
+                    :prop="`opt_color_list.${scope.$index}.left.outline_img`"
+                  >
+                    <sl-upload
+                      class="outline-uploader"
+                      :type="3"
+                      @on-success="
+                        (res) => {
+                          return handleLeftOutlineImgSuc(res, scope.row)
+                        }
+                      "
+                    >
+                      <img
+                        v-if="scope.row.left.outline_img"
+                        :src="scope.row.left.outline_img_url"
+                        class="upload-preview"
+                      />
+                      <i v-else class="el-icon-plus avatar-uploader-icon" />
+                    </sl-upload>
+                  </el-form-item>
+                  <el-form-item
+                    class="pictable-form-item lrtb-form-item"
+                    label="右侧底图"
+                    label-width="60px"
+                    :rules="{
+                      required: true,
+                      message: `底图不能为空`
+                    }"
+                    :prop="`opt_color_list.${scope.$index}.right.color_img`"
+                  >
+                    <sl-upload
+                      class="outline-uploader"
+                      :type="7"
+                      @on-success="
+                        (res) => {
+                          return handleRightColorImgSuc(res, scope.row)
+                        }
+                      "
+                    >
+                      <img
+                        v-if="scope.row.right.color_img"
+                        :src="scope.row.right.color_img_url"
+                        class="upload-preview"
+                      />
+                      <i v-else class="el-icon-plus avatar-uploader-icon" />
+                    </sl-upload>
+                  </el-form-item>
+                  <el-form-item
+                    class="pictable-form-item lrtb-form-item"
+                    label="右侧轮廓图"
+                    label-width="60px"
+                    :rules="{
+                      required: true,
+                      message: `轮廓图不能为空`
+                    }"
+                    :prop="`opt_color_list.${scope.$index}.right.outline_img`"
+                  >
+                    <sl-upload
+                      class="outline-uploader"
+                      :type="3"
+                      @on-success="
+                        (res) => {
+                          return handleRightOutlineImgSuc(res, scope.row)
+                        }
+                      "
+                    >
+                      <img
+                        v-if="scope.row.right.outline_img"
+                        :src="scope.row.right.outline_img_url"
+                        class="upload-preview"
+                      />
+                      <i v-else class="el-icon-plus avatar-uploader-icon" />
+                    </sl-upload>
+                  </el-form-item>
+                  <el-form-item
+                    class="pictable-form-item lrtb-form-item"
+                    label="顶部底图"
+                    label-width="60px"
+                    :rules="{
+                      required: true,
+                      message: `底图不能为空`
+                    }"
+                    :prop="`opt_color_list.${scope.$index}.top.color_img`"
+                  >
+                    <sl-upload
+                      class="outline-uploader"
+                      :type="7"
+                      @on-success="
+                        (res) => {
+                          return handleTopColorImgSuc(res, scope.row)
+                        }
+                      "
+                    >
+                      <img
+                        v-if="scope.row.top.color_img"
+                        :src="scope.row.top.color_img_url"
+                        class="upload-preview"
+                      />
+                      <i v-else class="el-icon-plus avatar-uploader-icon" />
+                    </sl-upload>
+                  </el-form-item>
+                  <el-form-item
+                    class="pictable-form-item lrtb-form-item"
+                    label="顶部轮廓图"
+                    label-width="60px"
+                    :rules="{
+                      required: true,
+                      message: `轮廓图不能为空`
+                    }"
+                    :prop="`opt_color_list.${scope.$index}.top.outline_img`"
+                  >
+                    <sl-upload
+                      class="outline-uploader"
+                      :type="3"
+                      @on-success="
+                        (res) => {
+                          return handleTopOutlineImgSuc(res, scope.row)
+                        }
+                      "
+                    >
+                      <img
+                        v-if="scope.row.top.outline_img"
+                        :src="scope.row.top.outline_img_url"
+                        class="upload-preview"
+                      />
+                      <i v-else class="el-icon-plus avatar-uploader-icon" />
+                    </sl-upload>
+                  </el-form-item>
+                  <el-form-item
+                    class="pictable-form-item lrtb-form-item"
+                    label="底部底图"
+                    label-width="60px"
+                    :rules="{
+                      required: true,
+                      message: `底图不能为空`
+                    }"
+                    :prop="`opt_color_list.${scope.$index}.bottom.color_img`"
+                  >
+                    <sl-upload
+                      class="outline-uploader"
+                      :type="7"
+                      @on-success="
+                        (res) => {
+                          return handleBottomColorImgSuc(res, scope.row)
+                        }
+                      "
+                    >
+                      <img
+                        v-if="scope.row.bottom.color_img"
+                        :src="scope.row.bottom.color_img_url"
+                        class="upload-preview"
+                      />
+                      <i v-else class="el-icon-plus avatar-uploader-icon" />
+                    </sl-upload>
+                  </el-form-item>
+                  <el-form-item
+                    class="pictable-form-item lrtb-form-item"
+                    label="底部轮廓图"
+                    label-width="60px"
+                    :rules="{
+                      required: true,
+                      message: `轮廓图不能为空`
+                    }"
+                    :prop="`opt_color_list.${scope.$index}.bottom.outline_img`"
+                  >
+                    <sl-upload
+                      class="outline-uploader"
+                      :type="3"
+                      @on-success="
+                        (res) => {
+                          return handleBottomOutlineImgSuc(res, scope.row)
+                        }
+                      "
+                    >
+                      <img
+                        v-if="scope.row.bottom.outline_img"
+                        :src="scope.row.bottom.outline_img_url"
+                        class="upload-preview"
+                      />
+                      <i v-else class="el-icon-plus avatar-uploader-icon" />
+                    </sl-upload>
+                  </el-form-item>
+                </div>
               </template>
             </el-table-column>
             <el-table-column prop="num" label="序号" width="80" align="center">
@@ -557,7 +747,17 @@ export default {
         attach_list_str: ''
       },
 
-      // opt_color_list : [{ color_name: '', inventory: '', color_img: '', outline_img: '', } ]
+      // opt_color_list 模板
+      // color_name: '',
+      // inventory: '',
+      // color_img: '',
+      // outline_img: '',
+      // sku: '',
+      // left: { color_img: '', outline_img: '' },
+      // right: { color_img: '', outline_img: '' },
+      // top: { color_img: '', outline_img: '' },
+      // bottom: { color_img: '', outline_img: '' },
+      // warehouse_inventory: [{ warehouse_id: '', inventory: '' }]
       basePicForm: {
         opt_color_list: []
       },
@@ -619,6 +819,10 @@ export default {
         color_img: '',
         outline_img: '',
         sku: '',
+        left: { color_img: '', outline_img: '' },
+        right: { color_img: '', outline_img: '' },
+        top: { color_img: '', outline_img: '' },
+        bottom: { color_img: '', outline_img: '' },
         warehouse_inventory: [{ warehouse_id: '', inventory: '' }]
       })
     },
@@ -668,12 +872,6 @@ export default {
       this.baseinfoForm.inventory = info.inventory || ''
 
       if (this.goodsType === GOODS_TYPE.DIY) {
-        // this.printinfoForm.height = info.img_print_param.height
-        // this.printinfoForm.width = info.img_print_param.width
-        // this.printinfoForm.radius = info.img_print_param.radius
-        // this.printinfoForm.pos = info.img_print_param.pos
-        // this.printinfoForm.x_offset = info.img_print_param.x_offset
-        // this.printinfoForm.y_offset = info.img_print_param.y_offset
         this.$refs.backPrintParam.setPrintParam(info.img_print_param)
         this.$refs.leftPrintParam.setPrintParam(info.img_print_param_left)
         this.$refs.rightPrintParam.setPrintParam(info.img_print_param_right)
@@ -686,8 +884,17 @@ export default {
         this.attachListForm.attach_list_str = info.attach_list_str
 
         this.basePicForm.opt_color_list.forEach((item) => {
-          item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=7&img_name=${item.color_img}`
-          item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=44&height=64&type=3&img_name=${item.outline_img}`
+          item.color_img_url = this.getImgUrl(44, 64, item.color_img, 7)
+          item.outline_img_url = this.getImgUrl(44, 64, item.outline_img, 3)
+
+          item.left.color_img_url = this.getImgUrl(44, 64, item.left.color_img, 7)
+          item.left.outline_img_url = this.getImgUrl(44, 64, item.left.outline_img, 3)
+          item.right.color_img_url = this.getImgUrl(44, 64, item.right.color_img, 7)
+          item.right.outline_img_url = this.getImgUrl(44, 64, item.right.outline_img, 3)
+          item.top.color_img_url = this.getImgUrl(44, 64, item.top.color_img, 7)
+          item.top.outline_img_url = this.getImgUrl(44, 64, item.top.outline_img, 3)
+          item.bottom.color_img_url = this.getImgUrl(44, 64, item.bottom.color_img, 7)
+          item.bottom.outline_img_url = this.getImgUrl(44, 64, item.bottom.outline_img, 3)
 
           // <<<<<<<<<<<<<<<<<<<<<<<<< 兼容后台数据格式不正确时候
           if (!Array.isArray(item.warehouse_inventory)) {
@@ -722,7 +929,6 @@ export default {
 
       if (this.goodsType === GOODS_TYPE.DIY) {
         const baseinfoValidate = await this.validateForm('baseinfoForm')
-        // const printinfoValidate = await this.validateForm('printinfoForm')
         const basePicValidate = await this.validateForm('basePicForm')
 
         const img_print_param = await this.$refs.backPrintParam.getPrintParam()
@@ -751,8 +957,6 @@ export default {
         data.model = this.baseinfoForm.model
         data.price = this.baseinfoForm.price
         data.remark = this.baseinfoForm.remark
-
-        // data.img_print_param = this.printinfoForm
 
         delete img_print_param.price
         data.img_print_param = img_print_param
@@ -975,6 +1179,41 @@ export default {
     },
     handleGifeWarehousedelClick(i) {
       this.baseinfoForm.warehouse_inventory.splice(i, 1)
+    },
+    getImgUrl(width, height, img_name, type) {
+      return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=${type}&width=${width}&height=${height}&img_name=${img_name}`
+    },
+    handleLeftColorImgSuc({ img_name }, row) {
+      row.left.color_img = img_name
+      row.left.color_img_url = this.getImgUrl(44, 64, img_name, 7)
+    },
+    handleLeftOutlineImgSuc({ img_name }, row) {
+      row.left.outline_img = img_name
+      row.left.outline_img_url = this.getImgUrl(44, 64, img_name, 3)
+    },
+    handleRightColorImgSuc({ img_name }, row) {
+      row.right.color_img = img_name
+      row.right.color_img_url = this.getImgUrl(44, 64, img_name, 7)
+    },
+    handleRightOutlineImgSuc({ img_name }, row) {
+      row.right.outline_img = img_name
+      row.right.outline_img_url = this.getImgUrl(44, 64, img_name, 3)
+    },
+    handleTopColorImgSuc({ img_name }, row) {
+      row.top.color_img = img_name
+      row.top.color_img_url = this.getImgUrl(44, 64, img_name, 7)
+    },
+    handleTopOutlineImgSuc({ img_name }, row) {
+      row.top.outline_img = img_name
+      row.top.outline_img_url = this.getImgUrl(44, 64, img_name, 3)
+    },
+    handleBottomColorImgSuc({ img_name }, row) {
+      row.bottom.color_img = img_name
+      row.bottom.color_img_url = this.getImgUrl(44, 64, img_name, 7)
+    },
+    handleBottomOutlineImgSuc({ img_name }, row) {
+      row.bottom.outline_img = img_name
+      row.bottom.outline_img_url = this.getImgUrl(44, 64, img_name, 3)
     }
   }
 }
@@ -1144,4 +1383,18 @@ export default {
   }
 }
 /** 仓库库存 end */
+
+.lrtb-upload-wrapper {
+  display: flex;
+  /deep/ .lrtb-form-item {
+    margin-right: 20px;
+    margin-bottom: 25px;
+    .el-form-item__label {
+      line-height: 30px;
+    }
+    .el-form-item__error {
+      left: -40px;
+    }
+  }
+}
 </style>
