@@ -1,7 +1,7 @@
 <template>
   <div class="printinfo-wrapper">
     <div class="printinfo-pic-name">{{ picPosition }}</div>
-    <el-form ref="printinfoForm" :model="printinfoForm" :rules="printinfoFormRules">
+    <el-form ref="printinfoForm" :model="printinfoForm" :rules="hasPriceItem ? {} :printinfoFormRules">
       <el-row :gutter="20">
         <el-col :span="6">
           <el-form-item label="图像高" label-width="100px" prop="height">

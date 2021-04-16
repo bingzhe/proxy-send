@@ -271,12 +271,12 @@
                     class="pictable-form-item lrtb-form-item"
                     label="左侧底图"
                     label-width="60px"
-                    :rules="{
+                  >
+                    <!-- :rules="{
                       required: true,
                       message: `底图不能为空`
                     }"
-                    :prop="`opt_color_list.${scope.$index}.left.color_img`"
-                  >
+                    :prop="`opt_color_list.${scope.$index}.left.color_img`" -->
                     <sl-upload
                       class="outline-uploader"
                       :type="7"
@@ -298,12 +298,12 @@
                     class="pictable-form-item lrtb-form-item"
                     label="左侧轮廓图"
                     label-width="60px"
-                    :rules="{
+                  >
+                    <!-- :rules="{
                       required: true,
                       message: `轮廓图不能为空`
                     }"
-                    :prop="`opt_color_list.${scope.$index}.left.outline_img`"
-                  >
+                    :prop="`opt_color_list.${scope.$index}.left.outline_img`" -->
                     <sl-upload
                       class="outline-uploader"
                       :type="3"
@@ -325,12 +325,12 @@
                     class="pictable-form-item lrtb-form-item"
                     label="右侧底图"
                     label-width="60px"
-                    :rules="{
+                  >
+                    <!-- :rules="{
                       required: true,
                       message: `底图不能为空`
                     }"
-                    :prop="`opt_color_list.${scope.$index}.right.color_img`"
-                  >
+                    :prop="`opt_color_list.${scope.$index}.right.color_img`" -->
                     <sl-upload
                       class="outline-uploader"
                       :type="7"
@@ -352,12 +352,12 @@
                     class="pictable-form-item lrtb-form-item"
                     label="右侧轮廓图"
                     label-width="60px"
-                    :rules="{
+                  >
+                    <!-- :rules="{
                       required: true,
                       message: `轮廓图不能为空`
                     }"
-                    :prop="`opt_color_list.${scope.$index}.right.outline_img`"
-                  >
+                    :prop="`opt_color_list.${scope.$index}.right.outline_img`" -->
                     <sl-upload
                       class="outline-uploader"
                       :type="3"
@@ -379,12 +379,12 @@
                     class="pictable-form-item lrtb-form-item"
                     label="顶部底图"
                     label-width="60px"
-                    :rules="{
+                  >
+                    <!-- :rules="{
                       required: true,
                       message: `底图不能为空`
                     }"
-                    :prop="`opt_color_list.${scope.$index}.top.color_img`"
-                  >
+                    :prop="`opt_color_list.${scope.$index}.top.color_img`" -->
                     <sl-upload
                       class="outline-uploader"
                       :type="7"
@@ -406,12 +406,12 @@
                     class="pictable-form-item lrtb-form-item"
                     label="顶部轮廓图"
                     label-width="60px"
-                    :rules="{
+                  >
+                    <!-- :rules="{
                       required: true,
                       message: `轮廓图不能为空`
                     }"
-                    :prop="`opt_color_list.${scope.$index}.top.outline_img`"
-                  >
+                    :prop="`opt_color_list.${scope.$index}.top.outline_img`" -->
                     <sl-upload
                       class="outline-uploader"
                       :type="3"
@@ -433,12 +433,12 @@
                     class="pictable-form-item lrtb-form-item"
                     label="底部底图"
                     label-width="60px"
-                    :rules="{
+                  >
+                    <!-- :rules="{
                       required: true,
                       message: `底图不能为空`
                     }"
-                    :prop="`opt_color_list.${scope.$index}.bottom.color_img`"
-                  >
+                    :prop="`opt_color_list.${scope.$index}.bottom.color_img`" -->
                     <sl-upload
                       class="outline-uploader"
                       :type="7"
@@ -460,12 +460,12 @@
                     class="pictable-form-item lrtb-form-item"
                     label="底部轮廓图"
                     label-width="60px"
-                    :rules="{
+                  >
+                    <!-- :rules="{
                       required: true,
                       message: `轮廓图不能为空`
                     }"
-                    :prop="`opt_color_list.${scope.$index}.bottom.outline_img`"
-                  >
+                    :prop="`opt_color_list.${scope.$index}.bottom.outline_img`" -->
                     <sl-upload
                       class="outline-uploader"
                       :type="3"

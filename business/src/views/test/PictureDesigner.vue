@@ -40,8 +40,8 @@ export default {
       outlineImg: null, // 轮廓图实例
       colorImg: null, // 地图实例
 
-      prune_img_data: '',
-      preview_img_data: '',
+      prune_img_data: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+      preview_img_data: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
 
       prune_img: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
       preview_img: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
@@ -110,6 +110,11 @@ export default {
       this.canvas.setZoom(this.scale)
       // 给 canvas添加路径
       // this.canvas.clipPath = this.clipPath
+    },
+    disposeCanvas() {
+      if (this.canvas) {
+        this.canvas.dispose()
+      }
     },
     addOutlineImg(img) {
       return new Promise((resolve) => {
@@ -345,16 +350,17 @@ export default {
       })
     },
     handleKeydown(e) {
-      if (e.keyCode === 38 && this.originImg) {
+      // console.log(e.keyCode)
+      if (e.ctrlKey && e.keyCode === 38 && this.originImg) {
         this.originImg.top -= 5
       }
-      if (e.keyCode === 40 && this.originImg) {
+      if (e.ctrlKey && e.keyCode === 40 && this.originImg) {
         this.originImg.top += 5
       }
-      if (e.keyCode === 37 && this.originImg) {
+      if (e.ctrlKey && e.keyCode === 37 && this.originImg) {
         this.originImg.left -= 5
       }
-      if (e.keyCode === 39 && this.originImg) {
+      if (e.ctrlKey && e.keyCode === 39 && this.originImg) {
         this.originImg.left += 5
       }
 

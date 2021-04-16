@@ -14,6 +14,7 @@
 
 <script>
 import DiyDesigner from './PictureDesigner'
+import { goodsGet } from '@/api/api'
 
 export default {
   components: {
@@ -45,8 +46,17 @@ export default {
   },
   mounted() {
     this.init()
+    this.getGoodsInfo()
   },
   methods: {
+    async getGoodsInfo() {
+      const data = {
+        opr: 'get_goods_info',
+        goods_id: 'G18971'
+      }
+      const resp = await goodsGet(data)
+      console.log(resp)
+    },
     init() {
       this.$nextTick(async () => {
         this.$refs.diyDesigner.init()
