@@ -27,12 +27,6 @@ export default {
   },
   data() {
     return {
-      // url: process.env.VUE_APP_BASEURL + '/img_save.php',
-
-      // height: 620,
-      // width: 300,
-      // radius: 45,
-
       canvas: null,
       rect: null, // 裁剪表示区域
       clipPath: null,
@@ -43,15 +37,38 @@ export default {
       prune_img_data: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
       preview_img_data: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
 
-      prune_img: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-      preview_img: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
-
       outlineWidth: '',
       outlineHeight: '',
 
       isMoving: false,
 
-      scale: 1 // canvas 缩放尺寸
+      scale: 1, // canvas 缩放尺寸
+
+      backParam: {
+        height: '',
+        width: '',
+        radius_adjius: ''
+      },
+      leftParam: {
+        height: '',
+        width: '',
+        radius_adjius: ''
+      },
+      rightParam: {
+        height: '',
+        width: '',
+        radius_adjius: ''
+      },
+      topParam: {
+        height: '',
+        width: '',
+        radius_adjius: ''
+      },
+      bottomParam: {
+        height: '',
+        width: '',
+        radius_adjius: ''
+      }
     }
   },
   methods: {
@@ -63,10 +80,10 @@ export default {
        */
 
       if (this.height >= 1000 && this.height < 1500) {
-        this.scale = 0.5
+        this.scale = 0.4
       }
       if (this.height >= 1500) {
-        this.scale = 0.4
+        this.scale = 0.3
       }
 
       /**
@@ -82,6 +99,7 @@ export default {
       // 隐藏的边框控件在遮罩上面
       this.canvas.controlsAboveOverlay = true
 
+      // 裁剪路径
       this.clipPath = new fabric.Rect({
         left: 100,
         top: 100,
@@ -119,7 +137,6 @@ export default {
     addOutlineImg(img) {
       return new Promise((resolve) => {
         this.canvas.setOverlayImage(img, () => {
-          // this.canvas.renderAll.bind(this.canvas)
           resolve()
         })
       })
@@ -183,43 +200,6 @@ export default {
         img.left = 100 - offsetWidth
 
         this.originImg = img
-
-        // const setOutlineTop = () => {
-        //   this.isMoving = true
-        //   if (this.isMoving) {
-        //     this.canvas.setActiveObject(this.outlineImg)
-        //   }
-        // }
-        // const setOutlineBottom = () => {
-        //   this.isMoving = false
-        //   this.canvas.setActiveObject(img)
-        // }
-
-        // img.on('moving', () => {
-        //   setOutlineTop()
-        // })
-        // img.on('scaling', () => {
-        //   setOutlineTop()
-        // })
-        // img.on('rotating', () => {
-        //   setOutlineTop()
-        // })
-        // img.on('skewing', () => {
-        //   setOutlineTop()
-        // })
-        // img.on('moved', () => { setOutlineBottom() })
-        // img.on('scaled', () => { setOutlineBottom() })
-        // img.on('rotated', () => { setOutlineBottom() })
-        // img.on('skewed', () => { setOutlineBottom() })
-
-        // img.on('selected', (e) => {
-        //   if (!(e.e && e.e.dbClick)) {
-        //     // setOutlineTop()
-        //   }
-        // })
-        // img.on('mousedblclick', (e) => {
-        //   this.canvas.setActiveObject(this.originImg, { dbClick: true })
-        // })
 
         img.on('selected', () => {
           document.addEventListener('keydown', this.handleKeydown, false)
@@ -316,36 +296,39 @@ export default {
           // this.canvas.setActiveObject(this.outlineImg)
           this.canvas.renderAll()
 
-          fabric.Image.fromURL(this.canvas.toDataURL({ multiplier: 1 / this.scale }), async (img) => {
-            screenshotCanvas.add(img)
-            screenshotCanvas.setHeight(this.outlineHeight)
-            screenshotCanvas.setWidth(this.outlineWidth)
-            screenshotCanvas.setBackgroundColor('rgba(255,255,255,1)')
+          fabric.Image.fromURL(
+            this.canvas.toDataURL({ multiplier: 1 / this.scale }),
+            async (img) => {
+              screenshotCanvas.add(img)
+              screenshotCanvas.setHeight(this.outlineHeight)
+              screenshotCanvas.setWidth(this.outlineWidth)
+              screenshotCanvas.setBackgroundColor('rgba(255,255,255,1)')
 
-            const top = 100 - (this.outlineHeight - this.height) / 2
-            const left = 100 - (this.outlineWidth - this.width) / 2
+              const top = 100 - (this.outlineHeight - this.height) / 2
+              const left = 100 - (this.outlineWidth - this.width) / 2
 
-            img.set('top', -top || 100)
-            img.set('left', -left || 100)
-            screenshotCanvas.renderAll()
+              img.set('top', -top || 100)
+              img.set('left', -left || 100)
+              screenshotCanvas.renderAll()
 
-            /**
-             * 生成第二张图片 和轮廓图合并后的图
-             */
-            this.preview_img_data = screenshotCanvas.toDataURL({ format: 'jpeg' })
+              /**
+               * 生成第二张图片 和轮廓图合并后的图
+               */
+              this.preview_img_data = screenshotCanvas.toDataURL({ format: 'jpeg' })
 
-            this.canvas.add(this.rect)
-            this.canvas.setActiveObject(this.originImg)
-            this.canvas.renderAll()
+              this.canvas.add(this.rect)
+              this.canvas.setActiveObject(this.originImg)
+              this.canvas.renderAll()
 
-            this.$emit('preview-success', {
-              preview_img_data: this.preview_img_data,
-              prune_img_data: this.prune_img_data
-            })
-            // this.$emit('on-success', { preview_img: this.preview_img, prune_img: this.prune_img })
-            screenshotCanvas.dispose()
-            resolve()
-          })
+              this.$emit('preview-success', {
+                preview_img_data: this.preview_img_data,
+                prune_img_data: this.prune_img_data
+              })
+
+              screenshotCanvas.dispose()
+              resolve()
+            }
+          )
         })
       })
     },

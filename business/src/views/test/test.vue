@@ -55,7 +55,7 @@ export default {
         goods_id: 'G18971'
       }
       const resp = await goodsGet(data)
-      console.log(resp)
+      console.log(resp.data.info)
     },
     init() {
       this.$nextTick(async () => {
