@@ -29,10 +29,10 @@ export default {
     return {
       canvas: null,
       rect: null, // 裁剪表示区域
-      clipPath: null,
+      clipPath: null, // 裁剪路径
       originImg: null, // 原图实例
       outlineImg: null, // 轮廓图实例
-      colorImg: null, // 地图实例
+      colorImg: null, // 底图实例
 
       prune_img_data: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
       preview_img_data: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
@@ -49,29 +49,96 @@ export default {
         width: '',
         radius_adjius: ''
       },
+      // 背部图片向对于图层的定位角
+      backPosLeft: '',
+      backPosTop: '',
+      backRect: null, // 裁剪表示区域
+      backClipPath: null, // 裁剪路径
+
       leftParam: {
         height: '',
         width: '',
         radius_adjius: ''
       },
+      // 左侧图片向对于图层的定位角
+      leftPosLeft: '',
+      leftPosTop: '',
+      leftRect: null, // 裁剪表示区域
+      leftClipPath: null, // 裁剪路径
+
       rightParam: {
         height: '',
         width: '',
         radius_adjius: ''
       },
+      // 右侧侧图片向对于图层的定位角
+      rightPosLeft: '',
+      rightPosTop: '',
+      rightRect: null, // 裁剪表示区域
+      rightClipPath: null, // 裁剪路径
+
       topParam: {
         height: '',
         width: '',
         radius_adjius: ''
       },
+      // 顶部侧图片向对于图层的定位角
+      topPosLeft: '',
+      topPosTop: '',
+      topRect: null, // 裁剪表示区域
+      topClipPath: null, // 裁剪路径
+
       bottomParam: {
         height: '',
         width: '',
         radius_adjius: ''
-      }
+      },
+      // 底部侧图片向对于图层的定位角
+      bottomPosLeft: '',
+      bottomPosTop: '',
+      bottomRect: null, // 裁剪表示区域
+      bottomClipPath: null // 裁剪路径
     }
   },
   methods: {
+    setInitData(data) {
+      /**
+       * data : {
+       *  backParam: { width: '', height: '', radius_adjius: '',},
+       *  leftParam: {...}
+       *  rightParam: {...}
+       *  topParam: {...}
+       *  bottomParam: {...}
+       * }
+       */
+      // this.back.width = back.width
+      // this.back.height = back.height
+      // this.back.radius_adjius = back.radius_adjius
+
+      ['backParam', 'leftParam', 'rightParam', 'topParam', 'bottomParam'].forEach((key) => {
+        this[key].width = data[key].width
+        this[key].height = data[key].height
+        this[key].radius_adjius = data[key].radius_adjius
+      })
+    },
+    // 获取所有图片的定位距离
+    setPosition() {
+      // this.backPosLeft = 400 + Math.round(this.width / 2)
+      this.backPosLeft = 400 + this.leftParam.width
+      this.backPosTop = 400 + Math.round(this.height / 3)
+
+      this.leftPosLeft = 200
+      this.leftPosTop = this.backPosTop
+
+      this.rightPosLeft = this.backPosLeft + this.width + 200
+      this.rightPosTop = this.backPosTop
+
+      this.topPosLeft = this.backPosLeft
+      this.topPosTop = 200
+
+      this.bottomPosLeft = this.backPosLeft
+      this.bottomPosTop = this.backPosTop + +this.height + 200
+    },
     init() {
       const heightWrapper = this.$refs.canvasBgWrapper.offsetWidth
 
@@ -91,7 +158,7 @@ export default {
        */
       this.canvas = new fabric.Canvas('designer-canvas', {
         width: heightWrapper,
-        height: this.height * this.scale + 300 * this.scale
+        height: this.height * this.scale * 2 + 300 * this.scale
       })
 
       fabric.Object.prototype.transparentCorners = false
@@ -99,35 +166,46 @@ export default {
       // 隐藏的边框控件在遮罩上面
       this.canvas.controlsAboveOverlay = true
 
-      // 裁剪路径
-      this.clipPath = new fabric.Rect({
-        left: 100,
-        top: 100,
-        width: this.width,
-        height: this.height,
-        rx: this.radius,
-        ry: this.radius,
+      // 初始化裁剪路径和位置
+      this.addClipPathPos('back')
+      this.addClipPathPos('left')
+      this.addClipPathPos('right')
+      this.addClipPathPos('top')
+      this.addClipPathPos('bottom')
+
+      this.canvas.setZoom(this.scale)
+    },
+    // pos: back/left/right/top/bottom
+    addClipPathPos(pos) {
+      const { width, height, radius_adjius } = this[`${pos}Param`]
+      const left = this[`${pos}PosLeft`]
+      const top = this[`${pos}PosTop`]
+
+      console.log(left, top, width, height, radius_adjius)
+      this[`${pos}clipPath`] = new fabric.Rect({
+        left,
+        top,
+        width,
+        height,
+        rx: radius_adjius,
+        ry: radius_adjius,
         absolutePositioned: true,
         fill: 'transparent'
       })
 
-      this.rect = new fabric.Rect({
-        left: 100,
-        top: 100,
-        width: this.width,
-        height: this.height,
-        rx: this.radius,
-        ry: this.radius,
+      // 裁剪位置
+      this[`${pos}rect`] = new fabric.Rect({
+        left,
+        top,
+        width,
+        height,
+        rx: radius_adjius,
+        ry: radius_adjius,
         selectable: false,
-        // borderColor: 'rgba(102, 153, 255, 0.75)',
         fill: 'rgba(184, 184, 184, 0.5)'
       })
 
-      this.canvas.add(this.rect)
-
-      this.canvas.setZoom(this.scale)
-      // 给 canvas添加路径
-      // this.canvas.clipPath = this.clipPath
+      this.canvas.add(this[`${pos}rect`])
     },
     disposeCanvas() {
       if (this.canvas) {
@@ -152,8 +230,8 @@ export default {
           this.outlineWidth = img.width
           this.outlineHeight = img.height
 
-          const left = 100 - (img.width - this.width) / 2
-          const top = 100 - (img.height - this.height) / 2
+          const left = this.backPosLeft - (img.width - this.width) / 2
+          const top = this.backPosTop - (img.height - this.height) / 2
 
           /**
            * 轮廓位置调整
@@ -196,8 +274,8 @@ export default {
         // const offsetWidth = img.scaleX > 1 ? (scaleWidth - this.width) / 2 : 0
         const offsetWidth = (scaleWidth - this.width) / 2
 
-        img.top = 100
-        img.left = 100 - offsetWidth
+        img.top = this.backPosTop
+        img.left = this.backPosLeft - offsetWidth
 
         this.originImg = img
 
@@ -220,8 +298,8 @@ export default {
         }
 
         fabric.Image.fromURL(url, (img) => {
-          const left = 100 - (img.width - this.width) / 2
-          const top = 100 - (img.height - this.height) / 2
+          const left = this.backPosLeft - (img.width - this.width) / 2
+          const top = this.backPosTop - (img.height - this.height) / 2
           /**
            * 轮廓位置调整
            */

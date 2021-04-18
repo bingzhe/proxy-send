@@ -45,7 +45,7 @@ export default {
     }
   },
   mounted() {
-    this.init()
+    // this.init()
     this.getGoodsInfo()
   },
   methods: {
@@ -56,21 +56,44 @@ export default {
       }
       const resp = await goodsGet(data)
       console.log(resp.data.info)
-    },
-    init() {
+      const info = resp.data.info
+      const initData = {
+        backParam: info.img_print_param,
+        leftParam: info.img_print_param_left,
+        rightParam: info.img_print_param_right,
+        topParam: info.img_print_param_bottom,
+        bottomParam: info.img_print_param_top
+      }
+
       this.$nextTick(async () => {
+        this.$refs.diyDesigner.setInitData(initData)
+        this.$refs.diyDesigner.setPosition()
         this.$refs.diyDesigner.init()
 
         /**
          * 默认选中第一张地图
          */
         await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-        // console.log(this.outline_img_url)
-        await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+        // // console.log(this.outline_img_url)
+        // await this.$refs.diyDesigner.addOutline(this.outline_img_url)
 
-        await this.$refs.diyDesigner.addOriginImg(this.url3)
+        // await this.$refs.diyDesigner.addOriginImg(this.url3)
       })
     },
+    // init() {
+    //   this.$nextTick(async () => {
+    //     this.$refs.diyDesigner.init()
+
+    //     /**
+    //      * 默认选中第一张地图
+    //      */
+    //     await this.$refs.diyDesigner.addColorImg(this.color_img_url)
+    //     // console.log(this.outline_img_url)
+    //     await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+
+    //     await this.$refs.diyDesigner.addOriginImg(this.url3)
+    //   })
+    // },
     async handlerPreviewClick() {
       //   this.loading = true
       //   this.loadingTipText = '正在合成'
