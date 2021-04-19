@@ -1,7 +1,9 @@
 <template>
   <div>
-    <DiyDesigner ref="diyDesigner" :height="picHeight" :width="picWidth" :radius="picRadius" @preview-success="handlerPreviewSuc" />
+    <!-- <Designer ref="diyDesigner" :height="picHeight" :width="picWidth" :radius="picRadius" @preview-success="handlerPreviewSuc" /> -->
     <!-- <DiyDesigner ref="diyDesigner" @preview-success="handlerPreviewSuc" /> -->
+
+    <DesignerControl ref="designerControl" />
 
     <el-button @click="handlerPreviewClick">预览</el-button>
     <el-button @click="removeOriginImg">removeOriginImg</el-button>
@@ -13,28 +15,23 @@
 </template>
 
 <script>
-import DiyDesigner from './PictureDesigner'
+import DesignerControl from './DesignerControl'
 import { goodsGet } from '@/api/api'
 
 export default {
   components: {
-    DiyDesigner
+    DesignerControl
   },
   data() {
     return {
-      color_img_url: 'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=7&img_name=1985893923d88f9b9272cfd4fa8e552b.png',
-      outline_img_url: 'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=3&img_name=e70fd85154b3c9985093a8dcbffe8dd4.png',
-      url3: 'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=1&img_name=7bde61719434db210bbab019f801f56f.jpg',
+      token: window.Store.GetGlobalData('token'),
+      color_img_url:
+        'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=7&img_name=1985893923d88f9b9272cfd4fa8e552b.png',
+      outline_img_url:
+        'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=3&img_name=e70fd85154b3c9985093a8dcbffe8dd4.png',
+      url3:
+        'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=1&img_name=7bde61719434db210bbab019f801f56f.jpg',
 
-      printParam: {
-        height: 1842,
-        pos: 2,
-        radius: 184,
-        radius_adjius: 92,
-        width: 826,
-        x_offset: 39,
-        y_offset: 37
-      },
       // diy裁剪尺寸
       picHeight: 1842,
       picWidth: 826,
@@ -57,43 +54,29 @@ export default {
       const resp = await goodsGet(data)
       console.log(resp.data.info)
       const info = resp.data.info
-      const initData = {
-        backParam: info.img_print_param,
-        leftParam: info.img_print_param_left,
-        rightParam: info.img_print_param_right,
-        topParam: info.img_print_param_bottom,
-        bottomParam: info.img_print_param_top
-      }
 
+      ;(info.opt_color_list || []).forEach((item) => {
+        item.color_img_url = this.getImgUrl(item.color_img, 7)
+        item.outline_img_url = this.getImgUrl(item.outline_img, 3)
+
+        item.back = {}
+        item.back.color_img = item.color_img
+        item.back.outline_img = item.outline_img
+        item.back.color_img_url = this.getImgUrl(item.color_img, 7)
+        item.back.outline_img_url = this.getImgUrl(item.outline_img, 3)
+        item.left.color_img_url = this.getImgUrl(item.left.color_img, 7)
+        item.left.outline_img_url = this.getImgUrl(item.left.outline_img, 3)
+        item.right.color_img_url = this.getImgUrl(item.right.color_img, 7)
+        item.right.outline_img_url = this.getImgUrl(item.right.outline_img, 3)
+        item.top.color_img_url = this.getImgUrl(item.top.color_img, 7)
+        item.top.outline_img_url = this.getImgUrl(item.top.outline_img, 3)
+        item.bottom.color_img_url = this.getImgUrl(item.bottom.color_img, 7)
+        item.bottom.outline_img_url = this.getImgUrl(item.bottom.outline_img, 3)
+      })
       this.$nextTick(async () => {
-        this.$refs.diyDesigner.setInitData(initData)
-        this.$refs.diyDesigner.setPosition()
-        this.$refs.diyDesigner.init()
-
-        /**
-         * 默认选中第一张地图
-         */
-        await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-        // // console.log(this.outline_img_url)
-        // await this.$refs.diyDesigner.addOutline(this.outline_img_url)
-
-        // await this.$refs.diyDesigner.addOriginImg(this.url3)
+        this.$refs.designerControl.updateData(info)
       })
     },
-    // init() {
-    //   this.$nextTick(async () => {
-    //     this.$refs.diyDesigner.init()
-
-    //     /**
-    //      * 默认选中第一张地图
-    //      */
-    //     await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-    //     // console.log(this.outline_img_url)
-    //     await this.$refs.diyDesigner.addOutline(this.outline_img_url)
-
-    //     await this.$refs.diyDesigner.addOriginImg(this.url3)
-    //   })
-    // },
     async handlerPreviewClick() {
       //   this.loading = true
       //   this.loadingTipText = '正在合成'
@@ -114,6 +97,9 @@ export default {
     },
     removeOutlineImg() {
       this.$refs.diyDesigner.removeOutlineImg()
+    },
+    getImgUrl(img_name, type = 1) {
+      return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=${type}&img_name=${img_name}`
     }
   }
 }
