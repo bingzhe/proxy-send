@@ -57,7 +57,7 @@
             v-for="(item, index) in opt_color_list"
             :key="index"
             class="pic-item"
-            :class="{'active': curPic === index}"
+            :class="{ active: curPic === index }"
             @click="handlerPicItemClick(item, index)"
           >
             <el-button>{{ item.color_name }}</el-button>
@@ -65,18 +65,27 @@
         </div>
         <div class="diy-content-wrapper">
           <div class="diy-designer-wrapper">
-            <DiyDesigner
+            <!-- <DiyDesigner
               ref="diyDesigner"
               :height="picHeight"
               :width="picWidth"
               :radius="picRadius"
               @preview-success="handlerPreviewSuc"
-            />
+            /> -->
+            <DesignerControl ref="designerControl" />
           </div>
           <div class="button-group">
-            <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
-            <br>
-            <el-button :disabled="!ori_user_img" type="text" @click="handlerPreviewClick">预览</el-button>
+            <el-button
+              v-if="picSource === 2"
+              type="text"
+              @click="showPicList = true"
+            >返回图库</el-button>
+            <br />
+            <el-button
+              :disabled="!ori_user_img"
+              type="text"
+              @click="handlerPreviewClick"
+            >预览</el-button>
           </div>
         </div>
       </div>
@@ -88,14 +97,18 @@
       <el-button type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
     </div>
 
-    <el-dialog class="preview-dialog preview-pic-wrapper" :visible.sync="dialogVisible" title="预览图">
+    <el-dialog
+      class="preview-dialog preview-pic-wrapper"
+      :visible.sync="dialogVisible"
+      title="预览图"
+    >
       <!-- <div class="preview-img-wrapper"> -->
       <!-- <div class="img-wrapper">
           <div>打印图</div>
           <img :src="dialogPruneUrl" alt>
       </div>-->
       <div class="img-wrapper">
-        <img :src="dialogImageUrl" alt>
+        <img :src="dialogImageUrl" alt />
       </div>
       <!-- </div> -->
     </el-dialog>
@@ -110,6 +123,7 @@ import { goodsGet, buycartSave } from '@/api/api'
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
 import DiyDesigner from './PictureDesigner'
+import DesignerControl from './designer/DesignerControl'
 import Http from '@/config/encsubmit'
 
 export default {
@@ -118,7 +132,8 @@ export default {
     SkuBaseinfo,
     MaterialList,
     SlUpload,
-    DiyDesigner
+    DiyDesigner,
+    DesignerControl
   },
 
   data() {
@@ -127,32 +142,32 @@ export default {
       url: process.env.VUE_APP_BASEURL + '/img_save.php',
 
       goodsInfo: {
-        goods_id: '',        // 商品编号(ID)（空时为新建）
-        goods_name: '',      // 商品名称
-        price: '',           // 商品价格（元）
-        raw_material: '',    // 材质（直接使用文本，如："玻璃"、"硅胶"...）
-        brand: '',           // 品牌
-        model: '',           // 型号
-        remark: ''           // 备注
+        goods_id: '', // 商品编号(ID)（空时为新建）
+        goods_name: '', // 商品名称
+        price: '', // 商品价格（元）
+        raw_material: '', // 材质（直接使用文本，如："玻璃"、"硅胶"...）
+        brand: '', // 品牌
+        model: '', // 型号
+        remark: '' // 备注
       },
 
-      num: 1,                // 商品数量
-      maxInventory: 9999,     // 计数器最大数量
+      num: 1, // 商品数量
+      maxInventory: 9999, // 计数器最大数量
 
-      ori_user_img: '',      // 用户上传的未经处理的原图
-      prune_img: '',         // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-      preview_img: '',       // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+      ori_user_img: '', // 用户上传的未经处理的原图
+      prune_img: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+      preview_img: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
 
       ori_user_img_url: '',
-      outline_img_url: '',     // 轮廓
-      color_img_url: '',      // 底图
+      outline_img_url: '', // 轮廓
+      color_img_url: '', // 底图
       preview_img_url: '',
       prune_img_rul: '',
 
-      picSource: 1,           // 1.本地 2.图库
-      showPicList: false,     // 是否显示图库
+      picSource: 1, // 1.本地 2.图库
+      showPicList: false, // 是否显示图库
       // 底图颜色
-      curPic: 0,              // 底图颜色index
+      curPic: 0, // 底图颜色index
       opt_color_list: [
         // {
         //   color_img: '',
@@ -168,8 +183,8 @@ export default {
       picRadius: 0,
 
       // 图片预览
-      dialogPruneUrl: '',  // 打印
-      dialogImageUrl: '',  // 预览
+      dialogPruneUrl: '', // 打印
+      dialogImageUrl: '', // 预览
       dialogVisible: false,
       isShowDialog: true, // 是否显示预览
 
@@ -179,13 +194,14 @@ export default {
       // 图片base64数据
       ori_user_img_data: '',
       prune_img_data: '',
-      preview_img_data: ''
+      preview_img_data: '',
 
+      opt_color: {} // 选择的底图轮廓图组
     }
   },
   computed: {
     ...mapState({
-      buycart_id: state => state.user.buycart_id
+      buycart_id: (state) => state.user.buycart_id
     })
   },
   mounted() {
@@ -218,20 +234,27 @@ export default {
       this.picRadius = (info.img_print_param || {}).radius_adjius
 
       this.opt_color_list = (info.opt_color_list || []).map((item, index) => {
-        item.color_img_url = `${
-          process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${
-          item.color_img
-        }`
-        item.outline_img_url = `${
-          process.env.VUE_APP_BASEURL
-        }/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${
-          item.outline_img
-        }`
+        item.color_img_url = this.getImgUrl(item.color_img, 7)
+        item.outline_img_url = this.getImgUrl(item.outline_img, 3)
+
+        item.back = {}
+        item.back.color_img = item.color_img
+        item.back.outline_img = item.outline_img
+        item.back.color_img_url = this.getImgUrl(item.color_img, 7)
+        item.back.outline_img_url = this.getImgUrl(item.outline_img, 3)
+        item.left.color_img_url = this.getImgUrl(item.left.color_img, 7)
+        item.left.outline_img_url = this.getImgUrl(item.left.outline_img, 3)
+        item.right.color_img_url = this.getImgUrl(item.right.color_img, 7)
+        item.right.outline_img_url = this.getImgUrl(item.right.outline_img, 3)
+        item.top.color_img_url = this.getImgUrl(item.top.color_img, 7)
+        item.top.outline_img_url = this.getImgUrl(item.top.outline_img, 3)
+        item.bottom.color_img_url = this.getImgUrl(item.bottom.color_img, 7)
+        item.bottom.outline_img_url = this.getImgUrl(item.bottom.outline_img, 3)
 
         if (this.curPic === index) {
           this.color_img_url = item.color_img_url
           this.outline_img_url = item.outline_img_url
+          this.opt_color = item
         }
 
         return item
@@ -245,15 +268,16 @@ export default {
 
       this.maxInventory = ((this.opt_color_list || [])[this.curPic] || {}).inventory
 
-      this.$nextTick(async() => {
-        this.$refs.diyDesigner.init()
+      this.$nextTick(async () => {
+        this.$refs.designerControl.updateData(info)
+        // this.$refs.diyDesigner.init()
 
-        /**
-         * 默认选中第一张地图
-         */
-        // console.log(this.outline_img_url)
-        await this.$refs.diyDesigner.addOutline(this.outline_img_url)
-        await this.$refs.diyDesigner.addColorImg(this.color_img_url)
+        // /**
+        //  * 默认选中第一张地图
+        //  */
+        // // console.log(this.outline_img_url)
+        // await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+        // await this.$refs.diyDesigner.addColorImg(this.color_img_url)
       })
     },
     handlerGetUploadFile({ file }) {
@@ -265,11 +289,11 @@ export default {
       const _this = this
       const fr = new FileReader()
 
-      fr.onload = function() {
+      fr.onload = function () {
         _this.ori_user_img_data = fr.result
 
         // <<<<<<<<<<<<<<<<<<
-        _this.$refs.diyDesigner.addOriginImg(fr.result)
+        // _this.$refs.diyDesigner.addOriginImg(fr.result)
         // _this.$refs.diyDesigner.addOriginImg(require('@/assets/images/origin.jpg'))
 
         // _this.loading = false
@@ -284,16 +308,16 @@ export default {
       this.curPic = i
 
       // <<<<<<<<<<<<<<<<<<
-      this.$refs.diyDesigner.removeOriginImg()
+      // this.$refs.diyDesigner.removeOriginImg()
 
-      await this.$refs.diyDesigner.addOutline(this.outline_img_url)
-      await this.$refs.diyDesigner.addColorImg(this.color_img_url)
+      // await this.$refs.diyDesigner.addOutline(this.outline_img_url)
+      // await this.$refs.diyDesigner.addColorImg(this.color_img_url)
 
       // await this.$refs.diyDesigner.addColorImg(require('@/assets/images/color.png'))
       // await this.$refs.diyDesigner.addOutline(require('@/assets/images/outline.png'))
 
-      this.$refs.diyDesigner.addOriginImgAgain()
-      this.$refs.diyDesigner.renderAll()
+      // this.$refs.diyDesigner.addOriginImgAgain()
+      // this.$refs.diyDesigner.renderAll()
     },
     async handlerAddCartClick() {
       if (!this.ori_user_img) {
@@ -320,12 +344,12 @@ export default {
 
       const data = {
         opr: 'put_to_buycart_diy',
-        goods_id: this.goodsInfo.goods_id,                          // 商品编号(ID)
-        num: this.num,                                              // 订购数量
-        color: this.opt_color_list[this.curPic].color_name,         // 颜色分类("红色"、"绿色"...)
-        preview_img: this.preview_img,                              // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
-        prune_img: this.prune_img,                                  // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-        ori_user_img: this.ori_user_img                             // 用户上传的未经处理的原图
+        goods_id: this.goodsInfo.goods_id, // 商品编号(ID)
+        num: this.num, // 订购数量
+        color: this.opt_color_list[this.curPic].color_name, // 颜色分类("红色"、"绿色"...)
+        preview_img: this.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+        prune_img: this.prune_img, // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+        ori_user_img: this.ori_user_img // 用户上传的未经处理的原图
       }
 
       if (this.buycart_id) {
@@ -351,16 +375,17 @@ export default {
       if (this.picSource === 2) {
         this.showPicList = true
       }
-      this.$refs.diyDesigner.removeOriginImg()
+      // this.$refs.diyDesigner.removeOriginImg()
       this.ori_user_img = ''
       this.ori_user_img_data = ''
       // this.outline_img_url = ''
     },
-    selectMaterialPic(img) {
-      this.ori_user_img = img.material_img
-      this.ori_user_img_url = img.material_img_url_ori
+    selectMaterialPic(item) {
+      this.ori_user_img = item.material_img
+      this.ori_user_img_url = item.material_img_url_ori
       this.showPicList = false
-      this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
+      // this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
+      this.$refs.designerControl.addAllOriginImg(item)
     },
     async handlerPreviewClick() {
       this.loading = true
@@ -408,7 +433,7 @@ export default {
           imgfile: file
         }
 
-        Http.EncSubmit(this.url, data, resp => {
+        Http.EncSubmit(this.url, data, (resp) => {
           if (resp.ret !== 0) {
             reject(resp)
             return this.$message.error(resp.msg)
@@ -416,8 +441,10 @@ export default {
           resolve(resp.data.img_name)
         })
       })
+    },
+    getImgUrl(img_name, type = 1) {
+      return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=${type}&img_name=${img_name}`
     }
-
   }
 }
 </script>

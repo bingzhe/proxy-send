@@ -156,6 +156,7 @@ export default {
     },
     // 裁剪的原图
     addOriginImg(url) {
+      console.log('222', url)
       if (this.originImg) {
         this.canvas.remove(this.originImg)
       }
@@ -306,6 +307,6 @@ export default {
   border: 1px solid #ccc;
 }
 .canvas-bg-wrapper {
-  background: url('../../assets/images/canvas_bg.jpg') repeat;
+  background: url('../../../assets/images/canvas_bg.jpg') repeat;
 }
 </style>

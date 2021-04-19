@@ -111,7 +111,23 @@ export default {
         radius_adjius: '',
         canvasHeight: '',
         canvasWidth: ''
-      }
+      },
+
+      hasback: true
+    }
+  },
+  computed: {
+    hasleft() {
+      return !!(this.leftParam.width || this.leftParam.height)
+    },
+    hasright() {
+      return !!(this.rightParam.width || this.rightParam.height)
+    },
+    hastop() {
+      return !!(this.topParam.width || this.topParam.height)
+    },
+    hasbottom() {
+      return !!(this.bottomParam.width || this.bottomParam.height)
     }
   },
   methods: {
@@ -138,12 +154,6 @@ export default {
 
         this.addAllColorImg()
         this.addAllOutline()
-
-        const url3 =
-          'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=1&img_name=7bde61719434db210bbab019f801f56f.jpg'
-        this.$refs.backDesigner.addOriginImg(url3)
-        this.$refs.leftDesigner.addOriginImg(url3)
-        this.$refs.rightDesigner.addOriginImg(url3)
       })
     },
     getInitData(data) {
@@ -184,15 +194,26 @@ export default {
     },
     addAllColorImg() {
       ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
-        if (this.opt_color[key].color_img) {
+        if (this[`has${key}`]) {
           this.$refs[`${key}Designer`].addColorImg(this.opt_color[key].color_img_url)
         }
       })
     },
     addAllOutline() {
       ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
-        if (this.opt_color[key].outline_img) {
+        if (this[`has${key}`]) {
           this.$refs[`${key}Designer`].addOutline(this.opt_color[key].outline_img_url)
+        }
+      })
+    },
+    addAllOriginImg(item) {
+      // console.log('item11111', item)
+      ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
+        console.log(item)
+        console.log(item[`material_img_${key}`])
+        console.log(item[`material_img_${key}_url_ori]`])
+        if (this[`has${key}`] && item[`material_img_${key}`]) {
+          this.$refs[`${key}Designer`].addOriginImg(item[`material_img_${key}_url_ori]`])
         }
       })
     }
