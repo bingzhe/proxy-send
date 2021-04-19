@@ -36,18 +36,61 @@
       </el-row>
 
       <div v-show="picSource === 1" class="upload-img-wrapper opr-item clearfix">
-        <div class="opr-lable">选择图片</div>
-        <div class="opr-value">
-          <el-input v-model="ori_user_img" placeholder="请选择DIY图片" />
+        <div>
+          <div class="opr-lable">背部图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'back')"
+          >
+            <el-input v-model="ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
         </div>
-        <sl-upload
-          class="outline-uploader"
-          :type="4"
-          :get-file="true"
-          @get-file="handlerGetUploadFile"
-        >
-          <el-button type="primary">选择</el-button>
-        </sl-upload>
+        <div>
+          <div class="opr-lable">左侧图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'left')"
+          >
+            <el-input v-model="left.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
+        </div>
+        <div>
+          <div class="opr-lable">右侧图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'right')"
+          >
+            <el-input v-model="right.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
+        </div>
+        <div>
+          <div class="opr-lable">顶部图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'top')"
+          >
+            <el-input v-model="top.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
+        </div>
+        <div>
+          <div class="opr-lable">底部图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'bottom')"
+          >
+            <el-input v-model="bottom.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
+        </div>
       </div>
 
       <div v-show="picSource === 1 || !showPicList" class="color-diy-wrapper clearfix">
@@ -65,24 +108,17 @@
         </div>
         <div class="diy-content-wrapper">
           <div class="diy-designer-wrapper">
-            <!-- <DiyDesigner
-              ref="diyDesigner"
-              :height="picHeight"
-              :width="picWidth"
-              :radius="picRadius"
-              @preview-success="handlerPreviewSuc"
-            /> -->
             <DesignerControl ref="designerControl" />
           </div>
           <div class="button-group">
-            <el-button
+            <!-- <el-button
               v-if="picSource === 2"
               type="text"
               @click="showPicList = true"
-            >返回图库</el-button>
-            <br />
+            >返回图库</el-button> -->
+            <!-- <br /> -->
             <el-button
-              :disabled="!ori_user_img"
+              :disabled="!ori_name"
               type="text"
               @click="handlerPreviewClick"
             >预览</el-button>
@@ -101,16 +137,30 @@
       class="preview-dialog preview-pic-wrapper"
       :visible.sync="dialogVisible"
       title="预览图"
+      width="80vw"
     >
-      <!-- <div class="preview-img-wrapper"> -->
-      <!-- <div class="img-wrapper">
-          <div>打印图</div>
-          <img :src="dialogPruneUrl" alt>
-      </div>-->
-      <div class="img-wrapper">
-        <img :src="dialogImageUrl" alt />
+      <div class="preview-img-wrapper">
+        <div class="img-wrapper">
+          <div class="pic-title">背部</div>
+          <img :src="preview_img_data" alt />
+        </div>
+        <div v-if="left.preview_img_data" class="img-wrapper">
+          <div class="pic-title">左侧</div>
+          <img :src="left.preview_img_data" alt />
+        </div>
+        <div v-if="right.preview_img_data" class="img-wrapper">
+          <div class="pic-title">右侧</div>
+          <img :src="right.preview_img_data" alt />
+        </div>
+        <div v-if="top.preview_img_data" class="img-wrapper">
+          <div class="pic-title">顶部</div>
+          <img :src="top.preview_img_data" alt />
+        </div>
+        <div v-if="bottom.preview_img_data" class="img-wrapper">
+          <div class="pic-title">底部</div>
+          <img :src="bottom.preview_img_data" alt />
+        </div>
       </div>
-      <!-- </div> -->
     </el-dialog>
   </div>
 </template>
@@ -122,7 +172,6 @@ import MaterialList from './components/MaterialList'
 import { goodsGet, buycartSave } from '@/api/api'
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
-import DiyDesigner from './PictureDesigner'
 import DesignerControl from './designer/DesignerControl'
 import Http from '@/config/encsubmit'
 
@@ -132,7 +181,6 @@ export default {
     SkuBaseinfo,
     MaterialList,
     SlUpload,
-    DiyDesigner,
     DesignerControl
   },
 
@@ -155,14 +203,13 @@ export default {
       maxInventory: 9999, // 计数器最大数量
 
       ori_user_img: '', // 用户上传的未经处理的原图
+
       prune_img: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
       preview_img: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
 
       ori_user_img_url: '',
       outline_img_url: '', // 轮廓
       color_img_url: '', // 底图
-      preview_img_url: '',
-      prune_img_rul: '',
 
       picSource: 1, // 1.本地 2.图库
       showPicList: false, // 是否显示图库
@@ -183,8 +230,8 @@ export default {
       picRadius: 0,
 
       // 图片预览
-      dialogPruneUrl: '', // 打印
-      dialogImageUrl: '', // 预览
+      dialogPruneUrl: '',
+      dialogImageUrl: '',
       dialogVisible: false,
       isShowDialog: true, // 是否显示预览
 
@@ -195,6 +242,36 @@ export default {
       ori_user_img_data: '',
       prune_img_data: '',
       preview_img_data: '',
+      ori_name: '', // 上传图片名称
+
+      left: {
+        ori_user_img_data: '',
+        prune_img_data: '',
+        preview_img_data: '',
+        ori_name: '', // 上传图片名称
+        ori_user_img: ''
+      },
+      right: {
+        ori_user_img_data: '',
+        prune_img_data: '',
+        preview_img_data: '',
+        ori_name: '', // 上传图片名称
+        ori_user_img: '' // 上传图片名称
+      },
+      top: {
+        ori_user_img_data: '',
+        prune_img_data: '',
+        preview_img_data: '',
+        ori_name: '', // 上传图片名称
+        ori_user_img: '' // 上传图片名称
+      },
+      bottom: {
+        ori_user_img_data: '',
+        prune_img_data: '',
+        preview_img_data: '',
+        ori_name: '', // 上传图片名称
+        ori_user_img: '' // 上传图片名称
+      },
 
       opt_color: {} // 选择的底图轮廓图组
     }
@@ -280,23 +357,38 @@ export default {
         // await this.$refs.diyDesigner.addColorImg(this.color_img_url)
       })
     },
-    handlerGetUploadFile({ file }) {
-      // this.loading = true
-      // this.loadingTipText = '正在加载'
-
+    handleGetuploadFile({ file }, type) {
       this.ori_user_img = file.name
 
       const _this = this
       const fr = new FileReader()
 
       fr.onload = function () {
-        _this.ori_user_img_data = fr.result
-
-        // <<<<<<<<<<<<<<<<<<
-        // _this.$refs.diyDesigner.addOriginImg(fr.result)
-        // _this.$refs.diyDesigner.addOriginImg(require('@/assets/images/origin.jpg'))
-
-        // _this.loading = false
+        switch (type) {
+          case 'back':
+            _this.ori_user_img_data = fr.result
+            _this.ori_name = file.name
+            break
+          case 'left':
+            _this.left.ori_user_img_data = fr.result
+            _this.left.ori_name = file.name
+            break
+          case 'right':
+            _this.right.ori_user_img_data = fr.result
+            _this.right.ori_name = file.name
+            break
+          case 'top':
+            _this.top.ori_user_img_data = fr.result
+            _this.top.ori_name = file.name
+            break
+          case 'bottom':
+            _this.bottom.ori_user_img_data = fr.result
+            _this.bottom.ori_name = file.name
+            break
+          default:
+            break
+        }
+        _this.$refs.designerControl.addOriginImg(fr.result, type)
       }
 
       fr.readAsDataURL(file)
@@ -312,10 +404,6 @@ export default {
 
       // await this.$refs.diyDesigner.addOutline(this.outline_img_url)
       // await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-
-      // await this.$refs.diyDesigner.addColorImg(require('@/assets/images/color.png'))
-      // await this.$refs.diyDesigner.addOutline(require('@/assets/images/outline.png'))
-
       // this.$refs.diyDesigner.addOriginImgAgain()
       // this.$refs.diyDesigner.renderAll()
     },
@@ -328,9 +416,34 @@ export default {
       this.loading = true
       this.loadingTipText = '正在提交'
 
-      if (!this.preview_img) {
-        this.isShowDialog = false
-        await this.$refs.diyDesigner.preview()
+      const left = {}
+      const right = {}
+      const top = {}
+      const bottom = {}
+
+      const previewRes = await this.$refs.designerControl.previewAll()
+      this.preview_img_data = previewRes[0].preview_img_data
+      this.prune_img_data = previewRes[0].prune_img_data
+
+      if (previewRes[1]) {
+        left.preview_img = await this.imgUpload(previewRes[1].preview_img_data, 5)
+        left.prune_img = await this.imgUpload(previewRes[1].prune_img_data, 6)
+        left.ori_user_img = this.left.ori_user_img
+      }
+      if (previewRes[2]) {
+        right.preview_img = await this.imgUpload(previewRes[2].preview_img_data, 5)
+        right.prune_img = await this.imgUpload(previewRes[2].prune_img_data, 6)
+        right.ori_user_img = this.right.ori_user_img
+      }
+      if (previewRes[3]) {
+        top.preview_img = await this.imgUpload(previewRes[3].preview_img_data, 5)
+        top.prune_img = await this.imgUpload(previewRes[3].prune_img_data, 6)
+        top.ori_user_img = this.top.ori_user_img
+      }
+      if (previewRes[4]) {
+        bottom.preview_img = await this.imgUpload(previewRes[4].preview_img_data, 5)
+        bottom.prune_img = await this.imgUpload(previewRes[4].prune_img_data, 6)
+        bottom.ori_user_img = this.bottom.ori_user_img
       }
 
       /**
@@ -338,7 +451,21 @@ export default {
        */
       if (this.picSource === 1) {
         this.ori_user_img = await this.imgUpload(this.ori_user_img_data, 4)
+
+        if (previewRes[1]) {
+          left.ori_user_img = await this.imgUpload(this.left.ori_user_img_data, 4)
+        }
+        if (previewRes[2]) {
+          right.ori_user_img = await this.imgUpload(this.right.ori_user_img_data, 4)
+        }
+        if (previewRes[3]) {
+          top.ori_user_img = await this.imgUpload(this.top.ori_user_img_data, 4)
+        }
+        if (previewRes[4]) {
+          bottom.ori_user_img = await this.imgUpload(this.bottom.ori_user_img_data, 4)
+        }
       }
+
       this.preview_img = await this.imgUpload(this.preview_img_data, 5)
       this.prune_img = await this.imgUpload(this.prune_img_data, 6)
 
@@ -349,7 +476,11 @@ export default {
         color: this.opt_color_list[this.curPic].color_name, // 颜色分类("红色"、"绿色"...)
         preview_img: this.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
         prune_img: this.prune_img, // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-        ori_user_img: this.ori_user_img // 用户上传的未经处理的原图
+        ori_user_img: this.ori_user_img, // 用户上传的未经处理的原图
+        left,
+        right,
+        top,
+        bottom
       }
 
       if (this.buycart_id) {
@@ -376,22 +507,53 @@ export default {
         this.showPicList = true
       }
       // this.$refs.diyDesigner.removeOriginImg()
-      this.ori_user_img = ''
-      this.ori_user_img_data = ''
+      // this.ori_user_img = ''
+      // this.ori_user_img_data = ''
       // this.outline_img_url = ''
     },
     selectMaterialPic(item) {
       this.ori_user_img = item.material_img
+      this.left.ori_user_img = item.material_img_left
+      this.right.ori_user_img = item.material_img_right
+      this.top.ori_user_img = item.material_img_top
+      this.bottom.ori_user_img = item.material_img_bottom
+
       this.ori_user_img_url = item.material_img_url_ori
       this.showPicList = false
-      // this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
       this.$refs.designerControl.addAllOriginImg(item)
     },
     async handlerPreviewClick() {
       this.loading = true
       this.loadingTipText = '正在合成'
-      await this.$refs.diyDesigner.preview()
+      const res = await this.$refs.designerControl.previewAll()
       this.loading = false
+
+      const back = res[0]
+      const left = res[1]
+      const right = res[2]
+      const top = res[3]
+      const bottom = res[4]
+
+      this.preview_img_data = back.preview_img_data
+      this.prune_img_data = back.prune_img_data
+
+      if (left) {
+        this.left.preview_img_data = left.preview_img_data
+        this.left.prune_img_data = left.prune_img_data
+      }
+      if (right) {
+        this.right.preview_img_data = right.preview_img_data
+        this.right.prune_img_data = right.prune_img_data
+      }
+      if (top) {
+        this.top.preview_img_data = top.preview_img_data
+        this.top.prune_img_data = top.prune_img_data
+      }
+      if (bottom) {
+        this.bottom.preview_img_data = bottom.preview_img_data
+        this.bottom.prune_img_data = bottom.prune_img_data
+      }
+      this.dialogVisible = true
     },
     handlerPreviewSuc({ preview_img_data, prune_img_data }) {
       this.preview_img_data = preview_img_data
@@ -507,12 +669,14 @@ export default {
 
 .upload-img-wrapper {
   margin-bottom: 24px;
+  display: flex;
   .opr-value {
     width: 520px;
     margin-right: 14px;
   }
   .outline-uploader {
     float: left;
+    margin-right: 14px;
   }
   .el-button {
     padding: 11px 20px;
@@ -569,33 +733,34 @@ export default {
     right: 0;
   }
 }
-// /deep/ .preview-dialog {
-//   .el-dialog__header {
-//     // background: rgba(176, 204, 177, 0.51);
-//   }
-//   .el-dialog__body {
-//     text-align: center;
-//     max-height: 80vh;
-//     // background: rgba(176, 204, 177, 0.51);
+/deep/ .preview-dialog {
+  // .el-dialog__header {
+  // background: rgba(176, 204, 177, 0.51);
+  // }
+  .el-dialog__body {
+    text-align: center;
+    max-height: 80vh;
+    // background: rgba(176, 204, 177, 0.51);
 
-//     .preview-img-wrapper {
-//       display: flex;
-//       justify-content: center;
-//       .img-wrapper {
-//         width: 60%;
-//         img {
-//           width: 100%;
-//           border: 1px solid #ccc;
-//         }
-//       }
-//     }
-//   }
-// }
+    .preview-img-wrapper {
+      display: flex;
+      justify-content: space-around;
+      // .img-wrapper {
+      // width: 60%;
+      // }
+    }
+  }
+}
 /deep/ .preview-pic-wrapper {
   .el-dialog__body {
     max-height: 80vh;
     text-align: center;
-    padding: 0;
+
+    .pic-title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
     img {
       max-height: 70vh;
       max-width: 70vh;

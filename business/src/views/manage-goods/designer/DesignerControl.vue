@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="designer-list">
+    <div class="designer-list" :style="topBottomOffsetStyle">
       <PictureDesigner
         ref="topDesigner"
         namePrefix="top"
@@ -44,7 +44,7 @@
         :canvasWidth="rightParam.canvasWidth"
       />
     </div>
-    <div class="designer-list">
+    <div class="designer-list" :style="topBottomOffsetStyle">
       <PictureDesigner
         ref="bottomDesigner"
         namePrefix="bottom"
@@ -113,7 +113,8 @@ export default {
         canvasWidth: ''
       },
 
-      hasback: true
+      hasback: true,
+      topBottomOffsetStyle: '' // top,bottom 偏移样式
     }
   },
   computed: {
@@ -191,30 +192,60 @@ export default {
 
       this.bottomParam.canvasWidth = 400 + this.topParam.width
       this.bottomParam.canvasHeight = 400 + this.topParam.height
+
+      this.topBottomOffsetStyle = `padding-left:${Math.round(
+        this.leftParam.canvasWidth * this.scale
+      )}px`
     },
     addAllColorImg() {
-      ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
+      ['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
         if (this[`has${key}`]) {
-          this.$refs[`${key}Designer`].addColorImg(this.opt_color[key].color_img_url)
+          await this.$refs[`${key}Designer`].addColorImg(this.opt_color[key].color_img_url)
         }
       })
     },
     addAllOutline() {
-      ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
+      ['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
         if (this[`has${key}`]) {
-          this.$refs[`${key}Designer`].addOutline(this.opt_color[key].outline_img_url)
+          await this.$refs[`${key}Designer`].addOutline(this.opt_color[key].outline_img_url)
         }
       })
     },
     addAllOriginImg(item) {
-      // console.log('item11111', item)
       ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
-        console.log(item)
-        console.log(item[`material_img_${key}`])
-        console.log(item[`material_img_${key}_url_ori]`])
         if (this[`has${key}`] && item[`material_img_${key}`]) {
-          this.$refs[`${key}Designer`].addOriginImg(item[`material_img_${key}_url_ori]`])
+          this.$refs[`${key}Designer`].addOriginImg(item[`material_img_${key}_url_ori`])
         }
+      })
+    },
+    addOriginImg(img, type) {
+      this.$refs[`${type}Designer`].addOriginImg(img)
+    },
+    previewAll() {
+      return new Promise((resolve, reject) => {
+        let backPromise, leftPromise, rightPromise, topPromise, bottomPromise
+        if (this.hasback) {
+          backPromise = this.$refs.backDesigner.preview()
+        }
+        if (this.hasleft) {
+          leftPromise = this.$refs.leftDesigner.preview()
+        }
+        if (this.hasright) {
+          rightPromise = this.$refs.rightDesigner.preview()
+        }
+        if (this.hastop) {
+          topPromise = this.$refs.topDesigner.preview()
+        }
+        if (this.hasbottom) {
+          bottomPromise = this.$refs.bottomDesigner.preview()
+        }
+
+        Promise.all([backPromise, leftPromise, rightPromise, topPromise, bottomPromise]).then(
+          (res) => {
+            console.log('PromiseAll', res)
+            resolve(res)
+          }
+        )
       })
     }
   }

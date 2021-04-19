@@ -3,7 +3,7 @@
     <canvas :id="idName" />
 
     <!-- screenshot canvas -->
-    <canvas id="screenshot-canvas" style="visibility: hidden; display: none" />
+    <canvas :id="screenshotIdName" style="visibility: hidden; display: none" />
   </div>
 </template>
 
@@ -156,7 +156,6 @@ export default {
     },
     // 裁剪的原图
     addOriginImg(url) {
-      console.log('222', url)
       if (this.originImg) {
         this.canvas.remove(this.originImg)
       }
@@ -232,8 +231,6 @@ export default {
           this.prune_img_data = screenshotCanvas.toDataURL({ format: 'png' })
 
           screenshotCanvas.clear()
-          // _this.canvas.clear()
-          // await this.addOutline(url)
           this.canvas.remove(this.originImg)
           this.canvas.renderAll()
 
@@ -266,13 +263,14 @@ export default {
               this.canvas.setActiveObject(this.originImg)
               this.canvas.renderAll()
 
-              this.$emit('preview-success', {
+              const previewData = {
                 preview_img_data: this.preview_img_data,
                 prune_img_data: this.prune_img_data
-              })
+              }
+              this.$emit('preview-success', previewData)
 
               screenshotCanvas.dispose()
-              resolve()
+              resolve(previewData)
             }
           )
         })
@@ -306,7 +304,7 @@ export default {
 #designer-canvas {
   border: 1px solid #ccc;
 }
-.canvas-bg-wrapper {
-  background: url('../../../assets/images/canvas_bg.jpg') repeat;
-}
+// .canvas-bg-wrapper {
+//   background: url('../../../assets/images/canvas_bg.jpg') repeat;
+// }
 </style>
