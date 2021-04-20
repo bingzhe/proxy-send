@@ -4,6 +4,7 @@
     <el-table-column prop="freight_fee" label="运费" min-width="100" align="center" />
     <el-table-column prop="discount_fee" label="折扣金额" min-width="100" align="center" />
     <el-table-column prop="attach_fee" label="配送礼品费用" min-width="100" align="center" />
+    <el-table-column prop="side_print_fee" label="侧面打印费用" min-width="100" align="center" />
   </el-table>
 </template>
 

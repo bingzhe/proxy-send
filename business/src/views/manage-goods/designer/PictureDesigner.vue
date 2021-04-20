@@ -37,8 +37,8 @@ export default {
       outlineWidth: '',
       outlineHeight: '',
 
-      posLeft: 200,
-      posTop: 200
+      posLeft: 300,
+      posTop: 300
     }
   },
   computed: {
@@ -51,14 +51,7 @@ export default {
   },
   methods: {
     init() {
-      // const heightWrapper = this.$refs.canvasBgWrapper.offsetWidth
-
-      /**
-       * 设计器画布的尺寸，宽度100% 高度是图片高度 + 300
-       */
       this.canvas = new fabric.Canvas(this.idName, {
-        // width: heightWrapper,
-        // height: this.height * this.scale * 2 + 300 * this.scale
         width: Math.round(this.canvasWidth * this.scale),
         height: Math.round(this.canvasHeight * this.scale)
       })
@@ -148,9 +141,6 @@ export default {
       })
     },
     removeOutlineImg() {
-      // if (this.outlineImg) {
-      //   this.canvas.remove(this.outlineImg)
-      // }
       this.canvas.overlayImage = null
       this.canvas.renderAll()
     },
@@ -207,6 +197,10 @@ export default {
     },
     preview() {
       return new Promise((resolve) => {
+        if (!this.originImg) {
+          resolve()
+          return
+        }
         const screenshotCanvas = new fabric.Canvas(this.screenshotIdName)
 
         // 去掉底色

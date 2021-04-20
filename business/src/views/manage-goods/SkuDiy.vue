@@ -108,15 +108,9 @@
         </div>
         <div class="diy-content-wrapper">
           <div class="diy-designer-wrapper">
-            <DesignerControl ref="designerControl" />
+            <DesignerControl ref="designerControl" :curPic="curPic" />
           </div>
           <div class="button-group">
-            <!-- <el-button
-              v-if="picSource === 2"
-              type="text"
-              @click="showPicList = true"
-            >返回图库</el-button> -->
-            <!-- <br /> -->
             <el-button
               :disabled="!ori_name"
               type="text"
@@ -138,6 +132,7 @@
       :visible.sync="dialogVisible"
       title="预览图"
       width="80vw"
+      top="6vh"
     >
       <div class="preview-img-wrapper">
         <div class="img-wrapper">

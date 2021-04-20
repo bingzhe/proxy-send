@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="designer-list" :style="topBottomOffsetStyle">
+    <div v-if="hastop" class="designer-list" :style="topBottomOffsetStyle">
       <PictureDesigner
         ref="topDesigner"
         namePrefix="top"
@@ -44,7 +44,7 @@
         :canvasWidth="rightParam.canvasWidth"
       />
     </div>
-    <div class="designer-list" :style="topBottomOffsetStyle">
+    <div v-if="hasbsottom" class="designer-list" :style="topBottomOffsetStyle">
       <PictureDesigner
         ref="bottomDesigner"
         namePrefix="bottom"
@@ -60,11 +60,15 @@
 </template>
 
 <script>
+/* eslint-disable vue/require-default-prop */
 import PictureDesigner from './PictureDesigner'
 
 export default {
   components: {
     PictureDesigner
+  },
+  props: {
+    curPic: Number
   },
   data() {
     return {
@@ -119,16 +123,28 @@ export default {
   },
   computed: {
     hasleft() {
-      return !!(this.leftParam.width || this.leftParam.height)
+      return !!(this.leftParam.width && this.leftParam.height)
     },
     hasright() {
-      return !!(this.rightParam.width || this.rightParam.height)
+      return !!(this.rightParam.width && this.rightParam.height)
     },
     hastop() {
-      return !!(this.topParam.width || this.topParam.height)
+      return !!(this.topParam.width && this.topParam.height)
     },
     hasbottom() {
-      return !!(this.bottomParam.width || this.bottomParam.height)
+      return !!(this.bottomParam.width && this.bottomParam.height)
+    }
+  },
+  watch: {
+    curPic: function (val) {
+      this.opt_color = this.opt_color_list[val]
+
+      this.$nextTick(async () => {
+        this.removeAllOriginImg()
+        await this.addAllColorImg()
+        this.allAddOriginImgAgain()
+        this.allRender()
+      })
     }
   },
   methods: {
@@ -143,15 +159,14 @@ export default {
       this.getInitData(initData)
       this.opt_color_list = info.opt_color_list
 
-      // >>>>>>> colors
-      this.opt_color = this.opt_color_list[0]
+      this.opt_color = this.opt_color_list[this.curPic]
 
       this.$nextTick(() => {
         this.$refs.backDesigner.init()
-        this.$refs.leftDesigner.init()
-        this.$refs.rightDesigner.init()
-        this.$refs.topDesigner.init()
-        this.$refs.bottomDesigner.init()
+        this.hasleft && this.$refs.leftDesigner.init()
+        this.hasright && this.$refs.rightDesigner.init()
+        this.hastop && this.$refs.topDesigner.init()
+        this.hasbottom && this.$refs.bottomDesigner.init()
 
         this.addAllColorImg()
         this.addAllOutline()
@@ -174,47 +189,94 @@ export default {
         this.scale = 0.3
       }
 
-      /**
-       * 计算画布尺寸
-       */
-
-      this.backParam.canvasWidth = 400 + this.backParam.width
-      this.backParam.canvasHeight = 400 + this.backParam.height
-
-      this.leftParam.canvasWidth = 400 + this.leftParam.width
-      this.leftParam.canvasHeight = 400 + this.leftParam.height
-
-      this.rightParam.canvasWidth = 400 + this.leftParam.width
-      this.rightParam.canvasHeight = 400 + this.leftParam.height
-
-      this.topParam.canvasWidth = 400 + this.topParam.width
-      this.topParam.canvasHeight = 400 + this.topParam.height
-
-      this.bottomParam.canvasWidth = 400 + this.topParam.width
-      this.bottomParam.canvasHeight = 400 + this.topParam.height
+      this.calculateCanvasSize(600)
 
       this.topBottomOffsetStyle = `padding-left:${Math.round(
         this.leftParam.canvasWidth * this.scale
       )}px`
     },
+    // 计算画布尺寸
+    calculateCanvasSize(base) {
+      this.backParam.canvasWidth = base + this.backParam.width || 0
+      this.backParam.canvasHeight = base + this.backParam.height || 0
+
+      this.leftParam.canvasWidth = base + this.leftParam.width || 0
+      this.leftParam.canvasHeight = base + this.leftParam.height || 0
+
+      this.rightParam.canvasWidth = base + this.leftParam.width || 0
+      this.rightParam.canvasHeight = base + this.leftParam.height || 0
+
+      this.topParam.canvasWidth = base + this.topParam.width || 0
+      this.topParam.canvasHeight = base + this.topParam.height || 0
+
+      this.bottomParam.canvasWidth = base + this.topParam.width || 0
+      this.bottomParam.canvasHeight = base + this.topParam.height || 0
+    },
     addAllColorImg() {
-      ['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
-        if (this[`has${key}`]) {
-          await this.$refs[`${key}Designer`].addColorImg(this.opt_color[key].color_img_url)
-        }
+      return new Promise((resolve, reject) => {
+        const promiseList = []
+        ;['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
+          if (this[`has${key}`]) {
+            promiseList.push(
+              this.$refs[`${key}Designer`].addColorImg(this.opt_color[key].color_img_url)
+            )
+          }
+        })
+        Promise.all(promiseList)
+          .then(() => {
+            resolve()
+          })
+          .catch((e) => reject(e))
       })
     },
     addAllOutline() {
-      ['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
-        if (this[`has${key}`]) {
-          await this.$refs[`${key}Designer`].addOutline(this.opt_color[key].outline_img_url)
-        }
+      return new Promise((resolve, reject) => {
+        const promiseList = []
+        ;['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
+          if (this[`has${key}`]) {
+            await this.$refs[`${key}Designer`].addOutline(this.opt_color[key].outline_img_url)
+          }
+        })
+        Promise.all(promiseList)
+          .then(() => {
+            resolve()
+          })
+          .catch((e) => reject(e))
       })
     },
     addAllOriginImg(item) {
-      ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
-        if (this[`has${key}`] && item[`material_img_${key}`]) {
-          this.$refs[`${key}Designer`].addOriginImg(item[`material_img_${key}_url_ori`])
+      return new Promise((resolve, reject) => {
+        const promiseList = []
+        ;['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
+          if (this[`has${key}`] && item[`material_img_${key}`]) {
+            this.$refs[`${key}Designer`].addOriginImg(item[`material_img_${key}_url_ori`])
+          }
+        })
+        Promise.all(promiseList)
+          .then(() => {
+            resolve()
+          })
+          .catch((e) => reject(e))
+      })
+    },
+    removeAllOriginImg() {
+      ['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
+        if (this[`has${key}`]) {
+          await this.$refs[`${key}Designer`].removeOriginImg()
+        }
+      })
+    },
+    allRender() {
+      ['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
+        if (this[`has${key}`]) {
+          await this.$refs[`${key}Designer`].renderAll()
+        }
+      })
+    },
+    allAddOriginImgAgain() {
+      ['back', 'left', 'right', 'top', 'bottom'].forEach(async (key) => {
+        if (this[`has${key}`]) {
+          await this.$refs[`${key}Designer`].addOriginImgAgain()
         }
       })
     },
@@ -240,12 +302,12 @@ export default {
           bottomPromise = this.$refs.bottomDesigner.preview()
         }
 
-        Promise.all([backPromise, leftPromise, rightPromise, topPromise, bottomPromise]).then(
-          (res) => {
+        Promise.all([backPromise, leftPromise, rightPromise, topPromise, bottomPromise])
+          .then((res) => {
             console.log('PromiseAll', res)
             resolve(res)
-          }
-        )
+          })
+          .catch((e) => reject(e))
       })
     }
   }

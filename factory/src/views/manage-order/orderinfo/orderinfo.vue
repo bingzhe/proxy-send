@@ -4,9 +4,7 @@
       <div class="order-title-wrapper">
         <div class="order-title-left">
           <div class="order-status-wrapper">
-            <div class="order-status">
-              订单信息
-            </div>
+            <div class="order-status">订单信息</div>
           </div>
         </div>
         <div class="btn-group-wrapper">
@@ -14,12 +12,8 @@
             class="btn-bd-primary"
             @click="openChangeAddressDialog"
           >修改收货人信息</el-button>
-          <el-button class="btn-bd-primary" @click="oprAdjustFeeDialog">
-            调整订单金额
-          </el-button>
-          <el-button class="btn-bd-primary" @click="handlerGoBackClick">
-            返回
-          </el-button>
+          <el-button class="btn-bd-primary" @click="oprAdjustFeeDialog"> 调整订单金额 </el-button>
+          <el-button class="btn-bd-primary" @click="handlerGoBackClick"> 返回 </el-button>
         </div>
       </div>
       <!-- 基本信息 -->
@@ -73,9 +67,7 @@
       </div>-->
     </div>
     <div v-loading="tableLoading" class="audit-wrapper" element-loading-text="拼命加载中">
-      <div class="audit-title">
-        审单处理
-      </div>
+      <div class="audit-title">审单处理</div>
       <div class="audit-form-wrapper">
         <el-form ref="auditForm" :model="auditForm" label-width="107px" :rules="auditFormRules">
           <el-form-item label="结论：" prop="pass">
@@ -84,9 +76,7 @@
               :disabled="order_status === ORDER_STATUS.DELIVERY_WAIT"
               :label="1"
             >通过</el-radio>
-            <el-radio v-model="auditForm.pass" :label="0">
-              不通过
-            </el-radio>
+            <el-radio v-model="auditForm.pass" :label="0"> 不通过 </el-radio>
           </el-form-item>
           <el-form-item label="原因：" prop="remark">
             <el-input
@@ -101,12 +91,8 @@
         </el-form>
       </div>
       <div class="audit-opr">
-        <el-button class="btn-bd-primary" @click="handlerGoBackClick">
-          取消
-        </el-button>
-        <el-button type="primary" @click="handlerAuditOprClick">
-          提交
-        </el-button>
+        <el-button class="btn-bd-primary" @click="handlerGoBackClick"> 取消 </el-button>
+        <el-button type="primary" @click="handlerAuditOprClick"> 提交 </el-button>
         <el-button
           class="btn-bd-primary"
           @click="handlerAuditOprAndNextClick"
@@ -280,26 +266,18 @@ export default {
         .join('，')
       this.baseinfoList[2].company_name = info.remark
       this.baseinfoList[3].company_name = (info.remark_img_list || []).map((img) => {
-        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&type=8&img_name=${img}&vxversion=v2`
+        return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=8&img_name=${img}&vxversion=v2`
       })
 
       this.remark_img_list = info.remark_img_list || []
 
       // 商品信息
       this.goodsList = info.goods_list.map((goods) => {
-        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${
-          goods.color
-        }_${goods.goods_id}`
+        goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.color}_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
-        goods.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&width=64&height=64&type=7&img_name=${goods.goods_img}`
-        goods.goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${
-          this.token
-        }&opr=get_img&type=7&to=jpg&img_name=${goods.goods_img}`
+        goods.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${goods.goods_img}`
+        goods.goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${goods.goods_img}`
         goods.warehouse_name = (goods.delivery_info || {}).warehouse_name || '-'
         goods.delivery_number = (goods.delivery_info || {}).delivery_number || '-'
         return goods
@@ -322,6 +300,9 @@ export default {
         : '¥ 0.00'
       this.orderFeeList[0].attach_fee = info.attach_fee
         ? `¥ ${info.attach_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].side_print_fee = info.side_print_fee
+        ? `¥ ${info.side_print_fee.toFixed(2)}`
         : '¥ 0.00'
       this.orderFeeList[2].goods_fee = info.adjust_fee
         ? `¥ ${info.adjust_fee.toFixed(2)}`
