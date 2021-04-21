@@ -1,61 +1,6 @@
 <template>
   <div>
-    <div class="designer-list">
-      <PictureDesigner
-        ref="topDesigner"
-        namePrefix="top"
-        :scale="scale"
-        :height="topParam.height"
-        :width="topParam.width"
-        :radius="topParam.radius_adjius"
-        :canvasHeight="topParam.canvasHeight"
-        :canvasWidth="topParam.canvasWidth"
-      />
-    </div>
-    <div class="designer-list">
-      <PictureDesigner
-        ref="leftDesigner"
-        namePrefix="left"
-        :scale="scale"
-        :height="leftParam.height"
-        :width="leftParam.width"
-        :radius="leftParam.radius_adjius"
-        :canvasHeight="leftParam.canvasHeight"
-        :canvasWidth="leftParam.canvasWidth"
-      />
-      <PictureDesigner
-        ref="backDesigner"
-        namePrefix="back"
-        :scale="scale"
-        :height="backParam.height"
-        :width="backParam.width"
-        :radius="backParam.radius_adjius"
-        :canvasHeight="backParam.canvasHeight"
-        :canvasWidth="backParam.canvasWidth"
-      />
-      <PictureDesigner
-        ref="rightDesigner"
-        namePrefix="right"
-        :scale="scale"
-        :height="rightParam.height"
-        :width="rightParam.width"
-        :radius="rightParam.radius_adjius"
-        :canvasHeight="rightParam.canvasHeight"
-        :canvasWidth="rightParam.canvasWidth"
-      />
-    </div>
-    <div class="designer-list">
-      <PictureDesigner
-        ref="bottomDesigner"
-        namePrefix="bottom"
-        :scale="scale"
-        :height="bottomParam.height"
-        :width="bottomParam.width"
-        :radius="bottomParam.radius_adjius"
-        :canvasHeight="bottomParam.canvasHeight"
-        :canvasWidth="bottomParam.canvasWidth"
-      />
-    </div>
+    <PictureDesigner ref="pictureDesigner" :mode="mode" :posList="posList" />
   </div>
 </template>
 
@@ -73,128 +18,130 @@ export default {
 
       scale: 1,
 
-      backParam: {
-        height: '',
-        width: '',
-        radius_adjius: '',
-        canvasHeight: '',
-        canvasWidth: ''
-      },
-
-      leftParam: {
-        height: '',
-        width: '',
-        radius_adjius: '',
-        canvasHeight: '',
-        canvasWidth: ''
-      },
-
-      rightParam: {
-        height: '',
-        width: '',
-        radius_adjius: '',
-        canvasHeight: '',
-        canvasWidth: ''
-      },
-
-      topParam: {
-        height: '',
-        width: '',
-        radius_adjius: '',
-        canvasHeight: '',
-        canvasWidth: ''
-      },
-
-      bottomParam: {
-        height: '',
-        width: '',
-        radius_adjius: '',
-        canvasHeight: '',
-        canvasWidth: ''
-      }
+      mode: 1, // 设计器模式 1：中左右上下 2：中右 3：中左
+      posList: ['back']
     }
   },
   methods: {
     updateData(info) {
-      const initData = {
-        backParam: info.img_print_param,
-        leftParam: info.img_print_param_left,
-        rightParam: info.img_print_param_right,
-        topParam: info.img_print_param_bottom,
-        bottomParam: info.img_print_param_top
+      const printParam = {
+        back: info.img_print_param,
+        left: info.img_print_param_left,
+        right: info.img_print_param_right,
+        top: info.img_print_param_bottom,
+        bottom: info.img_print_param_top
       }
-      this.getInitData(initData)
+
+      if (
+        !(
+          printParam.top.width &&
+          printParam.top.height &&
+          printParam.bottom.width &&
+          printParam.bottom.height
+        )
+      ) {
+        if (
+          !(
+            printParam.left.width &&
+            printParam.left.height &&
+            printParam.right.width &&
+            printParam.right.height
+          )
+        ) {
+          this.mode = 3
+        } else {
+          this.mode = 2
+        }
+      } else {
+        this.mode = 1
+      }
+
+      // 渲染的位置有哪些
+      if (this.mode === 1) {
+        this.posList.push('left', 'right', 'top', 'bottom')
+      } else if (this.mode === 2) {
+        this.posList.push('left', 'right')
+      }
+      console.log(this.mode)
+
       this.opt_color_list = info.opt_color_list
+
+      this.$refs.pictureDesigner.updateDateBeforeInit(printParam)
 
       // >>>>>>> colors
       this.opt_color = this.opt_color_list[0]
 
-      this.$nextTick(() => {
-        this.$refs.backDesigner.init()
-        this.$refs.leftDesigner.init()
-        this.$refs.rightDesigner.init()
-        this.$refs.topDesigner.init()
-        this.$refs.bottomDesigner.init()
+      this.$nextTick(async () => {
+        // 更新图片的定位距离
+        this.$refs.pictureDesigner.setPosition()
 
-        this.addAllColorImg()
-        this.addAllOutline()
+        this.$refs.pictureDesigner.init()
+
+        await this.addOutline()
+        await this.addAllColorImg()
 
         const url3 =
           'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=1&img_name=7bde61719434db210bbab019f801f56f.jpg'
-        this.$refs.backDesigner.addOriginImg(url3)
-        this.$refs.leftDesigner.addOriginImg(url3)
-        this.$refs.rightDesigner.addOriginImg(url3)
+        this.$refs.pictureDesigner.addOriginImg(url3)
       })
     },
-    getInitData(data) {
-      ['backParam', 'leftParam', 'rightParam', 'topParam', 'bottomParam'].forEach((key) => {
-        this[key].width = data[key].width
-        this[key].height = data[key].height
-        this[key].radius_adjius = data[key].radius_adjius
-      })
 
-      /**
-       * 设置画布和真实图片缩放比例
-       */
-      const height = this.backParam.height
-      if (height >= 1000 && height < 1500) {
-        this.scale = 0.4
-      } else if (height >= 1500) {
-        this.scale = 0.3
-      }
-
-      /**
-       * 计算画布尺寸
-       */
-
-      this.backParam.canvasWidth = 400 + this.backParam.width
-      this.backParam.canvasHeight = 400 + this.backParam.height
-
-      this.leftParam.canvasWidth = 400 + this.leftParam.width
-      this.leftParam.canvasHeight = 400 + this.leftParam.height
-
-      this.rightParam.canvasWidth = 400 + this.leftParam.width
-      this.rightParam.canvasHeight = 400 + this.leftParam.height
-
-      this.topParam.canvasWidth = 400 + this.topParam.width
-      this.topParam.canvasHeight = 400 + this.topParam.height
-
-      this.bottomParam.canvasWidth = 400 + this.topParam.width
-      this.bottomParam.canvasHeight = 400 + this.topParam.height
-    },
     addAllColorImg() {
-      ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
-        if (this.opt_color[key].color_img) {
-          this.$refs[`${key}Designer`].addColorImg(this.opt_color[key].color_img_url)
-        }
+      return new Promise((resolve, reject) => {
+        const promiseList = []
+        this.posList.forEach((pos) => {
+          if (this.opt_color[pos].color_img) {
+            promiseList.push(
+              this.$refs.pictureDesigner.addColorImg(this.opt_color[pos].color_img_url, pos)
+            )
+          }
+        })
+        Promise.all(promiseList)
+          .then(() => {
+            resolve()
+          })
+          .catch((e) => reject(e))
       })
     },
-    addAllOutline() {
-      ['back', 'left', 'right', 'top', 'bottom'].forEach((key) => {
-        if (this.opt_color[key].outline_img) {
-          this.$refs[`${key}Designer`].addOutline(this.opt_color[key].outline_img_url)
-        }
+    addAllOutlineToCanvas() {
+      return new Promise((resolve, reject) => {
+        const promiseList = []
+        this.posList.forEach((pos) => {
+          if (this.opt_color[pos].outline_img) {
+            promiseList.push(
+              this.$refs.pictureDesigner.addOutlineToCanvas(
+                this.opt_color[pos].outline_img_url,
+                pos
+              )
+            )
+          }
+        })
+        Promise.all(promiseList)
+          .then(() => {
+            resolve()
+          })
+          .catch((e) => reject(e))
       })
+    },
+    async addOutline() {
+      // 1. 清除画布上其他的东西
+      this.$refs.pictureDesigner.removeAllColor()
+      this.$refs.pictureDesigner.removeAllOutline()
+      // 2. 添加轮廓
+      await this.addAllOutlineToCanvas()
+      // 3. 截图
+      const prune_img_data = await this.$refs.pictureDesigner.getFullOutline()
+      // 4. 添加到遮罩层
+      await this.$refs.pictureDesigner.addOutlineMask(prune_img_data)
+      // 5. 清楚第二步添加的轮廓
+      this.$refs.pictureDesigner.removeAllOutline()
+      // 6. 刷新
+      this.$refs.pictureDesigner.renderAll()
+    },
+    async getPreviewData() {
+      console.log(222)
+      const { prune_img_data, preview_img_data } = await this.$refs.leftDesigner.getPreviewData()
+      return { prune_img_data, preview_img_data }
     }
   }
 }

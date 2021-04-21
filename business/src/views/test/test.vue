@@ -8,6 +8,7 @@
     <el-button @click="handlerPreviewClick">预览</el-button>
     <el-button @click="removeOriginImg">removeOriginImg</el-button>
     <el-button @click="removeOutlineImg">removeOutlineImg</el-button>
+
     <!-- <el-button @click="handlerPreviewClick">预览</el-button> -->
     <img :src="preview_img_data" alt="" />
     <img :src="prune_img_data" alt="" />
@@ -78,10 +79,17 @@ export default {
       })
     },
     async handlerPreviewClick() {
-      //   this.loading = true
-      //   this.loadingTipText = '正在合成'
-      await this.$refs.diyDesigner.preview()
+      // console.log(1111)
+      // //   this.loading = true
+      // //   this.loadingTipText = '正在合成'
+      const { preview_img_data, prune_img_data } = await this.$refs.designerControl.getPreviewData()
       //   this.loading = false
+      this.preview_img_data = preview_img_data
+      this.prune_img_data = prune_img_data
+
+      // const prune_img_data = await this.$refs.designerControl.addOutline()
+      // console.log(prune_img_data)
+      // this.prune_img_data = prune_img_data
     },
     handlerPreviewSuc({ preview_img_data, prune_img_data }) {
       this.preview_img_data = preview_img_data
