@@ -91,13 +91,6 @@ export const constantRoutes = [
         meta: { title: 'DIY下单', activeMenu: '/manage-goods/goodslist' }
       },
       {
-        path: 'diyt/:goods_id',
-        name: 'goodsdiyt',
-        hidden: true,
-        component: () => import('@/views/manage-goods/SkuDiyTest'),
-        meta: { title: 'DIY下单', activeMenu: '/manage-goods/goodslist' }
-      },
-      {
         path: 'tbnorm/:goods_id',
         name: 'tbgoodsnorm',
         hidden: true,
@@ -207,7 +200,7 @@ export const constantRoutes = [
     ]
   },
   // { path: '/diy', component: () => import('@/views/manage-goods/DiyDesigner'), hidden: true },
-  { path: '/test', component: () => import('@/views/test/test'), hidden: true },
+  // { path: '/test', component: () => import('@/views/test/test'), hidden: true },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

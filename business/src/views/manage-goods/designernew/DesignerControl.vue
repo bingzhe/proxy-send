@@ -14,7 +14,8 @@ export default {
     PictureDesigner
   },
   props: {
-    posList: Array
+    posList: Array,
+    curPic: Number
   },
   data() {
     return {
@@ -24,13 +25,27 @@ export default {
       scale: 1
     }
   },
+  watch: {
+    curPic: function (val) {
+      this.opt_color = this.opt_color_list[val]
+
+      this.$nextTick(async () => {
+        // this.removeAllOriginImg()
+        // await this.addAllColorImg()
+        // this.allAddOriginImgAgain()
+        // this.allRender()
+        await this.addOutline()
+        await this.addAllColorImg()
+        this.$refs.pictureDesigner.renderAll()
+      })
+    }
+  },
   methods: {
     updateData(info) {
       this.opt_color_list = info.opt_color_list
       this.$refs.pictureDesigner.updateDateBeforeInit(info.printParam)
 
-      // >>>>>>> colors
-      this.opt_color = this.opt_color_list[0]
+      this.opt_color = this.opt_color_list[this.curPic]
 
       this.$nextTick(async () => {
         // 更新图片的定位距离
