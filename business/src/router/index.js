@@ -91,6 +91,13 @@ export const constantRoutes = [
         meta: { title: 'DIY下单', activeMenu: '/manage-goods/goodslist' }
       },
       {
+        path: 'diyt/:goods_id',
+        name: 'goodsdiyt',
+        hidden: true,
+        component: () => import('@/views/manage-goods/SkuDiyTest'),
+        meta: { title: 'DIY下单', activeMenu: '/manage-goods/goodslist' }
+      },
+      {
         path: 'tbnorm/:goods_id',
         name: 'tbgoodsnorm',
         hidden: true,

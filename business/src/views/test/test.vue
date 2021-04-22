@@ -77,6 +77,14 @@ export default {
       this.$nextTick(async () => {
         this.$refs.designerControl.updateData(info)
       })
+
+      setTimeout(() => {
+        const url3 =
+          'http://b.pso.rockyshi.cn/php/img_get.php?token=T1mcrZXEpVwIU5kI&opr=get_img&type=1&img_name=7bde61719434db210bbab019f801f56f.jpg'
+        this.$refs.designerControl.addOriginImg(url3, 'back')
+        this.$refs.designerControl.addOriginImg(url3, 'left')
+        this.$refs.designerControl.addOriginImg(url3, 'right')
+      }, 1000)
     },
     async handlerPreviewClick() {
       // console.log(1111)

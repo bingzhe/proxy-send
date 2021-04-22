@@ -1,6 +1,7 @@
+
 <template>
   <div>
-    <PictureDesigner ref="pictureDesigner" :mode="mode" :posList="posList" />
+    <PictureDesigner ref="pictureDesigner" :posList="posList" />
   </div>
 </template>
 
@@ -8,65 +9,25 @@
 import PictureDesigner from './PictureDesigner'
 
 export default {
+  /* eslint-disable vue/require-default-prop */
   components: {
     PictureDesigner
+  },
+  props: {
+    posList: Array
   },
   data() {
     return {
       opt_color_list: [],
       opt_color: {},
 
-      scale: 1,
-
-      mode: 1, // 设计器模式 1：中左右上下 2：中左右 3：中
-      posList: ['back']
+      scale: 1
     }
   },
   methods: {
     updateData(info) {
-      const printParam = {
-        back: info.img_print_param,
-        left: info.img_print_param_left,
-        right: info.img_print_param_right,
-        top: info.img_print_param_bottom,
-        bottom: info.img_print_param_top
-      }
-
-      if (
-        !(
-          printParam.top.width &&
-          printParam.top.height &&
-          printParam.bottom.width &&
-          printParam.bottom.height
-        )
-      ) {
-        if (
-          !(
-            printParam.left.width &&
-            printParam.left.height &&
-            printParam.right.width &&
-            printParam.right.height
-          )
-        ) {
-          this.mode = 3
-        } else {
-          this.mode = 2
-        }
-      } else {
-        this.mode = 1
-      }
-
-      // 渲染的位置有哪些
-      if (this.mode === 1) {
-        this.posList.push('left', 'right', 'top', 'bottom')
-      } else if (this.mode === 2) {
-        this.posList.push('left', 'right')
-      }
-      console.log(this.mode)
-
       this.opt_color_list = info.opt_color_list
-
-      this.$refs.pictureDesigner.updateDateBeforeInit(printParam)
+      this.$refs.pictureDesigner.updateDateBeforeInit(info.printParam)
 
       // >>>>>>> colors
       this.opt_color = this.opt_color_list[0]
@@ -141,26 +102,31 @@ export default {
     },
 
     async addOutline() {
-      // 1. 清除画布上其他的东西
-      this.$refs.pictureDesigner.removeAllColor()
-      this.$refs.pictureDesigner.removeAllOutline()
-      // 2. 添加轮廓
-      await this.addAllOutlineToCanvas()
-      // 3. 截图
-      const prune_img_data = await this.$refs.pictureDesigner.getFullOutline()
-      // 4. 添加到遮罩层
-      await this.$refs.pictureDesigner.addOutlineMask(prune_img_data)
-      // 5. 清楚第二步添加的轮廓
-      this.$refs.pictureDesigner.removeAllOutline()
-      // 6. 刷新
-      this.$refs.pictureDesigner.renderAll()
-
+      try {
+        // 1. 清除画布上其他的东西
+        this.$refs.pictureDesigner.removeAllColor()
+        this.$refs.pictureDesigner.removeAllOutline()
+        // 2. 添加轮廓
+        await this.addAllOutlineToCanvas()
+        // 3. 截图
+        const prune_img_data = await this.$refs.pictureDesigner.getFullOutline()
+        // 4. 添加到遮罩层
+        await this.$refs.pictureDesigner.addOutlineMask(prune_img_data)
+        // 5. 清楚第二步添加的轮廓
+        this.$refs.pictureDesigner.removeAllOutline()
+        // 6. 刷新
+        this.$refs.pictureDesigner.renderAll()
+      } catch (error) {
+        console.error(error)
+      }
       // await this.$refs.pictureDesigner.addOutlineMask(require('@/assets/images/test.png'))
     },
-    async getPreviewData() {
-      console.log(222)
-      const { prune_img_data, preview_img_data } = await this.$refs.leftDesigner.getPreviewData()
-      return { prune_img_data, preview_img_data }
+    async previewAll() {
+      return await this.$refs.pictureDesigner.getPreviewData()
+    },
+    removeAllOriginImg() {
+      this.$refs.pictureDesigner.removeAllOriginImg()
+      this.$refs.pictureDesigner.renderAll()
     }
   }
 }

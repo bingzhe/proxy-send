@@ -13,20 +13,14 @@ import { fabric } from 'fabric'
 
 export default {
   props: {
-    mode: Number,
     posList: Array
   },
   data() {
     return {
-      // mode: 1, // 设计器模式 1：中左右上下 2：中右 3：中左
-      // posList: ['back'], // 有的图片位置
       scale: 1,
-      canvasWidth: 0,
-      canvasHeight: 0,
 
       canvas: null,
       rect: null, // 裁剪表示区域
-      clipPath: null, // 裁剪路径
 
       originImg: null, // 原图实例
       outlineImg: null, // 轮廓图实例
@@ -122,23 +116,6 @@ export default {
         this[key].radius_adjius = data[key].radius_adjius
       })
 
-      // if (!(this.top.width && this.top.height && this.bottom.width && this.bottom.height)) {
-      //   if (!(this.left.width && this.left.height && this.right.width && this.right.height)) {
-      //     this.mode = 3
-      //   } else {
-      //     this.mode = 2
-      //   }
-      // } else {
-      //   this.mode = 1
-      // }
-
-      // // 渲染的位置有哪些
-      // if (this.mode === 1) {
-      //   this.posList.push('left', 'right', 'top', 'bottom')
-      // } else if (this.mode === 2) {
-      //   this.posList.push('left', 'right')
-      // }
-
       // this.setPosition()
     },
     /**
@@ -148,8 +125,17 @@ export default {
      * @return {*}
      */
     setPosition(offset = 300, gutter = 300) {
-      console.log(this.mode)
-      switch (this.mode) {
+      // 设计器模式 1：中左右上下 2：中右 3：中左
+      let mode = 1
+      if (this.posList.indexOf('top') !== -1 || this.posList.indexOf('bottom') !== -1) {
+        mode = 1
+      } else if (this.posList.indexOf('left') !== -1 || this.posList.indexOf('right') !== -1) {
+        mode = 2
+      } else {
+        mode = 3
+      }
+
+      switch (mode) {
         case 1:
           this.back.posLeft = offset + gutter + this.left.width
           this.back.posTop = offset + gutter + this.top.height
@@ -185,7 +171,8 @@ export default {
       }
     },
     init() {
-      const widthWrapper = this.$refs.canvasBgWrapper.offsetWidth
+      const canvasWidth = this.$refs.canvasBgWrapper.offsetWidth
+
       // 设置画布和真实图片缩放比例
       if (this.back.height >= 1000 && this.back.height < 1500) {
         this.scale = 0.4
@@ -195,13 +182,16 @@ export default {
       /**
        * 设计器画布的尺寸，宽度100%  高度是图片高度 * 2 + 300
        */
-      console.log(this.scale)
-      console.log(this.back.height * this.scale + 600 * this.scale)
-      this.canvasHeight = this.back.height * this.scale + 600 * this.scale
-      this.canvasWidth = widthWrapper
+
+      let canvasHeight
+      if (this.posList.indexOf('top') !== -1 || this.posList.indexOf('top') !== -1) {
+        canvasHeight = this.back.height * this.scale * 2
+      } else {
+        canvasHeight = this.back.height * this.scale + 600 * this.scale
+      }
       this.canvas = new fabric.Canvas('preview-canvas', {
-        width: widthWrapper,
-        height: this.back.height * this.scale + 600 * this.scale
+        width: canvasWidth,
+        height: canvasHeight
       })
 
       fabric.Object.prototype.transparentCorners = false
@@ -268,6 +258,13 @@ export default {
       this.posList.forEach((pos) => {
         if (this[pos].colorImg) {
           this.canvas.remove(this[pos].colorImg)
+        }
+      })
+    },
+    addAllColorAgain() {
+      this.posList.forEach((pos) => {
+        if (this[pos].colorImg) {
+          this.canvas.add(this[pos].colorImg)
         }
       })
     },
@@ -340,13 +337,11 @@ export default {
          * 缩放图片的高度到轮廓尺寸
          * 计算图片缩放后的尺寸，给定位距离加上偏移距离
          */
-        console.log('this[pos]', this[pos])
         img.scaleToHeight(this[pos].height, false)
+
         const scaleWidth = img.width * img.scaleX
         // const offsetWidth = img.scaleX > 1 ? (scaleWidth - this.width) / 2 : 0
         const offsetWidth = (scaleWidth - this[pos].width) / 2
-        console.log({ scaleWidth })
-        console.log({ offsetWidth })
 
         img.top = this[pos].posTop
         img.left = this[pos].posLeft - offsetWidth
@@ -362,19 +357,23 @@ export default {
         this.canvas.add(img)
       })
     },
+    addOriginImgAgain() {
+      this.posList.forEach((pos) => {
+        if (this[pos].originImg) {
+          this.canvas.add(this[pos].originImg)
+        }
+      })
+    },
+    removeAllOriginImg() {
+      this.posList.forEach((pos) => {
+        if (this[pos].originImg) {
+          this.canvas.remove(this[pos].originImg)
+        }
+      })
+    },
     disposeCanvas() {
       if (this.canvas) {
         this.canvas.dispose()
-      }
-    },
-    removeOriginImg() {
-      if (this.originImg) {
-        this.canvas.remove(this.originImg)
-      }
-    },
-    addOriginImgAgain() {
-      if (this.originImg) {
-        this.canvas.add(this.originImg)
       }
     },
     renderAll() {
@@ -407,7 +406,6 @@ export default {
         const screenshotCanvas = new fabric.Canvas('screenshot-canvas')
 
         fabric.Image.fromURL(picData, (img) => {
-          console.log(picData)
           screenshotCanvas.add(img)
           screenshotCanvas.setHeight(height)
           screenshotCanvas.setWidth(width)
@@ -418,56 +416,57 @@ export default {
           img.set('left', offsetLeft)
 
           screenshotCanvas.renderAll()
-
           const screenshotData = screenshotCanvas.toDataURL({ format: imgTyle })
-
           screenshotCanvas.dispose()
-
           resolve(screenshotData)
         })
       })
     },
     async getPreviewData() {
-      this.canvas.remove(this.colorImg)
-      this.canvas.remove(this.rect)
+      this.removeAllColor()
       this.canvas.overlayImage = null
       this.canvas.renderAll()
 
-      // 生成裁剪图，原图缩放，旋转后图片，不包括底图，轮廓图
-      const prune_img_data = await this.getScreenshot(
-        this.canvas.toDataURL({ multiplier: 1 / this.scale }),
-        this.height,
-        this.width,
-        -this.posTop,
-        -this.posLeft
-      )
+      const prune_img_data = {}
+      const preview_img_data = {}
 
+      // 生成裁剪图，原图缩放，旋转后图片，不包括底图，轮廓图
+      for (const pos of this.posList) {
+        if (this[pos].originImg) {
+          prune_img_data[pos] = await this.getScreenshot(
+            this.canvas.toDataURL({ multiplier: 1 / this.scale }),
+            this[pos].height,
+            this[pos].width,
+            -this[pos].posTop,
+            -this[pos].posLeft
+          )
+        }
+      }
       this.canvas.clear()
       this.canvas.renderAll()
 
-      this.canvas.add(this.colorImg)
-      await this.addOutlineImg(this.outlineImg)
-      this.canvas.add(this.originImg)
+      this.addAllColorAgain()
+      await this.addOutlineImg(this.outlineImgMask)
+      this.addOriginImgAgain()
       this.canvas.renderAll()
 
-      const top = this.posTop - (this.outlineHeight - this.height) / 2
-      const left = this.posLeft - (this.outlineWidth - this.width) / 2
+      // 生成预览图，原图缩放，旋转后图片，包括底图，轮廓图
+      for (const pos of this.posList) {
+        if (this[pos].originImg) {
+          const top = this[pos].posTop - (this[pos].outlineHeight - this[pos].height) / 2
+          const left = this[pos].posLeft - (this[pos].outlineWidth - this[pos].width) / 2
 
-      const preview_img_data = await this.getScreenshot(
-        this.canvas.toDataURL({ multiplier: 1 / this.scale }),
-        this.outlineHeight,
-        this.outlineWidth,
-        -top,
-        -left,
-        'jpeg',
-        'rgba(255,255,255,1)'
-      )
-
-      this.canvas.add(this.rect)
-      this.canvas.setActiveObject(this.originImg)
-      this.canvas.renderAll()
-
-      console.log({ prune_img_data }, { preview_img_data })
+          preview_img_data[pos] = await this.getScreenshot(
+            this.canvas.toDataURL({ multiplier: 1 / this.scale }),
+            this[pos].outlineHeight,
+            this[pos].outlineWidth,
+            -top,
+            -left,
+            'jpeg',
+            'rgba(255,255,255,1)'
+          )
+        }
+      }
 
       return { prune_img_data, preview_img_data }
     },
@@ -500,6 +499,6 @@ export default {
   border: 1px solid #ccc;
 }
 .canvas-bg-wrapper {
-  background: url('../../assets/images/canvas_bg.jpg') repeat;
+  background: url('../../../assets/images/canvas_bg.jpg') repeat;
 }
 </style>
