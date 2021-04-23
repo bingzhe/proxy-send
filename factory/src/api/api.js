@@ -33,6 +33,17 @@ function generateRequestFn(interfaceFile, options = {}) {
               message: resp.msg
             })
           }
+          if (resp.data.msgdata) {
+            const { title, content } = resp.data.msgdata || {}
+            Vue.prototype.$msgbox({
+              dangerouslyUseHTMLString: true,
+              title: title,
+              message: content,
+              confirmButtonText: '关闭',
+              closeOnClickModal: false,
+              showClose: false
+            })
+          }
           resolve(resp)
         },
         options
