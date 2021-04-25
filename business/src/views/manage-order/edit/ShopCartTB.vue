@@ -4,10 +4,21 @@
       <div class="goods-wrapper">
         <div class="baseinfo-title-wrapper clearfix">
           <baseinfo-title class="select-shop-title" color="#FB7474" text="已选商品" />
-          <el-button class="continue-shop" type="primary" plain @click="goGoodsList">继续选购</el-button>
+          <el-button
+            class="continue-shop"
+            type="primary"
+            plain
+            @click="goGoodsList"
+          >继续选购</el-button>
         </div>
         <div class="select-goods-table-wrapper">
-          <el-table ref="selectGoodsTable" class="select-goods-table" border :data="goodsList" @selection-change="handleSelectionChange">
+          <el-table
+            ref="selectGoodsTable"
+            class="select-goods-table"
+            border
+            :data="goodsList"
+            @selection-change="handleSelectionChange"
+          >
             <el-table-column type="selection" align="center" width="55" />
             <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
               <template slot-scope="scope">
@@ -25,8 +36,16 @@
             <el-table-column prop="goodsSumPrice" label="小计" min-width="50" />
             <el-table-column prop="opr" label="操作" width="85" align="center">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.type === GOODS_TYPE.DIY" type="text" @click="handleGoodsEditClick(scope.row)">编辑</el-button>
-                <el-button class="del-btn" type="text" @click="delShopcart(scope.$index)">删除</el-button>
+                <el-button
+                  v-if="scope.row.type === GOODS_TYPE.DIY"
+                  type="text"
+                  @click="handleGoodsEditClick(scope.row)"
+                >编辑</el-button>
+                <el-button
+                  class="del-btn"
+                  type="text"
+                  @click="delShopcart(scope.$index)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -39,7 +58,12 @@
         <div class="gifs-form-wrapper clearfix">
           <div v-for="(item, index) in attachList" :key="index" class="gifs-item">
             <span class="gifs-label">{{ item.goods_name }}</span>
-            <el-input-number v-model="item.num" controls-position="right" :min="0" @change="getPrice" />
+            <el-input-number
+              v-model="item.num"
+              controls-position="right"
+              :min="0"
+              @change="getPrice"
+            />
             <span class="gifs-price">（&yen; {{ item.price }}）</span>
           </div>
         </div>
@@ -49,20 +73,56 @@
           <baseinfo-title color="#FBBD74" text="配送信息" />
         </div>
         <div class="consignee-form-wrapper">
-          <el-form ref="consigneeFrom" :model="consigneeFrom" :rules="consigeneeFromRules" :inline="true" label-width="80px">
+          <el-form
+            ref="consigneeFrom"
+            :model="consigneeFrom"
+            :rules="consigeneeFromRules"
+            :inline="true"
+            label-width="80px"
+          >
             <el-form-item label="仓库" prop="warehouse_id" label-width="130px">
-              <el-select v-model="consigneeFrom.warehouse_id" placeholder="请选择" filterable @change="handleWarehouseChange">
-                <el-option v-for="(item, index) in warehouseList" :key="index" :label="item.warehouse_name" :value="item.warehouse_id" />
+              <el-select
+                v-model="consigneeFrom.warehouse_id"
+                placeholder="请选择"
+                filterable
+                @change="handleWarehouseChange"
+              >
+                <el-option
+                  v-for="(item, index) in warehouseList"
+                  :key="index"
+                  :label="item.warehouse_name"
+                  :value="item.warehouse_id"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="物流" prop="delivery_company_name" label-width="110px">
-              <el-select v-model="consigneeFrom.delivery_company_name" placeholder="请选择" filterable @change="getPrice">
-                <el-option v-for="(item, index) in deliveryCompanyList" :key="index" :label="item.company_name" :value="item.company_name" />
+              <el-select
+                v-model="consigneeFrom.delivery_company_name"
+                placeholder="请选择"
+                filterable
+                @change="getPrice"
+              >
+                <el-option
+                  v-for="(item, index) in deliveryCompanyList"
+                  :key="index"
+                  :label="item.company_name"
+                  :value="item.company_name"
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="下单店铺" prop="tshop_id" label-width="130px">
-              <el-select v-model="consigneeFrom.tshop_id" class="full-width" placeholder="请选择" @change="getPrice">
-                <el-option v-for="(item, index) in tshopList" :key="index" :label="item.tshop_name" :value="item.tshop_id" />
+              <el-select
+                v-model="consigneeFrom.tshop_id"
+                class="full-width"
+                placeholder="请选择"
+                @change="getPrice"
+              >
+                <el-option
+                  v-for="(item, index) in tshopList"
+                  :key="index"
+                  :label="item.tshop_name"
+                  :value="item.tshop_id"
+                />
               </el-select>
             </el-form-item>
             <br />
@@ -81,31 +141,68 @@
             </el-form-item>
             <br />
             <el-form-item label="省/直辖市" prop="province" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.province" v-trim="consigneeFrom.province" placeholder="请输入" />
+              <el-input
+                v-model.trim="consigneeFrom.province"
+                v-trim="consigneeFrom.province"
+                placeholder="请输入"
+              />
             </el-form-item>
             <el-form-item label="市" prop="city" label-width="110px">
-              <el-input v-model.trim="consigneeFrom.city" v-trim="consigneeFrom.city" placeholder="请输入" @change="getPrice" />
+              <el-input
+                v-model.trim="consigneeFrom.city"
+                v-trim="consigneeFrom.city"
+                placeholder="请输入"
+                @change="getPrice"
+              />
             </el-form-item>
             <br />
             <el-form-item label="区/县" prop="area" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.area" v-trim="consigneeFrom.area" placeholder="请输入" />
+              <el-input
+                v-model.trim="consigneeFrom.area"
+                v-trim="consigneeFrom.area"
+                placeholder="请输入"
+              />
             </el-form-item>
             <el-form-item label="乡/镇/街道" prop="street" label-width="110px">
-              <el-input v-model.trim="consigneeFrom.street" v-trim="consigneeFrom.street" placeholder="请输入" />
+              <el-input
+                v-model.trim="consigneeFrom.street"
+                v-trim="consigneeFrom.street"
+                placeholder="请输入"
+              />
             </el-form-item>
             <br />
             <el-form-item class="address" label="收货人详细地址" prop="address" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.address" v-trim="consigneeFrom.address" type="textarea" placeholder="请输入" />
+              <el-input
+                v-model.trim="consigneeFrom.address"
+                v-trim="consigneeFrom.address"
+                type="textarea"
+                placeholder="请输入"
+              />
               <div class="gray-tip">* 自动拆解不正确时请手工填写以下信息</div>
-              <el-button :disabled="!consigneeFrom.address" class="split-btn" type="primary" @click="autoSplit">自动拆解</el-button>
+              <el-button
+                :disabled="!consigneeFrom.address"
+                class="split-btn"
+                type="primary"
+                @click="autoSplit"
+              >自动拆解</el-button>
             </el-form-item>
             <br />
             <el-form-item label="留言" prop="remark" label-width="130px">
-              <el-input v-model.trim="consigneeFrom.remark" type="textarea" placeholder="请输入" maxlength="150" show-word-limit />
+              <el-input
+                v-model.trim="consigneeFrom.remark"
+                type="textarea"
+                placeholder="请输入"
+                maxlength="150"
+                show-word-limit
+              />
             </el-form-item>
             <el-form-item label="附图" prop="remark_img_list" label-width="130px">
               <div class="remark-img-wrapper">
-                <div v-for="(item, index) in remarkImgPreviewList" :key="index" class="remark-img-item">
+                <div
+                  v-for="(item, index) in remarkImgPreviewList"
+                  :key="index"
+                  class="remark-img-item"
+                >
                   <img :src="item" @click="handleRemarkImgClick(item)" />
                   <i class="el-icon-error" @click="handleRemarkImgRemoveClick(index)"></i>
                 </div>
@@ -427,7 +524,6 @@ export default {
       const resp = await orderGet(data)
       // console.log('计算订单费用 res=>', resp)
 
-      // <<<<<<<<<<<<<<<<<<<<<<<<<<
       if (resp.ret !== 0) return
 
       const feeInfo = resp.data || {}
@@ -490,6 +586,7 @@ export default {
     },
     async saveOrderOpr() {
       const goods_list = this.multipleSelection.map((goods) => {
+        // console.log('保存订单', JSON.stringify(goods, null, 2))
         return {
           goods_id: goods.goods_id,
           index_id: goods.index_id || '',
@@ -497,7 +594,11 @@ export default {
           num: goods.num,
           preview_img: goods.preview_img || '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
           prune_img: goods.prune_img || '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-          ori_user_img: goods.ori_user_img || '' // 用户上传的未经处理的原图
+          ori_user_img: goods.ori_user_img || '', // 用户上传的未经处理的原图
+          left: goods.left,
+          right: goods.right,
+          top: goods.top,
+          bottom: goods.bottom
         }
       })
 

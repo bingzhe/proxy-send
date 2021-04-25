@@ -15,7 +15,11 @@ export default {
   },
   props: {
     posList: Array,
-    curPic: Number
+    curPic: Number,
+    picFlag: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -27,8 +31,10 @@ export default {
   },
   watch: {
     curPic: function (val) {
+      if (!this.picFlag) return
       this.opt_color = this.opt_color_list[val]
 
+      console.log('curPic', val)
       this.$nextTick(async () => {
         // this.removeAllOriginImg()
         // await this.addAllColorImg()
@@ -119,7 +125,9 @@ export default {
     async addOutline() {
       try {
         // 1. 清除画布上其他的东西
+        this.$refs.pictureDesigner.removeOutlineImgMask()
         this.$refs.pictureDesigner.removeAllColor()
+        this.$refs.pictureDesigner.removeAllOriginImg()
         this.$refs.pictureDesigner.removeAllOutline()
         // 2. 添加轮廓
         await this.addAllOutlineToCanvas()
@@ -142,6 +150,16 @@ export default {
     removeAllOriginImg() {
       this.$refs.pictureDesigner.removeAllOriginImg()
       this.$refs.pictureDesigner.renderAll()
+    },
+    removeAllColor() {
+      this.$refs.pictureDesigner.removeAllColor()
+    },
+    removeAllOutline() {
+      this.$refs.pictureDesigner.removeAllOutline()
+    },
+
+    disposeCanvas() {
+      this.$refs.pictureDesigner.disposeCanvas()
     }
   }
 }

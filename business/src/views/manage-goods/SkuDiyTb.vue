@@ -111,7 +111,12 @@
         </div>
         <div class="diy-content-wrapper">
           <div class="diy-designer-wrapper">
-            <DesignerControl ref="designerControl" :curPic="curPic" :posList="posList" />
+            <DesignerControl
+              ref="designerControl"
+              :curPic="curPic"
+              :picFlag="picFlag"
+              :posList="posList"
+            />
           </div>
           <div class="button-group">
             <el-button type="text" @click="handlerPreviewClick">预览</el-button>
@@ -204,9 +209,10 @@ export default {
       maxInventory: 9999, // 计数器最大数量
 
       picSource: 1, // 1.本地 2.图库
-      isMateral: false, // 是不是素材图片
+      isMateral: true, // 是不是素材图片
 
       curPic: 0, // 底图颜色index
+      picFlag: false,
       opt_color_list: [
         // {
         //   color_img: '',
@@ -410,7 +416,7 @@ export default {
           (item) => item.color_name === goods.color
         )
 
-        console.log('goods', goods)
+        // console.log('goods', JSON.stringify(goods, null, 2))
       }
 
       this.$nextTick(async () => {
@@ -441,6 +447,7 @@ export default {
     },
     async handlerPicItemClick(item, i) {
       this.maxInventory = item.inventory
+      this.picFlag = true
       this.curPic = i
     },
     async handlerAddCartClick() {
@@ -465,7 +472,7 @@ export default {
       const previewRes = await this.$refs.designerControl.previewAll()
       const preview_img_data = previewRes.preview_img_data
       const prune_img_data = previewRes.prune_img_data
-      console.log({ previewRes })
+      // console.log({ previewRes })
 
       const allPosList = ['back', 'left', 'right', 'top', 'bottom']
       for (const pos of allPosList) {
@@ -491,6 +498,8 @@ export default {
         }
       }
 
+      const goods_img_url = this.getImgUrl(picObj.back.preview_img, 5)
+
       const goods = {
         goods_id: goodsInfo.goods_id,
         num: this.num,
@@ -499,7 +508,7 @@ export default {
         goods_info_str: `${goodsInfo.raw_material}_${goodsInfo.brand || goodsInfo.brand_id}_${
           goodsInfo.model
         }_${color.color_name}_${goodsInfo.goods_id}`,
-        goods_img_url: `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=5&img_name=${this.preview_img}`,
+        goods_img_url: goods_img_url,
         price: goodsInfo.price,
         goodsSumPrice: goodsInfo.price * this.num,
         preview_img: picObj.back.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
@@ -511,7 +520,7 @@ export default {
         bottom: picObj.bottom
       }
 
-      console.log('pushDiyGoods', goods)
+      // console.log('pushDiyGoods', JSON.stringify(goods, null, 2))
 
       if (this.source) {
         this.$store.commit('orderEdit/editGoods', goods)
@@ -627,9 +636,10 @@ export default {
     },
     async handleSelectGoods(goodsid) {
       // console.log('goodsid', goodsid)
-      this.ori_user_img = ''
-      this.goodsInfo.goods_id = goodsid
-      this.$refs.diyDesigner.disposeCanvas()
+      this.$refs.designerControl.removeAllColor()
+      this.$refs.designerControl.removeAllOutline()
+      this.$refs.designerControl.removeAllOriginImg()
+      this.$refs.designerControl.disposeCanvas()
       const data = {
         opr: 'get_goods_info',
         goods_id: this.goodsInfo.goods_id
@@ -639,6 +649,16 @@ export default {
       console.log('商品信息 res=>', resp)
 
       if (resp.ret !== 0) return
+
+      const allPosList = ['back', 'left', 'right', 'top', 'bottom']
+      for (const pos of allPosList) {
+        this[pos].ori_user_img_data = ''
+        this[pos].ori_name = ''
+        this[pos].ori_user_img = ''
+      }
+      this.goodsInfo.goods_id = goodsid
+      this.curPic = 0
+      this.posList = ['back']
 
       const info = resp.data.info
 
@@ -650,33 +670,54 @@ export default {
       this.goodsInfo.remark = info.remark
       this.goodsInfo.brand_id = info.brand
 
-      this.picHeight = (info.img_print_param || {}).height
-      this.picWidth = (info.img_print_param || {}).width
-      this.picRadius = (info.img_print_param || {}).radius_adjius
-
       this.opt_color_list = (info.opt_color_list || []).map((item, index) => {
-        item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${item.color_img}`
-        item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${item.outline_img}`
+        item.color_img_url = this.getImgUrl(item.color_img, 7)
+        item.outline_img_url = this.getImgUrl(item.outline_img, 3)
 
-        if (this.curPic === index) {
-          this.color_img_url = item.color_img_url
-          this.outline_img_url = item.outline_img_url
-        }
+        item.back = {}
+        item.back.color_img = item.color_img
+        item.back.outline_img = item.outline_img
+
+        item.back.color_img_url = this.getImgUrl(item.color_img, 7)
+        item.back.outline_img_url = this.getImgUrl(item.outline_img, 3)
+        item.left.color_img_url = this.getImgUrl(item.left.color_img, 7)
+        item.left.outline_img_url = this.getImgUrl(item.left.outline_img, 3)
+        item.right.color_img_url = this.getImgUrl(item.right.color_img, 7)
+        item.right.outline_img_url = this.getImgUrl(item.right.outline_img, 3)
+        item.top.color_img_url = this.getImgUrl(item.top.color_img, 7)
+        item.top.outline_img_url = this.getImgUrl(item.top.outline_img, 3)
+        item.bottom.color_img_url = this.getImgUrl(item.bottom.color_img, 7)
+        item.bottom.outline_img_url = this.getImgUrl(item.bottom.outline_img, 3)
 
         return item
       })
 
+      const printParam = {
+        back: info.img_print_param,
+        left: info.img_print_param_left,
+        right: info.img_print_param_right,
+        top: info.img_print_param_top,
+        bottom: info.img_print_param_bottom
+      }
+      info.printParam = printParam
+
+      if (printParam.left.width && printParam.left.height) {
+        this.posList.push('left')
+      }
+      if (printParam.right.width && printParam.right.height) {
+        this.posList.push('right')
+      }
+      if (printParam.top.width && printParam.top.height) {
+        this.posList.push('top')
+      }
+      if (printParam.bottom.width && printParam.bottom.height) {
+        this.posList.push('bottom')
+      }
+
       this.maxInventory = ((this.opt_color_list || [])[this.curPic] || {}).inventory
 
       this.$nextTick(async () => {
-        this.$refs.diyDesigner.init()
-
-        /**
-         * 默认选中第一张地图
-         */
-        await this.$refs.diyDesigner.addOutline(this.outline_img_url)
-        await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-        // console.log(this.outline_img_url)
+        this.$refs.designerControl.updateData(info)
       })
     }
   }

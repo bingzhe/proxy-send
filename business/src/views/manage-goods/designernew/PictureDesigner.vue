@@ -321,8 +321,10 @@ export default {
       })
     },
     removeOutlineImgMask() {
-      this.canvas.overlayImage = null
-      this.canvas.renderAll()
+      if (this.canvas) {
+        this.canvas.overlayImage = null
+        this.canvas.renderAll()
+      }
     },
     // 裁剪的原图
     addOriginImg(url, pos) {
