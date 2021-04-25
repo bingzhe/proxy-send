@@ -103,6 +103,10 @@ const mutations = {
     state.goodsList[index].goods_img_url = payload.goods_img_url
     state.goodsList[index].color = payload.color
     state.goodsList[index].goods_info_str = payload.goods_info_str
+    state.goodsList[index].left = payload.left
+    state.goodsList[index].right = payload.right
+    state.goodsList[index].top = payload.top
+    state.goodsList[index].bottom = payload.bottom
   }
 }
 

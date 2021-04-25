@@ -450,9 +450,9 @@ export default {
      *
      * ---- 2020.9.27
      * 编辑商品直接进diy商品页面,goodsList后面
-     * 
+     *
      * ---- 2021.3.5
-     * diy商品又可能不存在，跳转编辑路径的goodsId位置用placeholderGoods占位识别 
+     * diy商品又可能不存在，跳转编辑路径的goodsId位置用placeholderGoods占位识别
      */
     handleGoodsEditClick(row) {
       let path

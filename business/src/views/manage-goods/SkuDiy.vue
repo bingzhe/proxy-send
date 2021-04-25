@@ -329,7 +329,6 @@ export default {
 
       this.$nextTick(async () => {
         this.$refs.designerControl.updateData(info)
-        // this.$refs.diyDesigner.init()
       })
     },
     handleGetuploadFile({ file }, type) {
@@ -471,6 +470,7 @@ export default {
 
       this.dialogVisible = true
     },
+
     handlePreviewDialogClose() {
       this.posList.forEach((pos) => {
         this[`preview_img_data_${pos}`] = ''

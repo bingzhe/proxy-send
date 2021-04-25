@@ -15,7 +15,12 @@
           <div class="opr-item clearfix">
             <div class="opr-lable">订购数量</div>
             <div class="opr-value">
-              <el-input-number v-model="num" controls-position="right" :min="1" :max="maxInventory" />
+              <el-input-number
+                v-model="num"
+                controls-position="right"
+                :min="1"
+                :max="maxInventory"
+              />
             </div>
             <div class="opr-suffix">件</div>
           </div>
@@ -34,51 +39,123 @@
       </el-row>
 
       <div v-show="picSource === 1" class="upload-img-wrapper opr-item clearfix">
-        <div class="opr-lable">选择图片</div>
-        <div class="opr-value">
-          <el-input v-model="ori_user_img" placeholder="请选择DIY图片" />
+        <div>
+          <div class="opr-lable">背部图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'back')"
+          >
+            <el-input v-model="back.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
         </div>
-        <sl-upload class="outline-uploader" :type="4" :get-file="true" @get-file="handlerGetUploadFile">
-          <el-button type="primary">选择</el-button>
-        </sl-upload>
+        <div v-if="posList.indexOf('left') !== -1">
+          <div class="opr-lable">左侧图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'left')"
+          >
+            <el-input v-model="left.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
+        </div>
+        <div v-if="posList.indexOf('right') !== -1">
+          <div class="opr-lable">右侧图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'right')"
+          >
+            <el-input v-model="right.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
+        </div>
+        <div v-if="posList.indexOf('top') !== -1">
+          <div class="opr-lable">顶部图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'top')"
+          >
+            <el-input v-model="top.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
+        </div>
+        <div v-if="posList.indexOf('bottom') !== -1">
+          <div class="opr-lable">底部图片</div>
+          <sl-upload
+            class="outline-uploader"
+            :type="4"
+            :get-file="true"
+            @get-file="handleGetuploadFile($event, 'bottom')"
+          >
+            <el-input v-model="bottom.ori_name" readonly placeholder="请选择DIY图片" />
+          </sl-upload>
+        </div>
       </div>
 
-      <div v-show="picSource === 1 || !showPicList" class="color-diy-wrapper clearfix">
+      <div v-show="picSource === 1" class="color-diy-wrapper clearfix">
         <div class="pic-list-wrapper">
           <div class="pic-list-title">选择边框颜色</div>
-          <div v-for="(item, index) in opt_color_list" :key="index" class="pic-item" :class="{ active: curPic === index }" @click="handlerPicItemClick(item, index)">
-            <el-button>{{ item.color_name }}</el-button>
+          <div
+            v-for="(item, index) in opt_color_list"
+            :key="index"
+            class="pic-item"
+            :class="{ active: curPic === index }"
+            @click="handlerPicItemClick(item, index)"
+          >
+            <el-button type="small">{{ item.color_name }}</el-button>
           </div>
         </div>
         <div class="diy-content-wrapper">
           <div class="diy-designer-wrapper">
-            <diy-designer ref="diyDesigner" :height="picHeight" :width="picWidth" :radius="picRadius" @preview-success="handlerPreviewSuc" />
+            <DesignerControl ref="designerControl" :curPic="curPic" :posList="posList" />
           </div>
           <div class="button-group">
-            <el-button v-if="picSource === 2" type="text" @click="showPicList = true">返回图库</el-button>
-            <br />
-            <el-button :disabled="!ori_user_img" type="text" @click="handlerPreviewClick">预览</el-button>
+            <el-button type="text" @click="handlerPreviewClick">预览</el-button>
           </div>
         </div>
       </div>
 
-      <material-list v-if="picSource === 2 && showPicList" @on-select="selectMaterialPic" />
+      <material-list v-if="picSource === 2" @on-select="selectMaterialPic" />
     </div>
     <div class="button-group-wrapper">
       <el-button @click="handlerCancelClick">取消</el-button>
       <el-button type="primary" @click="handlerAddCartClick">下一步:提交订单</el-button>
     </div>
 
-    <el-dialog class="preview-dialog preview-pic-wrapper" :visible.sync="dialogVisible" title="预览图">
-      <!-- <div class="preview-img-wrapper"> -->
-      <!-- <div class="img-wrapper">
-          <div>打印图</div>
-          <img :src="dialogPruneUrl" alt>
-      </div>-->
-      <div class="img-wrapper">
-        <img :src="dialogImageUrl" alt />
+    <el-dialog
+      class="preview-dialog preview-pic-wrapper"
+      :visible.sync="dialogVisible"
+      title="预览图"
+      width="80vw"
+      top="6vh"
+      @close="handlePreviewDialogClose"
+    >
+      <div class="preview-img-wrapper">
+        <div class="img-wrapper">
+          <div class="pic-title">背部</div>
+          <img :src="preview_img_data_back" alt />
+        </div>
+        <div v-if="preview_img_data_left" class="img-wrapper">
+          <div class="pic-title">左侧</div>
+          <img :src="preview_img_data_left" alt />
+        </div>
+        <div v-if="preview_img_data_right" class="img-wrapper">
+          <div class="pic-title">右侧</div>
+          <img :src="preview_img_data_right" alt />
+        </div>
+        <div v-if="preview_img_data_top" class="img-wrapper">
+          <div class="pic-title">顶部</div>
+          <img :src="preview_img_data_top" alt />
+        </div>
+        <div v-if="preview_img_data_bottom" class="img-wrapper">
+          <div class="pic-title">底部</div>
+          <img :src="preview_img_data_bottom" alt />
+        </div>
       </div>
-      <!-- </div> -->
     </el-dialog>
 
     <SkuSearchDialog ref="skuSearchDialog" @select-goods="handleSelectGoods" />
@@ -94,7 +171,7 @@ import { goodsGet } from '@/api/api'
 // buycartSave
 import { mapState } from 'vuex'
 import SlUpload from '@/components/upload/index'
-import DiyDesigner from './PictureDesigner'
+import DesignerControl from './designernew/DesignerControl'
 import Http from '@/config/encsubmit'
 
 export default {
@@ -103,8 +180,8 @@ export default {
     SkuBaseinfo,
     MaterialList,
     SlUpload,
-    DiyDesigner,
-    SkuSearchDialog
+    SkuSearchDialog,
+    DesignerControl
   },
 
   data() {
@@ -126,19 +203,9 @@ export default {
       num: 1, // 商品数量
       maxInventory: 9999, // 计数器最大数量
 
-      ori_user_img: '', // 用户上传的未经处理的原图
-      prune_img: '', // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-      preview_img: '', // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
-
-      ori_user_img_url: '',
-      outline_img_url: '', // 轮廓
-      color_img_url: '', // 底图
-      preview_img_url: '',
-      prune_img_rul: '',
-
       picSource: 1, // 1.本地 2.图库
-      showPicList: false, // 是否显示图库
-      // 底图颜色
+      isMateral: false, // 是不是素材图片
+
       curPic: 0, // 底图颜色index
       opt_color_list: [
         // {
@@ -149,30 +216,53 @@ export default {
         // }
       ],
 
-      // diy裁剪尺寸
-      picHeight: 0,
-      picWidth: 0,
-      picRadius: 0,
+      posList: ['back'], // 设计器渲染的位置
 
       // 图片预览
-      dialogPruneUrl: '', // 打印
-      dialogImageUrl: '', // 预览
+      preview_img_data_back: '',
+      preview_img_data_left: '',
+      preview_img_data_right: '',
+      preview_img_data_top: '',
+      preview_img_data_bottom: '',
+
       dialogVisible: false,
-      isShowDialog: true, // 是否显示预览
 
       loading: false,
       loadingTipText: '正在合成',
 
-      // 图片base64数据
-      ori_user_img_data: '',
-      prune_img_data: '',
-      preview_img_data: '',
+      back: {
+        ori_user_img_data: '', // 上传的图片数据
+        ori_name: '', // 上传图片名称
+        ori_user_img: '' // 图库选择的图片
+      },
+
+      left: {
+        ori_user_img_data: '', // 上传的图片数据
+        ori_name: '', // 上传图片名称
+        ori_user_img: '' // 图库选择的图片
+      },
+      right: {
+        ori_user_img_data: '',
+        ori_name: '', // 上传图片名称
+        ori_user_img: '' // 上传图片名称
+      },
+      top: {
+        ori_user_img_data: '',
+        ori_name: '', // 上传图片名称
+        ori_user_img: '' // 上传图片名称
+      },
+      bottom: {
+        ori_user_img_data: '',
+        ori_name: '', // 上传图片名称
+        ori_user_img: '' // 上传图片名称
+      },
+
+      opt_color: {}, // 选择的底图轮廓图组
 
       /**
        * "" 列表过来，商品新增，
        * shopcartTb 编辑订单页面商品编辑
        * */
-
       source: ''
     }
   },
@@ -231,142 +321,194 @@ export default {
       this.goodsInfo.remark = info.remark
       this.goodsInfo.brand_id = info.brand
 
-      this.picHeight = (info.img_print_param || {}).height
-      this.picWidth = (info.img_print_param || {}).width
-      this.picRadius = (info.img_print_param || {}).radius_adjius
-
-      /**
-       * diy商品编辑的时候,color的回显
-       */
-
-      if (this.source) {
-        const goods = this.goodsList.filter((goods) => this.editIndexId === goods.index_id)[0] || {}
-        const ori_user_img = goods.ori_user_img
-
-        this.ori_user_img = ori_user_img
-        this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${ori_user_img}`
-
-        this.num = goods.num
-        this.curPic = (info.opt_color_list || []).findIndex((item) => item.color_name === goods.color)
-
-        console.log('goods', goods)
-      }
-
       this.opt_color_list = (info.opt_color_list || []).map((item, index) => {
-        item.color_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&img_name=${item.color_img}`
-        item.outline_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=3&img_name=${item.outline_img}`
+        item.color_img_url = this.getImgUrl(item.color_img, 7)
+        item.outline_img_url = this.getImgUrl(item.outline_img, 3)
 
-        if (this.curPic === index) {
-          this.color_img_url = item.color_img_url
-          this.outline_img_url = item.outline_img_url
-        }
+        item.back = {}
+        item.back.color_img = item.color_img
+        item.back.outline_img = item.outline_img
+
+        item.back.color_img_url = this.getImgUrl(item.color_img, 7)
+        item.back.outline_img_url = this.getImgUrl(item.outline_img, 3)
+        item.left.color_img_url = this.getImgUrl(item.left.color_img, 7)
+        item.left.outline_img_url = this.getImgUrl(item.left.outline_img, 3)
+        item.right.color_img_url = this.getImgUrl(item.right.color_img, 7)
+        item.right.outline_img_url = this.getImgUrl(item.right.outline_img, 3)
+        item.top.color_img_url = this.getImgUrl(item.top.color_img, 7)
+        item.top.outline_img_url = this.getImgUrl(item.top.outline_img, 3)
+        item.bottom.color_img_url = this.getImgUrl(item.bottom.color_img, 7)
+        item.bottom.outline_img_url = this.getImgUrl(item.bottom.outline_img, 3)
 
         return item
       })
 
-      // this.outline_img_url = `${
-      //   process.env.VUE_APP_BASEURL
-      // }/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${
-      //   info.outline_img
-      // }`
+      const printParam = {
+        back: info.img_print_param,
+        left: info.img_print_param_left,
+        right: info.img_print_param_right,
+        top: info.img_print_param_top,
+        bottom: info.img_print_param_bottom
+      }
+      info.printParam = printParam
+
+      if (printParam.left.width && printParam.left.height) {
+        this.posList.push('left')
+      }
+      if (printParam.right.width && printParam.right.height) {
+        this.posList.push('right')
+      }
+      if (printParam.top.width && printParam.top.height) {
+        this.posList.push('top')
+      }
+      if (printParam.bottom.width && printParam.bottom.height) {
+        this.posList.push('bottom')
+      }
 
       this.maxInventory = ((this.opt_color_list || [])[this.curPic] || {}).inventory
 
-      this.$nextTick(async () => {
-        this.$refs.diyDesigner.init()
+      /**
+       * diy商品编辑的时候,color的回显
+       */
+      let goods = {}
+      const origin_img_as_material = {}
+      if (this.source) {
+        goods = this.goodsList.filter((goods) => this.editIndexId === goods.index_id)[0] || {}
+        // const ori_user_img = goods.ori_user_img
 
-        /**
-         * 默认选中第一张地图
-         */
-        await this.$refs.diyDesigner.addOutline(this.outline_img_url)
-        await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-        // console.log(this.outline_img_url)
+        // this.ori_user_img = ori_user_img
+        // this.ori_user_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=1&img_name=${ori_user_img}`
+
+        this.back.ori_user_img = goods.ori_user_img
+        this.left.ori_user_img = goods.left.ori_user_img
+        this.right.ori_user_img = goods.right.ori_user_img
+        this.top.ori_user_img = goods.top.ori_user_img
+        this.bottom.ori_user_img = goods.bottom.ori_user_img
+
+        origin_img_as_material.material_img_back = goods.ori_user_img
+        origin_img_as_material.material_img_left = goods.left.ori_user_img
+        origin_img_as_material.material_img_right = goods.left.ori_user_img
+        origin_img_as_material.material_img_top = goods.left.ori_user_img
+        origin_img_as_material.material_img_bottom = goods.left.ori_user_img
+        origin_img_as_material.material_img_back_url_ori = this.getImgUrl(goods.ori_user_img, 1)
+        origin_img_as_material.material_img_left_url_ori = this.getImgUrl(
+          goods.left.ori_user_img,
+          1
+        )
+        origin_img_as_material.material_img_right_url_ori = this.getImgUrl(
+          goods.left.ori_user_img,
+          1
+        )
+        origin_img_as_material.material_img_top_url_ori = this.getImgUrl(goods.left.ori_user_img, 1)
+        origin_img_as_material.material_img_bottom_url_ori = this.getImgUrl(
+          goods.left.ori_user_img,
+          1
+        )
+
+        this.num = goods.num
+        this.curPic = (info.opt_color_list || []).findIndex(
+          (item) => item.color_name === goods.color
+        )
+
+        console.log('goods', goods)
+      }
+
+      this.$nextTick(async () => {
+        this.$refs.designerControl.updateData(info)
 
         /**
          * 回显ori_user_img
          */
-        if (this.source && this.ori_user_img_url) {
-          this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
-        }
+        setTimeout(() => {
+          if (this.source) {
+            this.$refs.designerControl.addAllOriginImg(origin_img_as_material)
+          }
+        }, 1000)
       })
     },
-    handlerGetUploadFile({ file }) {
-      // this.loading = true
-      // this.loadingTipText = '正在加载'
-
-      this.ori_user_img = file.name
-
+    handleGetuploadFile({ file }, type) {
       const _this = this
       const fr = new FileReader()
 
       fr.onload = function () {
-        _this.ori_user_img_data = fr.result
+        _this[type].ori_user_img_data = fr.result
+        _this[type].ori_name = file.name
 
-        // <<<<<<<<<<<<<<<<<<
-        _this.$refs.diyDesigner.addOriginImg(fr.result)
-        // _this.$refs.diyDesigner.addOriginImg(require('@/assets/images/origin.jpg'))
-
-        // _this.loading = false
+        _this.$refs.designerControl.addOriginImg(fr.result, type)
       }
 
       fr.readAsDataURL(file)
     },
     async handlerPicItemClick(item, i) {
       this.maxInventory = item.inventory
-      this.color_img_url = item.color_img_url
-      this.outline_img_url = item.outline_img_url
       this.curPic = i
-
-      // <<<<<<<<<<<<<<<<<<
-      this.$refs.diyDesigner.removeOriginImg()
-
-      await this.$refs.diyDesigner.addOutline(this.outline_img_url)
-      await this.$refs.diyDesigner.addColorImg(this.color_img_url)
-
-      // await this.$refs.diyDesigner.addColorImg(require('@/assets/images/color.png'))
-      // await this.$refs.diyDesigner.addOutline(require('@/assets/images/outline.png'))
-
-      this.$refs.diyDesigner.addOriginImgAgain()
-      this.$refs.diyDesigner.renderAll()
     },
     async handlerAddCartClick() {
-      if (!this.ori_user_img) {
-        this.$message.error('DIY照片不能为空，请先上传')
+      if (!this.back.ori_user_img && !this.back.ori_user_img_data) {
+        this.$message.error('背部DIY照片不能为空，请先上传或者选择')
         return
       }
 
       this.loading = true
       this.loadingTipText = '正在提交'
 
-      if (!this.preview_img) {
-        this.isShowDialog = false
-        await this.$refs.diyDesigner.preview()
+      const goodsInfo = this.goodsInfo
+      const color = this.opt_color_list[this.curPic]
+      const picObj = {
+        back: {},
+        left: {},
+        right: {},
+        top: {},
+        bottom: {}
+      }
+
+      const previewRes = await this.$refs.designerControl.previewAll()
+      const preview_img_data = previewRes.preview_img_data
+      const prune_img_data = previewRes.prune_img_data
+      console.log({ previewRes })
+
+      const allPosList = ['back', 'left', 'right', 'top', 'bottom']
+      for (const pos of allPosList) {
+        if (preview_img_data[pos]) {
+          picObj[pos].preview_img = await this.imgUpload(preview_img_data[pos], 5)
+          picObj[pos].prune_img = await this.imgUpload(prune_img_data[pos], 6)
+          picObj[pos].ori_user_img = this[pos].ori_user_img
+        } else {
+          picObj[pos].preview_img = ''
+          picObj[pos].prune_img = ''
+          picObj[pos].ori_user_img = ''
+        }
       }
 
       /**
        * 本地选择的图片需要先上传
        */
-      if (this.picSource === 1 && !this.source) {
-        this.ori_user_img = await this.imgUpload(this.ori_user_img_data, 4)
+      if (!this.isMateral) {
+        for (const pos of allPosList) {
+          if (preview_img_data[pos]) {
+            picObj[pos].ori_user_img = await this.imgUpload(this[pos].ori_user_img_data, 4)
+          }
+        }
       }
-      this.preview_img = await this.imgUpload(this.preview_img_data, 5)
-      this.prune_img = await this.imgUpload(this.prune_img_data, 6)
-
-      const color = this.opt_color_list[this.curPic]
-      const goodsInfo = this.goodsInfo
 
       const goods = {
         goods_id: goodsInfo.goods_id,
         num: this.num,
         type_str: 'DIY',
         color: color.color_name,
-        goods_info_str: `${goodsInfo.raw_material}_${goodsInfo.brand || goodsInfo.brand_id}_${goodsInfo.model}_${color.color_name}_${goodsInfo.goods_id}`,
+        goods_info_str: `${goodsInfo.raw_material}_${goodsInfo.brand || goodsInfo.brand_id}_${
+          goodsInfo.model
+        }_${color.color_name}_${goodsInfo.goods_id}`,
         goods_img_url: `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=5&img_name=${this.preview_img}`,
         price: goodsInfo.price,
         goodsSumPrice: goodsInfo.price * this.num,
-        preview_img: this.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
-        prune_img: this.prune_img, // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-        ori_user_img: this.ori_user_img // 用户上传的未经处理的原图
+        preview_img: picObj.back.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
+        prune_img: picObj.back.prune_img, // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
+        ori_user_img: picObj.back.ori_user_img, // 用户上传的未经处理的原图
+        left: picObj.left,
+        right: picObj.right,
+        top: picObj.top,
+        bottom: picObj.bottom
       }
 
       console.log('pushDiyGoods', goods)
@@ -378,65 +520,58 @@ export default {
         this.$store.commit('orderEdit/goodsListPush', goods)
         this.$router.push({ path: `/manage-order/tborderedit/${this.editOrderId}` })
       }
-
-      // const data = {
-      //   opr: 'put_to_buycart_diy',
-      //   goods_id: this.goodsInfo.goods_id, // 商品编号(ID)
-      //   num: this.num, // 订购数量
-      //   color: this.opt_color_list[this.curPic].color_name, // 颜色分类("红色"、"绿色"...)
-      //   preview_img: this.preview_img, // 经过设计器修整后的用户图（且和轮廓图合并后的图）（预览图）
-      //   prune_img: this.prune_img, // 经过设计器修整后的用户图（已缩放、旋转，但不包含轮廓）
-      //   ori_user_img: this.ori_user_img // 用户上传的未经处理的原图
-      // }
-
-      // if (this.buycart_id) {
-      //   data.buycart_id = this.buycart_id
-      // }
-
-      // console.log('diy加入购物车', data)
-      // const resp = await buycartSave(data)
-      // console.log('diy加入购物车', resp)
-      // this.loading = false
-      // if (resp.ret !== 0) return
-
-      // /**
-      //  * 更新页面全局数据
-      //  */
-      // this.$store.dispatch('user/getUserInfo')
-      // this.$router.push('/manage-goods/shopcart')
     },
     handlerCancelClick() {
       this.$router.go(-1)
     },
-    handlerPicSourceChange() {
-      if (this.picSource === 2) {
-        this.showPicList = true
-      }
-      this.$refs.diyDesigner.removeOriginImg()
-      this.ori_user_img = ''
-      this.ori_user_img_data = ''
-      // this.outline_img_url = ''
+    // 点击切换按钮的时候重置数据
+    handlerPicSourceChange(val) {
+      this.isMateral = val !== 1
+      this.$refs.designerControl.removeAllOriginImg()
+      this.posList.forEach((pos) => {
+        this[pos].ori_user_img = ''
+        this[pos].ori_user_img_data = ''
+        this[pos].ori_name = ''
+      })
     },
-    selectMaterialPic(img) {
-      this.ori_user_img = img.material_img
-      this.ori_user_img_url = img.material_img_url_ori
-      this.showPicList = false
-      this.$refs.diyDesigner.addOriginImg(this.ori_user_img_url)
+    selectMaterialPic(item) {
+      this.back.ori_user_img = item.material_img
+      this.left.ori_user_img = item.material_img_left
+      this.right.ori_user_img = item.material_img_right
+      this.top.ori_user_img = item.material_img_top
+      this.bottom.ori_user_img = item.material_img_bottom
+
+      this.$refs.designerControl.addAllOriginImg(item)
+      this.picSource = 1
     },
     async handlerPreviewClick() {
+      if (!this.back.ori_user_img && !this.back.ori_user_img_data) {
+        this.$message.error('背部DIY照片不能为空，请先上传或者选择')
+        return
+      }
+
       this.loading = true
       this.loadingTipText = '正在合成'
-      await this.$refs.diyDesigner.preview()
+      const previewRes = await this.$refs.designerControl.previewAll()
       this.loading = false
-    },
-    handlerPreviewSuc({ preview_img_data, prune_img_data }) {
-      this.preview_img_data = preview_img_data
-      this.prune_img_data = prune_img_data
-      this.dialogImageUrl = this.preview_img_data
 
-      if (this.isShowDialog) {
-        this.dialogVisible = true
-      }
+      const preview_img_data = previewRes.preview_img_data
+      // const prune_img_data = previewRes.prune_img_data
+
+      // 预览弹窗图片赋值
+      this.posList.forEach((pos) => {
+        if (preview_img_data[pos]) {
+          this[`preview_img_data_${pos}`] = preview_img_data[pos]
+        }
+      })
+
+      this.dialogVisible = true
+    },
+
+    handlePreviewDialogClose() {
+      this.posList.forEach((pos) => {
+        this[`preview_img_data_${pos}`] = ''
+      })
     },
     base64ToFile(urlData) {
       var arr = urlData.split(',')
@@ -477,6 +612,9 @@ export default {
           resolve(resp.data.img_name)
         })
       })
+    },
+    getImgUrl(img_name, type = 1) {
+      return `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=${type}&img_name=${img_name}`
     },
     handleBeforeunload(e) {
       if (e) {
@@ -605,12 +743,14 @@ export default {
 
 .upload-img-wrapper {
   margin-bottom: 24px;
+  display: flex;
   .opr-value {
     width: 520px;
     margin-right: 14px;
   }
   .outline-uploader {
     float: left;
+    margin-right: 14px;
   }
   .el-button {
     padding: 11px 20px;
@@ -622,12 +762,12 @@ export default {
   min-height: 465px;
   box-shadow: 0px 0px 6px 0px rgba(37, 132, 249, 0.15);
   border-radius: 2px;
-  padding-left: 170px;
+  padding-left: 110px;
   position: relative;
 }
 .pic-list-wrapper {
   text-align: center;
-  width: 170px;
+  width: 110px;
   border-right: 1px solid #eff4f9;
   position: absolute;
   top: 0;
@@ -640,11 +780,6 @@ export default {
   }
   .pic-item {
     margin-bottom: 16px;
-    .el-button {
-      height: 38px;
-      width: 90px;
-      padding: 11px;
-    }
 
     &.active {
       .el-button {
@@ -667,33 +802,34 @@ export default {
     right: 0;
   }
 }
-// /deep/ .preview-dialog {
-//   .el-dialog__header {
-//     // background: rgba(176, 204, 177, 0.51);
-//   }
-//   .el-dialog__body {
-//     text-align: center;
-//     max-height: 80vh;
-//     // background: rgba(176, 204, 177, 0.51);
+/deep/ .preview-dialog {
+  // .el-dialog__header {
+  // background: rgba(176, 204, 177, 0.51);
+  // }
+  .el-dialog__body {
+    text-align: center;
+    max-height: 80vh;
+    // background: rgba(176, 204, 177, 0.51);
 
-//     .preview-img-wrapper {
-//       display: flex;
-//       justify-content: center;
-//       .img-wrapper {
-//         width: 60%;
-//         img {
-//           width: 100%;
-//           border: 1px solid #ccc;
-//         }
-//       }
-//     }
-//   }
-// }
+    .preview-img-wrapper {
+      display: flex;
+      justify-content: space-around;
+      // .img-wrapper {
+      // width: 60%;
+      // }
+    }
+  }
+}
 /deep/ .preview-pic-wrapper {
   .el-dialog__body {
     max-height: 80vh;
     text-align: center;
-    padding: 0;
+
+    .pic-title {
+      font-size: 16px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
     img {
       max-height: 70vh;
       max-width: 70vh;

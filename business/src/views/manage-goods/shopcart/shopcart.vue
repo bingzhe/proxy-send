@@ -423,7 +423,7 @@ export default {
         remark_img_list: this.remark_img_list
       }
 
-      console.log('计算订单费用 req=>', data)
+      console.log('计算订单费用 req=>', JSON.stringify(data, null, 2))
       const resp = await buycartSave(data)
       console.log('计算订单费用 res=>', resp)
 
