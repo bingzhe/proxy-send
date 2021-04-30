@@ -415,6 +415,7 @@ export default {
         this.curPic = (info.opt_color_list || []).findIndex(
           (item) => item.color_name === goods.color
         )
+        if (this.curPic === -1) this.curPic = 0
 
         // console.log('goods', JSON.stringify(goods, null, 2))
       }
@@ -642,7 +643,7 @@ export default {
       this.$refs.designerControl.disposeCanvas()
       const data = {
         opr: 'get_goods_info',
-        goods_id: this.goodsInfo.goods_id
+        goods_id: goodsid
       }
 
       const resp = await goodsGet(data)

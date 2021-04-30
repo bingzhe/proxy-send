@@ -117,9 +117,9 @@ export default {
 
       this.skuTableLoading = true
 
-      console.log('get sku data req=>', data)
+      // console.log('get sku data req=>', data)
       const resp = await goodsGet(data)
-      console.log('get sku data res=>', resp)
+      // console.log('get sku data res=>', resp)
 
       if (resp.ret !== 0) return
       this.skuTableLoading = false
@@ -135,7 +135,7 @@ export default {
     },
     handleSkuSelect(row) {
       this.selectRow = row
-      console.log('select row', row)
+      // console.log('select row', row)
     }
   }
 }
