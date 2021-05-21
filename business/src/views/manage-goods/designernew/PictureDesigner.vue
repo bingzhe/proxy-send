@@ -174,9 +174,17 @@ export default {
       const canvasWidth = this.$refs.canvasBgWrapper.offsetWidth
 
       // 设置画布和真实图片缩放比例
-      if (this.back.height >= 1000 && this.back.height < 1500) {
+      // if (this.back.height >= 1000 && this.back.height < 1500) {
+      //   this.scale = 0.4
+      // } else if (this.back.height >= 1500) {
+      //   this.scale = 0.3
+      // }
+
+      if (this.back.width < 500) {
+        this.scale = 0.5
+      } else if (this.back.width >= 500 && this.back.width < 700) {
         this.scale = 0.4
-      } else if (this.back.height >= 1500) {
+      } else if (this.back.width >= 700) {
         this.scale = 0.3
       }
       /**
