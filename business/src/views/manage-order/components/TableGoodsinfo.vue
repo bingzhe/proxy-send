@@ -7,7 +7,31 @@
             class="goods-img-preview"
             :src="scope.row.goods_img_url"
             @click="handlePictureCardPreview(scope.row.goods_img_url_preview)"
-          >
+          />
+          <img
+            v-if="scope.row.left_goods_img_url"
+            class="goods-img-preview"
+            :src="scope.row.left_goods_img_url"
+            @click="handlePictureCardPreview(scope.row.left_goods_img_url_preview)"
+          />
+          <img
+            v-if="scope.row.right_goods_img_url"
+            class="goods-img-preview"
+            :src="scope.row.right_goods_img_url"
+            @click="handlePictureCardPreview(scope.row.right_goods_img_url_preview)"
+          />
+          <img
+            v-if="scope.row.top_goods_img_url"
+            class="goods-img-preview"
+            :src="scope.row.top_goods_img_url"
+            @click="handlePictureCardPreview(scope.row.top_goods_img_url_preview)"
+          />
+          <img
+            v-if="scope.row.bottom_goods_img_url"
+            class="goods-img-preview"
+            :src="scope.row.bottom_goods_img_url"
+            @click="handlePictureCardPreview(scope.row.bottom_goods_img_url_preview)"
+          />
         </template>
       </el-table-column>
       <el-table-column prop="goods_name" label="商品名称" min-width="160" align="center" />
@@ -22,7 +46,7 @@
       </el-table-column>
     </el-table>
     <el-dialog class="preview-pic-wrapper" :visible.sync="dialogVisible">
-      <img :src="dialogImageUrl" alt>
+      <img :src="dialogImageUrl" alt />
     </el-dialog>
   </div>
 </template>

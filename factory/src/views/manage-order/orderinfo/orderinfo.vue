@@ -280,6 +280,28 @@ export default {
         goods.goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${goods.goods_img}`
         goods.warehouse_name = (goods.delivery_info || {}).warehouse_name || '-'
         goods.delivery_number = (goods.delivery_info || {}).delivery_number || '-'
+
+        const left = goods.left || {}
+        const right = goods.right || {}
+        const top = goods.top || {}
+        const bottom = goods.bottom || {}
+        if (left.preview_img) {
+          goods.left_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${left.preview_img}`
+          goods.left_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${left.preview_img}`
+        }
+        if (right.preview_img) {
+          goods.right_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${right.preview_img}`
+          goods.right_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${right.preview_img}`
+        }
+        if (top.preview_img) {
+          goods.top_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${top.preview_img}`
+          goods.top_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${top.preview_img}`
+        }
+        if (bottom.preview_img) {
+          goods.bottom_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${bottom.preview_img}`
+          goods.bottom_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${bottom.preview_img}`
+        }
+
         return goods
       })
 

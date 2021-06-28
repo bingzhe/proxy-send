@@ -7,14 +7,31 @@
         </div>
         <div class="order-status-wrapper">
           <div class="order-status">当前订单状态：{{ ORDER_STATUS.toString(order_status) }}</div>
-          <div v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="order-status-reason">{{ status_remark }}</div>
+          <div v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="order-status-reason">
+            {{ status_remark }}
+          </div>
         </div>
       </div>
       <div class="btn-group-wrapper">
-        <el-button v-if="order_status === ORDER_STATUS.AUDIT_WAIT" class="btn-bd-primary" @click="openUndoDialogTip">撤销订单</el-button>
-        <el-button v-if="order_status === ORDER_STATUS.AUDIT_FAIL" class="btn-bd-primary" @click="handlerEditBtnClick">编辑订单</el-button>
-        <el-button v-if="order_status === ORDER_STATUS.AUDIT_FAIL || order_status === ORDER_STATUS.REVOCAT" class="btn-bd-primary" @click="openDeleteDialogTip">删除订单</el-button>
-        <el-button v-if="order_status === ORDER_STATUS.DELIVERY_SUC" class="btn-bd-primary">物流追踪</el-button>
+        <el-button
+          v-if="order_status === ORDER_STATUS.AUDIT_WAIT"
+          class="btn-bd-primary"
+          @click="openUndoDialogTip"
+        >撤销订单</el-button>
+        <el-button
+          v-if="order_status === ORDER_STATUS.AUDIT_FAIL"
+          class="btn-bd-primary"
+          @click="handlerEditBtnClick"
+        >编辑订单</el-button>
+        <el-button
+          v-if="order_status === ORDER_STATUS.AUDIT_FAIL || order_status === ORDER_STATUS.REVOCAT"
+          class="btn-bd-primary"
+          @click="openDeleteDialogTip"
+        >删除订单</el-button>
+        <el-button
+          v-if="order_status === ORDER_STATUS.DELIVERY_SUC"
+          class="btn-bd-primary"
+        >物流追踪</el-button>
         <el-button class="btn-bd-primary" @click="handlerGoBackClick">返回</el-button>
       </div>
     </div>
@@ -24,7 +41,11 @@
         <baseinfo-title color="#FB7474" text="基本信息" />
       </div>
       <div class="info-content-wrapper">
-        <table-baseinfo :baseinfo-list="baseinfoList" @imgupload-success="handleBaseInfoimgUpload" @imgdelete="handleBaseInfoimgdel" />
+        <table-baseinfo
+          :baseinfo-list="baseinfoList"
+          @imgupload-success="handleBaseInfoimgUpload"
+          @imgdelete="handleBaseInfoimgdel"
+        />
       </div>
     </div>
     <!-- 商品信息 -->
@@ -65,10 +86,26 @@
     </div>
 
     <!-- 撤销提示弹窗 -->
-    <dialog-tip ref="undoDialogTip" type="undo" cancel-text="不撤销" confirm-text="撤销" title="撤销订单" tip-text="订单撤销不能还原，确定要撤销？" @confirm="undoOrderOpr" />
+    <dialog-tip
+      ref="undoDialogTip"
+      type="undo"
+      cancel-text="不撤销"
+      confirm-text="撤销"
+      title="撤销订单"
+      tip-text="订单撤销不能还原，确定要撤销？"
+      @confirm="undoOrderOpr"
+    />
 
     <!-- 删除提示弹窗 -->
-    <dialog-tip ref="deleteDialogTip" type="delete" cancel-text="不删除" confirm-text="删除" title="删除订单" tip-text="确定要删除订单吗？" @confirm="deleteOrderOpr" />
+    <dialog-tip
+      ref="deleteDialogTip"
+      type="delete"
+      cancel-text="不删除"
+      confirm-text="删除"
+      title="删除订单"
+      tip-text="确定要删除订单吗？"
+      @confirm="deleteOrderOpr"
+    />
   </div>
 </template>
 
@@ -215,8 +252,29 @@ export default {
         goods.desc_str = `${goods.raw_material}_${goods.brand_txt}_${goods.model_txt}_${goods.color}_${goods.goods_id}`
         goods.type_str = GOODS_TYPE.toString(goods.type)
         goods.total_price = goods.num * goods.price
-        goods.goods_img_url = goods.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${goods.goods_img}`
+        goods.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${goods.goods_img}`
         goods.goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${goods.goods_img}`
+        const left = goods.left || {}
+        const right = goods.right || {}
+        const top = goods.top || {}
+        const bottom = goods.bottom || {}
+        if (left.preview_img) {
+          goods.left_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${left.preview_img}`
+          goods.left_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${left.preview_img}`
+        }
+        if (right.preview_img) {
+          goods.right_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${right.preview_img}`
+          goods.right_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${right.preview_img}`
+        }
+        if (top.preview_img) {
+          goods.top_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${top.preview_img}`
+          goods.top_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${top.preview_img}`
+        }
+        if (bottom.preview_img) {
+          goods.bottom_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${bottom.preview_img}`
+          goods.bottom_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${bottom.preview_img}`
+        }
+
         return goods
       })
 
@@ -229,14 +287,30 @@ export default {
 
       // 费用信息
       this.orderFeeList[0].goods_fee = info.goods_fee ? `¥ ${info.goods_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].freight_fee = info.freight_fee ? `¥ ${info.freight_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].discount_fee = info.discount_fee ? `- ¥ ${info.discount_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].attach_fee = info.attach_fee ? `¥ ${info.attach_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[0].side_print_fee = info.side_print_fee ? `¥ ${info.side_print_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].goods_fee = info.adjust_fee ? `¥ ${info.adjust_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].freight_fee = info.refund_fee ? `¥ ${info.refund_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].discount_fee = info.order_fee ? `¥ ${info.order_fee.toFixed(2)}` : '¥ 0.00'
-      this.orderFeeList[2].attach_fee = info.actual_fee ? `¥ ${info.actual_fee.toFixed(2)}` : '¥ 0.00'
+      this.orderFeeList[0].freight_fee = info.freight_fee
+        ? `¥ ${info.freight_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].discount_fee = info.discount_fee
+        ? `- ¥ ${info.discount_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].attach_fee = info.attach_fee
+        ? `¥ ${info.attach_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[0].side_print_fee = info.side_print_fee
+        ? `¥ ${info.side_print_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].goods_fee = info.adjust_fee
+        ? `¥ ${info.adjust_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].freight_fee = info.refund_fee
+        ? `¥ ${info.refund_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].discount_fee = info.order_fee
+        ? `¥ ${info.order_fee.toFixed(2)}`
+        : '¥ 0.00'
+      this.orderFeeList[2].attach_fee = info.actual_fee
+        ? `¥ ${info.actual_fee.toFixed(2)}`
+        : '¥ 0.00'
 
       // 操作历史信息
       this.orderTrack = (info.order_track || []).map((track) => {
