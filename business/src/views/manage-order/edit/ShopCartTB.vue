@@ -20,13 +20,33 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" align="center" width="55" />
-            <el-table-column prop="goods_img" align="center" label="图片" min-width="50">
+            <el-table-column prop="goods_img" align="center" label="图片" min-width="100">
               <template slot-scope="scope">
                 <img class="table-img" :src="scope.row.goods_img_url" />
+                <img
+                  v-if="scope.row.left_goods_img_url"
+                  class="table-img"
+                  :src="scope.row.left_goods_img_url"
+                />
+                <img
+                  v-if="scope.row.right_goods_img_url"
+                  class="table-img"
+                  :src="scope.row.right_goods_img_url"
+                />
+                <img
+                  v-if="scope.row.top_goods_img_url"
+                  class="table-img"
+                  :src="scope.row.top_goods_img_url"
+                />
+                <img
+                  v-if="scope.row.bottom_goods_img_url"
+                  class="table-img"
+                  :src="scope.row.bottom_goods_img_url"
+                />
               </template>
             </el-table-column>
-            <el-table-column prop="type_str" label="商品类型" min-width="50" />
-            <el-table-column prop="sku" label="sku" width="300" />
+            <el-table-column prop="type_str" label="商品类型" width="80" />
+            <el-table-column prop="sku" label="sku" width="230" />
             <el-table-column prop="num" label="数量" width="150">
               <template slot-scope="scope">
                 <el-input-number v-model="scope.row.num" :min="1" size="small" @change="getPrice" />
@@ -421,11 +441,32 @@ export default {
       this.attachList = info.attach_list || []
 
       this.goodsList = (info.goods_list || []).map((item) => {
-        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=35&height=70&type=7&img_name=${item.goods_img}`
+        item.goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${item.goods_img}`
 
         item.type_str = GOODS_TYPE.toString(item.type)
         item.goods_info_str = `${item.raw_material}_${item.brand_txt}_${item.model_txt}_${item.color}_${item.goods_id}`
         item.goodsSumPrice = item.num * item.price
+
+        const left = item.left || {}
+        const right = item.right || {}
+        const top = item.top || {}
+        const bottom = item.bottom || {}
+        if (left.preview_img) {
+          item.left_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${left.preview_img}`
+          item.left_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${left.preview_img}`
+        }
+        if (right.preview_img) {
+          item.right_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${right.preview_img}`
+          item.right_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${right.preview_img}`
+        }
+        if (top.preview_img) {
+          item.top_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${top.preview_img}`
+          item.top_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${top.preview_img}`
+        }
+        if (bottom.preview_img) {
+          item.bottom_goods_img_url = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&width=64&height=64&type=7&img_name=${bottom.preview_img}`
+          item.bottom_goods_img_url_preview = `${process.env.VUE_APP_BASEURL}/img_get.php?token=${this.token}&opr=get_img&type=7&to=jpg&img_name=${bottom.preview_img}`
+        }
 
         return item
       })
@@ -756,8 +797,9 @@ export default {
 .select-goods-table-wrapper {
   margin: 0 140px;
   .table-img {
-    height: 70px;
-    width: 35px;
+    height: 64px;
+    width: 64px;
+    vertical-align: middle;
   }
   /deep/ .el-table .cell {
     padding-left: 5px;
